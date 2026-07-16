@@ -8,6 +8,7 @@ import DonorCard from "../components/donors/DonorCard";
 import DocumentsTab from "../components/donors/documents/DocumentsTab";
 import PaymentsTab from "../components/donors/payments/PaymentsTab";
 
+import "../styles/dashboard.css";
 import "../styles/donors.css";
 
 const API = "http://127.0.0.1:5000/api";
@@ -115,17 +116,11 @@ export default function Donors() {
   return (
     <div className="donors-page">
 
-      <div className="page-header">
+      <div className="dashboard-head">
 
-        <div>
+        <div className="dashboard-title">
 
-          <h1>Donors</h1>
-
-          <p>
-            Monitor donor engagement,
-            proposal readiness,
-            documentation and payments.
-          </p>
+          <h4 className="section-heading">Donors</h4>
 
         </div>
 

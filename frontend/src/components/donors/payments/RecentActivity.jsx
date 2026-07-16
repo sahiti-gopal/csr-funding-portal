@@ -84,9 +84,9 @@ export default function RecentActivity({
           <h3>
 
             <Activity
-              size={20}
+              size={15}
               style={{
-                marginRight: 8,
+                marginRight: 6,
                 verticalAlign: "middle",
               }}
             />
@@ -140,7 +140,7 @@ export default function RecentActivity({
                   className="activity-icon"
                 >
 
-                  <Icon size={20} />
+                  <Icon size={15} />
 
                 </div>
 

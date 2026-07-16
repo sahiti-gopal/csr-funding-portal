@@ -24,7 +24,7 @@ export default function DocumentCategory({
               color,
             }}
           >
-            <FolderOpen size={20} />
+            <FolderOpen size={16} />
           </div>
 
           <div>

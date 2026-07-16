@@ -37,11 +37,11 @@ export default function DocumentList({
               >
                 {missing ? (
                   <AlertTriangle
-                    size={20}
+                    size={16}
                   />
                 ) : (
                   <FileText
-                    size={20}
+                    size={16}
                   />
                 )}
               </div>
@@ -90,7 +90,7 @@ export default function DocumentList({
 
               {missing ? (
 
-                <button className="upload-btn">
+                <button className="doc-upload-btn">
 
                   <Upload size={16} />
 

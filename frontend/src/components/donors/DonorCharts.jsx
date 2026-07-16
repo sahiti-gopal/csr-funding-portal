@@ -41,15 +41,15 @@ function ChartCard({
         <div className="chart-wrapper">
 
           <ResponsiveContainer
-            width={180}
-            height={180}
+            width={110}
+            height={110}
           >
             <PieChart>
 
               <Pie
                 data={data}
-                innerRadius={52}
-                outerRadius={78}
+                innerRadius={32}
+                outerRadius={48}
                 dataKey="value"
               >
 

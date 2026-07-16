@@ -100,7 +100,7 @@ export default function DonorOverview({
                     color: card.color,
                   }}
                 >
-                  <Icon size={22} />
+                  <Icon size={15} />
                 </div>
 
               </div>

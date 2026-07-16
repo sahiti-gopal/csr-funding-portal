@@ -85,7 +85,7 @@ export default function NotificationDropdown({ onClose }) {
     key={alert.id}
     className="notification-row"
     onClick={() => {
-      navigate("/alerts");
+      navigate("/alerts", { state: { highlightAlertId: alert.id } });
       onClose?.();
     }}
   >

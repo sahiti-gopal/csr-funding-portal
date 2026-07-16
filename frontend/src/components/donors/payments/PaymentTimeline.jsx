@@ -46,13 +46,13 @@ export default function PaymentTimeline({
               {step.completed ? (
 
                 <CheckCircle2
-                  size={22}
+                  size={15}
                 />
 
               ) : (
 
                 <Circle
-                  size={22}
+                  size={15}
                 />
 
               )}

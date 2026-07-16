@@ -79,16 +79,6 @@ export default function Alerts() {
     loadAlerts();
   }, [category, priority]);
 
-  const markRead = async () => {
-    try {
-      await axios.patch(`${API}/alerts/read-all`);
-
-      loadAlerts();
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const exportAlerts = () => {
     window.open(`${API}/alerts/export`, "_blank");
   };
@@ -99,11 +89,7 @@ export default function Alerts() {
       <div className="alerts-header">
 
   <div>
-    <h1>Alerts</h1>
-
-    <p>
-      Monitor and respond to risk alerts for your CSR projects
-    </p>
+    <h4>Alerts</h4>
   </div>
 
 </div>
@@ -114,7 +100,6 @@ export default function Alerts() {
         priority={priority}
         onCategoryChange={setCategory}
         onPriorityChange={setPriority}
-        onMarkRead={markRead}
       />
 
       <div className="alerts-list">

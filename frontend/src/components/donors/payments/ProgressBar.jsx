@@ -5,13 +5,13 @@ export default function ProgressBar({
 }) {
   return (
     <div
-      className="progress-track"
+      className="pay-progress-track"
       style={{
         height,
       }}
     >
       <div
-        className="progress-fill"
+        className="pay-progress-fill"
         style={{
           width: `${value}%`,
           background: color,

@@ -93,13 +93,18 @@ body {
   display: flex;
   align-items: center;
   gap: 13px;
-  padding: 11px 14px;
+  padding: 11px 14px 11px 11px;
+  border-left: 3px solid transparent;
   border-radius: 10px;
   text-decoration: none;
   font-size: 14.5px;
   font-weight: 500;
   color: #9fb0cd;
-  transition: background 0.2s ease, color 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+
+.nav-item svg {
+  flex-shrink: 0;
 }
 
 .nav-item:hover {
@@ -109,6 +114,7 @@ body {
 
 .nav-item.active {
   background: #22375f;
+  border-left-color: #4ade80;
   color: #fff;
   font-weight: 600;
 }
@@ -162,12 +168,12 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 0 30px;
+  gap: 20px;
+  padding: 0 22px;
 }
 
 .header-greeting {
-  font-size: 20px;
+  font-size: 15px;
   font-weight: 700;
   color: #2563eb;
 }
@@ -178,7 +184,7 @@ body {
 
     align-items:center;
 
-    gap:20px;
+    gap:14px;
 
     position:relative;
 
@@ -199,7 +205,7 @@ body {
 }
 
 .header-search input {
-  width: 240px;
+  width: 200px;
   padding: 9px 14px 9px 36px;
   border: 1px solid #e2e8f0;
   border-radius: 10px;
@@ -269,6 +275,7 @@ body {
 @media (max-width: 768px) {
   .sidebar {
     width: 72px;
+    padding: 22px 12px;
   }
   .logo p,
   .logo h2,
@@ -276,49 +283,24 @@ body {
   .sidebar-user div {
     display: none;
   }
-}
-.header-filters{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    margin-right:18px;
-}
-
-.header-filters select{
-
-    height:40px;
-
-    min-width:170px;
-
-    border:1px solid #dbe3ef;
-
-    border-radius:10px;
-
-    padding:0 14px;
-
-    background:white;
-
-    font-size:14px;
-
-    cursor:pointer;
-
-    transition:.2s;
-}
-
-.header-filters select:hover{
-
-    border-color:#2563eb;
-
-}
-
-.header-filters select:focus{
-
-    outline:none;
-
-    border-color:#2563eb;
-
-    box-shadow:0 0 0 3px rgba(37,99,235,.12);
-
+  .logo {
+    justify-content: center;
+    padding: 6px 0 26px;
+  }
+  .nav-item {
+    justify-content: center;
+    padding: 11px;
+    border-left-width: 0;
+    border-bottom: 3px solid transparent;
+  }
+  .nav-item.active {
+    border-left-width: 0;
+    border-bottom-color: #4ade80;
+  }
+  .sidebar-user {
+    justify-content: center;
+    padding: 14px 0 4px;
+  }
 }
 .notification-dropdown{
 

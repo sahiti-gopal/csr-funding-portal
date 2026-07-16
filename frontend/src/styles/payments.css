@@ -5,8 +5,18 @@
 .payments-page{
     display:flex;
     flex-direction:column;
-    gap:22px;
-    margin-top:18px;
+    gap:12px;
+    margin-top:8px;
+}
+
+.payments-loading,
+.payments-error{
+    padding:40px;
+    text-align:center;
+    color:#64748B;
+    background:#fff;
+    border:1px dashed #CBD5E1;
+    border-radius:14px;
 }
 
 /* ==========================================
@@ -14,161 +24,93 @@
 ========================================== */
 
 .payment-header{
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
-
     background:#fff;
-
     border:1px solid #E5E7EB;
-
-    border-radius:18px;
-
-    padding:22px 26px;
-
-    box-shadow:0 10px 25px rgba(15,23,42,.05);
-
+    border-radius:14px;
+    padding:14px 16px;
+    box-shadow:0 6px 18px rgba(15,23,42,.05);
 }
 
 .payment-header-left{
-
     display:flex;
-
     align-items:center;
-
-    gap:18px;
-
+    gap:12px;
 }
 
 .payment-avatar{
-
-    width:62px;
-
-    height:62px;
-
-    border-radius:16px;
-
+    width:40px;
+    height:40px;
+    border-radius:12px;
     background:#EFF6FF;
-
     color:#2563EB;
-
     display:flex;
-
     align-items:center;
-
     justify-content:center;
-
-}
-
-.payment-header-content{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:6px;
-
-}
-
-.payment-label{
-
-    color:#64748B;
-
+    font-weight:700;
     font-size:13px;
+    flex-shrink:0;
+}
 
-    font-weight:600;
+.payment-header-info h2{
+    margin:0;
+    font-size:15px;
+    font-weight:700;
+    color:#111827;
+}
 
+.payment-header-info p{
+    margin:2px 0 0;
+    font-size:12px;
+    color:#64748B;
 }
 
 .payment-select{
-
     position:relative;
-
-    width:250px;
-
 }
 
 .payment-select select{
-
-    width:100%;
-
-    padding:10px 36px 10px 14px;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:12px;
-
     appearance:none;
-
-    background:white;
-
-    font-size:15px;
-
+    width:100%;
+    padding:7px 30px 7px 12px;
+    border:1px solid #E5E7EB;
+    border-radius:10px;
+    background:#fff;
+    font-size:12px;
     font-weight:600;
-
-    outline:none;
-
-}
-
-.payment-arrow{
-
-    position:absolute;
-
-    right:12px;
-
-    top:50%;
-
-    transform:translateY(-50%);
-
-    pointer-events:none;
-
-}
-
-.payment-meta{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    color:#16A34A;
-
-    font-size:13px;
-
-}
-
-.add-donor-btn{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    background:#2563EB;
-
-    color:white;
-
-    border:none;
-
-    padding:12px 20px;
-
-    border-radius:12px;
-
+    color:#334155;
     cursor:pointer;
-
-    font-weight:600;
-
+    outline:none;
 }
 
-.add-donor-btn:hover{
+.select-icon{
+    position:absolute;
+    right:10px;
+    top:50%;
+    transform:translateY(-50%);
+    pointer-events:none;
+    color:#94A3B8;
+}
 
+.payment-add-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#2563EB;
+    color:#fff;
+    border:none;
+    padding:8px 14px;
+    border-radius:10px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.payment-add-btn:hover{
     background:#1D4ED8;
-
 }
 
 /* ==========================================
@@ -176,369 +118,826 @@
 ========================================== */
 
 .payment-toolbar{
-
     display:flex;
-
     justify-content:space-between;
-
     align-items:center;
+    flex-wrap:wrap;
+    gap:10px;
+}
 
-    gap:20px;
-
+.payment-toolbar-left{
+    flex:1;
+    min-width:220px;
 }
 
 .payment-search{
-
     display:flex;
-
     align-items:center;
-
-    gap:12px;
-
-    flex:1;
-
-    max-width:480px;
-
-    background:white;
-
+    gap:8px;
+    max-width:420px;
+    background:#fff;
     border:1px solid #E5E7EB;
-
-    border-radius:14px;
-
-    padding:12px 16px;
-
+    border-radius:10px;
+    padding:7px 12px;
+    color:#94A3B8;
 }
 
 .payment-search input{
-
     flex:1;
-
     border:none;
-
     outline:none;
-
     background:transparent;
-
-    font-size:15px;
-
-}
-
-.payment-toolbar-actions{
-
-    display:flex;
-
-    gap:12px;
-
-}
-
-.toolbar-btn{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    border-radius:12px;
-
-    padding:12px 18px;
-
-    font-weight:600;
-
-    cursor:pointer;
-
-    transition:.2s;
-
-}
-
-.toolbar-btn.secondary{
-
-    background:white;
-
-    border:1px solid #CBD5E1;
-
-}
-
-.toolbar-btn.secondary:hover{
-
-    background:#F8FAFC;
-
-}
-
-.toolbar-btn.primary{
-
-    background:#2563EB;
-
-    border:none;
-
-    color:white;
-
-}
-
-.toolbar-btn.primary:hover{
-
-    background:#1D4ED8;
-
-}
-/* ==========================================
-   PAYMENT LIST
-========================================== */
-
-.payments-list{
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-}
-
-.payment-card{
-    background:#fff;
-    border:1px solid #E5E7EB;
-    border-radius:18px;
-    overflow:hidden;
-    box-shadow:0 10px 25px rgba(15,23,42,.05);
-}
-
-.payment-card-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:22px 26px;
-    cursor:pointer;
-    transition:.2s;
-}
-
-.payment-card-header:hover{
-    background:#F8FAFC;
-}
-
-.payment-title{
-    display:flex;
-    flex-direction:column;
-    gap:10px;
-}
-
-.payment-title h2{
-    font-size:22px;
-    color:#111827;
-    margin:0;
-}
-
-.payment-tags{
-    display:flex;
-    gap:12px;
-    align-items:center;
-}
-
-.amount-chip{
-    background:#DBEAFE;
-    color:#2563EB;
-    padding:8px 14px;
-    border-radius:999px;
     font-size:13px;
-    font-weight:700;
+    color:#334155;
 }
 
-.pending-chip{
+.payment-toolbar-right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.toolbar-filter{
     display:flex;
     align-items:center;
     gap:6px;
-    background:#FEF3C7;
-    color:#B45309;
-    padding:8px 14px;
-    border-radius:999px;
-    font-size:13px;
-    font-weight:700;
+    border:1px solid #E5E7EB;
+    border-radius:10px;
+    padding:7px 10px;
+    background:#fff;
+    color:#94A3B8;
 }
 
-.expand-btn{
+.toolbar-filter select{
     border:none;
-    background:#F8FAFC;
-    width:42px;
-    height:42px;
-    border-radius:10px;
+    outline:none;
+    background:transparent;
+    font-size:12px;
+    font-weight:600;
+    color:#334155;
     cursor:pointer;
 }
 
-/* ==========================================
-   PAYMENT INFO
-========================================== */
-
-.payment-info{
-    display:flex;
-    gap:30px;
-    padding:0 26px 22px;
-    border-bottom:1px solid #EEF2F7;
-}
-
-.info-item{
+.toolbar-btn{
     display:flex;
     align-items:center;
-    gap:10px;
-    color:#64748B;
-    font-size:14px;
+    gap:6px;
+    border-radius:10px;
+    padding:7px 12px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.2s;
 }
 
-.info-item strong{
-    color:#111827;
+.toolbar-btn.secondary{
+    background:#fff;
+    border:1px solid #CBD5E1;
+    color:#334155;
+}
+
+.toolbar-btn.secondary:hover{
+    background:#F8FAFC;
+}
+
+.toolbar-btn.primary{
+    background:#2563EB;
+    border:none;
+    color:#fff;
+}
+
+.toolbar-btn.primary:hover{
+    background:#1D4ED8;
 }
 
 /* ==========================================
-   DOCUMENT SECTION
+   SHARED SECTION HEADER
 ========================================== */
 
-.documents-section{
-    padding:20px 26px;
-}
-
-.payment-document-row{
+.section-header{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    padding:18px 0;
-    border-bottom:1px solid #F1F5F9;
+    margin-bottom:12px;
 }
 
-.payment-document-row:last-child{
-    border-bottom:none;
-}
-
-.document-left{
+.section-header h3{
+    margin:0;
     display:flex;
     align-items:center;
-    gap:18px;
+    gap:6px;
+    font-size:15px;
+    font-weight:700;
+    color:#111827;
 }
 
-.pdf-icon{
-    width:48px;
-    height:48px;
-    border-radius:12px;
-    background:#FEE2E2;
-    color:#DC2626;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+.section-header p{
+    margin:2px 0 0;
+    font-size:12px;
+    color:#64748B;
 }
 
-.document-title{
-    display:flex;
-    align-items:center;
+/* ==========================================
+   KPI CARDS
+========================================== */
+
+.payment-kpis{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
     gap:10px;
 }
 
-.document-title h4{
-    margin:0;
-    color:#111827;
-    font-size:16px;
+.payment-kpi-card{
+    background:#fff;
+    border:1px solid #E5E7EB;
+    border-radius:14px;
+    padding:12px;
+    transition:.2s;
+    box-shadow:0 6px 18px rgba(15,23,42,.05);
 }
 
-.file-type{
-    background:#F3F4F6;
+.payment-kpi-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 24px rgba(37,99,235,.10);
+}
+
+.kpi-header{
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:6px;
+}
+
+.kpi-icon{
+    width:26px;
+    height:26px;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#F8FAFC;
+}
+
+.kpi-icon svg{
+    width:15px;
+    height:15px;
+}
+
+.kpi-value{
+    font-size:16px;
+    font-weight:700;
+    line-height:1.2;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.kpi-title{
+    margin-top:2px;
     color:#64748B;
-    padding:4px 8px;
-    border-radius:6px;
+    font-size:12px;
+}
+
+.kpi-progress{
+    margin-top:8px;
+    width:100%;
+    height:4px;
+    background:#EEF2F7;
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.kpi-progress-fill{
+    height:100%;
+    border-radius:999px;
+}
+
+/* ==========================================
+   CARD SHELL (timeline / schedule / proof /
+   fund / linked / ai / activity)
+========================================== */
+
+.payment-timeline-card,
+.payment-schedule-card,
+.payment-proof-card,
+.fund-card,
+.linked-projects-card,
+.ai-insights-card,
+.recent-activity-card{
+    background:#fff;
+    border:1px solid #E5E7EB;
+    border-radius:14px;
+    padding:16px;
+}
+
+.payment-schedule-card,
+.linked-projects-card{
+    padding:16px 0;
+}
+
+.payment-schedule-card .section-header,
+.linked-projects-card .section-header{
+    padding:0 16px;
+}
+
+/* ==========================================
+   TIMELINE
+========================================== */
+
+.timeline-wrapper{
+    display:flex;
+    justify-content:space-between;
+    position:relative;
+}
+
+.timeline-line{
+    position:absolute;
+    left:24px;
+    right:24px;
+    top:15px;
+    height:3px;
+    background:#E5E7EB;
+}
+
+.timeline-step{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    flex:1;
+}
+
+.timeline-circle{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+    border:3px solid #CBD5E1;
+    z-index:2;
+}
+
+.timeline-circle svg{
+    width:15px;
+    height:15px;
+}
+
+.timeline-circle.completed{
+    border-color:#16A34A;
+    color:#16A34A;
+}
+
+.timeline-circle.pending{
+    border-color:#CBD5E1;
+    color:#94A3B8;
+}
+
+.timeline-content{
+    text-align:center;
+    margin-top:8px;
+}
+
+.timeline-content h4{
+    margin:0 0 2px;
+    font-size:13px;
+    font-weight:600;
+    color:#111827;
+}
+
+.timeline-date{
+    display:block;
+    color:#64748B;
+    font-size:11px;
+    margin-bottom:4px;
+}
+
+.timeline-content strong{
+    color:#2563EB;
+    font-size:12px;
+}
+
+.timeline-connector{
+    display:none;
+}
+
+@media(max-width:900px){
+
+    .timeline-wrapper{
+        flex-direction:column;
+        gap:16px;
+    }
+
+    .timeline-line{
+        display:none;
+    }
+
+    .timeline-step{
+        align-items:flex-start;
+        flex-direction:row;
+        gap:12px;
+    }
+
+    .timeline-content{
+        text-align:left;
+        margin-top:0;
+    }
+
+}
+
+/* ==========================================
+   PAYMENT SCHEDULE / LINKED PROJECTS TABLES
+========================================== */
+
+.payment-table-wrapper,
+.linked-projects-table{
+    overflow-x:auto;
+}
+
+.payment-table,
+.linked-projects-table table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.payment-table thead,
+.linked-projects-table thead{
+    background:#F8FAFC;
+}
+
+.payment-table th,
+.linked-projects-table th{
+    text-align:left;
+    padding:8px 12px;
+    font-size:11px;
+    font-weight:700;
+    color:#475569;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    border-bottom:1px solid #E5E7EB;
+    white-space:nowrap;
+}
+
+.payment-table td,
+.linked-projects-table td{
+    padding:10px 12px;
+    border-bottom:1px solid #F1F5F9;
+    font-size:13px;
+    color:#334155;
+}
+
+.payment-table tbody tr:hover,
+.linked-projects-table tbody tr:hover{
+    background:#FAFBFC;
+}
+
+.payment-table strong{
+    color:#111827;
+}
+
+.installment-name{
+    font-weight:600;
+    color:#111827;
+}
+
+.transaction-id{
+    color:#2563EB;
+    font-weight:600;
+    font-family:monospace;
+    font-size:12px;
+}
+
+.project-row strong{
+    color:#111827;
+}
+
+.project-progress{
+    display:flex;
+    align-items:center;
+    gap:8px;
+}
+
+.project-progress .pay-progress-track{
+    width:100px;
+}
+
+.project-progress span{
+    min-width:34px;
+    font-size:12px;
+    font-weight:600;
+    color:#2563EB;
+}
+
+@media(max-width:900px){
+
+    .payment-table{
+        min-width:820px;
+    }
+
+    .linked-projects-table table{
+        min-width:720px;
+    }
+
+}
+
+/* ==========================================
+   STATUS BADGES
+========================================== */
+
+.status-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:70px;
+    padding:4px 10px;
+    border-radius:999px;
     font-size:11px;
     font-weight:700;
 }
 
-.document-meta{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-top:6px;
-    color:#64748B;
-    font-size:13px;
+.status-badge.paid{
+    background:#DCFCE7;
+    color:#15803D;
 }
 
-.verified{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    color:#16A34A;
-    font-weight:600;
+.status-badge.pending{
+    background:#FEF3C7;
+    color:#B45309;
 }
 
-.pending{
-    display:flex;
-    align-items:center;
-    gap:6px;
-    color:#F59E0B;
-    font-weight:600;
+.status-badge.overdue{
+    background:#FEE2E2;
+    color:#DC2626;
+}
+
+.status-badge.scheduled{
+    background:#DBEAFE;
+    color:#2563EB;
 }
 
 /* ==========================================
-   ACTION BUTTONS
+   REUSABLE PROGRESS BAR (payments scope only
+   — namespaced so it can't collide with the
+   donor list's .progress-track/.progress-fill)
 ========================================== */
 
-.document-actions{
+.pay-progress-track{
+    width:100%;
+    background:#E5E7EB;
+    border-radius:999px;
+    overflow:hidden;
+}
+
+.pay-progress-fill{
+    height:100%;
+    border-radius:999px;
+    transition:width .35s ease;
+}
+
+/* ==========================================
+   PAYMENT PROOF
+========================================== */
+
+.proof-list{
     display:flex;
+    flex-direction:column;
     gap:10px;
 }
 
-.view-btn,
-.download-btn,
-.replace-btn{
+.proof-card{
+    border:1px solid #E5E7EB;
+    border-radius:12px;
+    overflow:hidden;
+}
+
+.proof-header{
     display:flex;
+    justify-content:space-between;
     align-items:center;
-    gap:8px;
-    border-radius:10px;
-    padding:10px 16px;
+    padding:12px 14px;
     cursor:pointer;
-    font-weight:600;
+    background:#fff;
     transition:.2s;
 }
 
-.view-btn{
-    border:1px solid #CBD5E1;
-    background:#fff;
-}
-
-.view-btn:hover{
+.proof-header:hover{
     background:#F8FAFC;
 }
 
-.download-btn{
-    background:#2563EB;
-    color:white;
-    border:none;
+.proof-header h4{
+    margin:0;
+    font-size:13px;
+    font-weight:600;
+    color:#111827;
 }
 
-.download-btn:hover{
-    background:#1D4ED8;
+.proof-header span{
+    font-size:12px;
+    color:#64748B;
 }
 
-.replace-btn{
-    background:#F59E0B;
-    color:white;
-    border:none;
+.proof-right{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:#94A3B8;
 }
 
-.replace-btn:hover{
-    background:#D97706;
+.proof-right strong{
+    font-size:13px;
+    color:#111827;
+}
+
+.proof-body{
+    padding:0 14px 14px;
+    border-top:1px solid #F1F5F9;
+}
+
+.proof-meta{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:12px 0;
+}
+
+.proof-meta span{
+    display:block;
+    font-size:11px;
+    color:#64748B;
+    margin-bottom:2px;
+}
+
+.proof-meta strong{
+    font-size:13px;
+    color:#111827;
+    font-family:monospace;
+}
+
+.upload-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    background:#F8FAFC;
+    border:1px solid #E5E7EB;
+    border-radius:10px;
+    padding:7px 12px;
+    font-size:12px;
+    font-weight:600;
+    color:#334155;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.upload-btn:hover{
+    background:#EFF6FF;
+    border-color:#2563EB;
+    color:#2563EB;
+}
+
+.proof-table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+.proof-table th{
+    text-align:left;
+    padding:6px 8px;
+    font-size:11px;
+    font-weight:700;
+    color:#94A3B8;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+    border-bottom:1px solid #F1F5F9;
+}
+
+.proof-table td{
+    padding:8px;
+    font-size:12px;
+    color:#334155;
+    border-bottom:1px solid #F1F5F9;
+}
+
+.doc-name{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    color:#111827;
+    font-weight:500;
+}
+
+.doc-status{
+    display:flex;
+    align-items:center;
+    gap:6px;
+}
+
+.table-action{
+    border:1px solid #E5E7EB;
+    background:#fff;
+    border-radius:8px;
+    width:26px;
+    height:26px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    color:#64748B;
+    transition:.2s;
+}
+
+.table-action:hover{
+    background:#F8FAFC;
+    color:#2563EB;
 }
 
 /* ==========================================
-   FOOTER
+   FUND UTILIZATION
 ========================================== */
 
-.payment-footer{
+.fund-list{
     display:flex;
-    justify-content:space-between;
-    padding:18px 26px;
-    background:#FAFBFC;
-    border-top:1px solid #EEF2F7;
-    color:#64748B;
-    font-size:13px;
+    flex-direction:column;
+    gap:14px;
 }
 
-.payment-footer strong{
+.fund-row{
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.fund-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.fund-top h4{
+    margin:0 0 2px;
+    font-size:13px;
+    font-weight:600;
     color:#111827;
+}
+
+.fund-top span{
+    color:#64748B;
+    font-size:11px;
+}
+
+.fund-top strong{
+    font-size:14px;
+    color:#111827;
+}
+
+.fund-footer{
+    display:flex;
+    justify-content:space-between;
+    color:#64748B;
+    font-size:11px;
+}
+
+/* ==========================================
+   AI INSIGHTS
+========================================== */
+
+.ai-insights-list{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+}
+
+.ai-insight-row{
+    display:flex;
+    gap:12px;
+    padding:12px;
+    border:1px solid #F1F5F9;
+    border-radius:12px;
+    transition:.2s;
+}
+
+.ai-insight-row:hover{
+    background:#F8FAFC;
+}
+
+.ai-icon{
+    width:32px;
+    height:32px;
+    border-radius:10px;
+    background:#F8FAFC;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.ai-content{
+    flex:1;
+    min-width:0;
+}
+
+.ai-content h4{
+    margin:0 0 4px;
+    font-size:13px;
+    font-weight:600;
+    color:#111827;
+}
+
+.ai-content p{
+    margin:0;
+    color:#64748B;
+    line-height:1.5;
+    font-size:12px;
+}
+
+.ai-content small{
+    display:inline-block;
+    margin-top:6px;
+    font-size:11px;
+    font-weight:600;
+    color:#94A3B8;
+}
+
+/* ==========================================
+   RECENT ACTIVITY
+========================================== */
+
+.activity-list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.activity-row{
+    display:flex;
+    gap:12px;
+    align-items:flex-start;
+    padding-bottom:10px;
+    border-bottom:1px solid #F1F5F9;
+}
+
+.activity-row:last-child{
+    border-bottom:none;
+    padding-bottom:0;
+}
+
+.activity-icon{
+    width:30px;
+    height:30px;
+    border-radius:10px;
+    background:#EFF6FF;
+    color:#2563EB;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-shrink:0;
+}
+
+.activity-icon svg{
+    width:15px;
+    height:15px;
+}
+
+.activity-content{
+    flex:1;
+}
+
+.activity-content h4{
+    margin:0 0 2px;
+    font-size:13px;
+    font-weight:600;
+    color:#111827;
+    line-height:1.4;
+}
+
+.activity-content span{
+    font-size:11px;
+    color:#64748B;
 }
 
 /* ==========================================
    RESPONSIVE
 ========================================== */
 
-@media(max-width:1000px){
+@media(max-width:1100px){
+
+    .payment-kpis{
+        grid-template-columns:repeat(3,1fr);
+    }
+
+}
+
+@media(max-width:700px){
+
+    .payment-kpis{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .payment-header{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:12px;
+    }
 
     .payment-toolbar{
         flex-direction:column;
@@ -548,1174 +947,5 @@
     .payment-search{
         max-width:none;
     }
-
-    .payment-toolbar-actions{
-        flex-wrap:wrap;
-    }
-
-    .payment-document-row{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:18px;
-    }
-
-    .document-actions{
-        width:100%;
-    }
-
-    .document-actions button{
-        flex:1;
-        justify-content:center;
-    }
-
-    .payment-header{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:20px;
-    }
-
-}
-
-@media(max-width:700px){
-
-    .payment-info{
-        flex-direction:column;
-        gap:14px;
-    }
-
-    .payment-title h2{
-        font-size:18px;
-    }
-
-}
-/* ==========================================
-   KPI CARDS
-========================================== */
-
-.payment-kpis{
-
-    display:grid;
-
-    grid-template-columns:repeat(6,1fr);
-
-    gap:16px;
-
-}
-
-.payment-kpi-card{
-
-    background:white;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:16px;
-
-    padding:18px;
-
-    transition:.25s;
-
-    box-shadow:0 6px 18px rgba(15,23,42,.05);
-
-}
-
-.payment-kpi-card:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:0 16px 30px rgba(37,99,235,.10);
-
-}
-
-.kpi-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    margin-bottom:14px;
-
-}
-
-.kpi-icon{
-
-    width:42px;
-
-    height:42px;
-
-    border-radius:12px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:#F8FAFC;
-
-}
-
-.kpi-value{
-
-    font-size:24px;
-
-    font-weight:700;
-
-}
-
-.kpi-title{
-
-    margin-top:6px;
-
-    color:#64748B;
-
-    font-size:13px;
-
-}
-
-.kpi-progress{
-
-    margin-top:14px;
-
-    width:100%;
-
-    height:6px;
-
-    background:#EEF2F7;
-
-    border-radius:999px;
-
-    overflow:hidden;
-
-}
-
-.kpi-progress-fill{
-
-    height:100%;
-
-    border-radius:999px;
-
-}
-/* ==========================================
-        TIMELINE
-========================================== */
-
-.payment-timeline-card{
-
-    background:white;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:18px;
-
-    padding:28px;
-
-    margin-top:24px;
-
-}
-
-.section-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:28px;
-
-}
-
-.section-header h3{
-
-    font-size:22px;
-
-    color:#111827;
-
-}
-
-.section-header p{
-
-    color:#64748B;
-
-    margin-top:4px;
-
-}
-
-.timeline-wrapper{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    position:relative;
-
-}
-
-.timeline-line{
-
-    position:absolute;
-
-    left:50px;
-
-    right:50px;
-
-    top:24px;
-
-    height:4px;
-
-    background:#E5E7EB;
-
-}
-
-.timeline-step{
-
-    position:relative;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    flex:1;
-
-}
-
-.timeline-circle{
-
-    width:48px;
-
-    height:48px;
-
-    border-radius:50%;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    background:white;
-
-    border:4px solid #CBD5E1;
-
-    z-index:2;
-
-}
-
-.timeline-circle.completed{
-
-    border-color:#16A34A;
-
-    color:#16A34A;
-
-}
-
-.timeline-circle.pending{
-
-    border-color:#CBD5E1;
-
-    color:#94A3B8;
-
-}
-
-.timeline-content{
-
-    text-align:center;
-
-    margin-top:18px;
-
-}
-
-.timeline-content h4{
-
-    font-size:15px;
-
-    color:#111827;
-
-    margin-bottom:6px;
-
-}
-
-.timeline-date{
-
-    display:block;
-
-    color:#64748B;
-
-    font-size:13px;
-
-    margin-bottom:8px;
-
-}
-
-.timeline-content strong{
-
-    color:#2563EB;
-
-    font-size:15px;
-
-}
-
-.timeline-connector{
-
-    display:none;
-
-}
-
-@media(max-width:900px){
-
-.timeline-wrapper{
-
-flex-direction:column;
-
-gap:30px;
-
-}
-
-.timeline-line{
-
-display:none;
-
-}
-
-.timeline-step{
-
-align-items:flex-start;
-
-flex-direction:row;
-
-gap:18px;
-
-}
-
-.timeline-content{
-
-text-align:left;
-
-margin-top:0;
-
-}
-
-}
-/* ==========================================
-        PAYMENT SCHEDULE
-========================================== */
-
-.payment-schedule-card{
-
-    margin-top:24px;
-
-    background:#fff;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-}
-
-.payment-table-wrapper{
-
-    overflow-x:auto;
-
-}
-
-.payment-table{
-
-    width:100%;
-
-    border-collapse:collapse;
-
-}
-
-.payment-table thead{
-
-    background:#F8FAFC;
-
-}
-
-.payment-table th{
-
-    text-align:left;
-
-    padding:18px 20px;
-
-    font-size:13px;
-
-    font-weight:700;
-
-    color:#475569;
-
-    border-bottom:1px solid #E5E7EB;
-
-}
-
-.payment-table td{
-
-    padding:18px 20px;
-
-    border-bottom:1px solid #EEF2F7;
-
-    font-size:14px;
-
-    color:#334155;
-
-}
-
-.payment-table tbody tr:hover{
-
-    background:#FAFBFC;
-
-}
-
-.installment-name{
-
-    font-weight:600;
-
-    color:#111827;
-
-}
-
-.transaction-id{
-
-    color:#2563EB;
-
-    font-weight:600;
-
-    font-family:monospace;
-
-}
-
-.payment-table strong{
-
-    color:#111827;
-
-}
-
-@media(max-width:900px){
-
-.payment-table{
-
-min-width:900px;
-
-}
-
-}
-/* ==========================================
-   STATUS BADGES
-========================================== */
-
-.status-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    min-width:88px;
-
-    padding:7px 14px;
-
-    border-radius:999px;
-
-    font-size:12px;
-
-    font-weight:700;
-
-}
-
-.status-badge.paid{
-
-    background:#DCFCE7;
-
-    color:#15803D;
-
-}
-
-.status-badge.pending{
-
-    background:#FEF3C7;
-
-    color:#B45309;
-
-}
-
-.status-badge.overdue{
-
-    background:#FEE2E2;
-
-    color:#DC2626;
-
-}
-
-.status-badge.scheduled{
-
-    background:#DBEAFE;
-
-    color:#2563EB;
-
-}
-
-/* ==========================================
-   REUSABLE PROGRESS BAR
-========================================== */
-
-.progress-track{
-
-    width:100%;
-
-    background:#E5E7EB;
-
-    border-radius:999px;
-
-    overflow:hidden;
-
-}
-
-.progress-fill{
-
-    height:100%;
-
-    border-radius:999px;
-
-    transition:.35s ease;
-
-}
-/* ==========================================
-   PAYMENT PROOF
-========================================== */
-
-.payment-proof-card{
-
-    margin-top:24px;
-
-    background:#fff;
-
-    border-radius:18px;
-
-    border:1px solid #E5E7EB;
-
-    padding:24px;
-
-}
-
-.proof-list{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:18px;
-
-}
-
-.proof-card{
-
-    border:1px solid #E5E7EB;
-
-    border-radius:16px;
-
-    overflow:hidden;
-
-}
-
-.proof-header{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:22px;
-
-    cursor:pointer;
-
-    background:#fff;
-
-}
-
-.proof-header:hover{
-
-    background:#F8FAFC;
-
-}
-
-.proof-header h3{
-
-    font-size:18px;
-
-    margin-bottom:10px;
-
-}
-
-.proof-meta{
-
-    display:flex;
-
-    gap:20px;
-
-    color:#64748B;
-
-    font-size:13px;
-
-}
-
-.proof-meta span{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:6px;
-
-}
-
-.proof-toggle{
-
-    border:none;
-
-    background:#F8FAFC;
-
-    width:40px;
-
-    height:40px;
-
-    border-radius:10px;
-
-    cursor:pointer;
-
-}
-
-.utr-box{
-
-    padding:18px 22px;
-
-    background:#F8FAFC;
-
-    display:flex;
-
-    justify-content:space-between;
-
-    border-top:1px solid #EEF2F7;
-
-    border-bottom:1px solid #EEF2F7;
-
-}
-
-.documents-list{
-
-    padding:0 22px 22px;
-
-}
-
-.payment-document{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    padding:18px 0;
-
-    border-bottom:1px solid #EEF2F7;
-
-}
-
-.payment-document:last-child{
-
-    border-bottom:none;
-
-}
-
-.payment-document-left{
-
-    display:flex;
-
-    gap:18px;
-
-    align-items:center;
-
-}
-
-.payment-pdf{
-
-    width:46px;
-
-    height:46px;
-
-    border-radius:12px;
-
-    background:#FEE2E2;
-
-    color:#DC2626;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
-}
-
-.payment-document h4{
-
-    margin-bottom:6px;
-
-    font-size:15px;
-
-}
-
-.payment-document-meta{
-
-    display:flex;
-
-    gap:14px;
-
-    font-size:13px;
-
-    color:#64748B;
-
-}
-
-.payment-actions{
-
-    display:flex;
-
-    gap:10px;
-
-}
-/* ==========================================
-   FUND UTILIZATION
-========================================== */
-
-.fund-card{
-
-    margin-top:24px;
-
-    background:#fff;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:18px;
-
-    padding:24px;
-
-}
-
-.fund-list{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:24px;
-
-}
-
-.fund-row{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:12px;
-
-}
-
-.fund-top{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-}
-
-.fund-top h4{
-
-    font-size:16px;
-
-    color:#111827;
-
-    margin-bottom:4px;
-
-}
-
-.fund-top span{
-
-    color:#64748B;
-
-    font-size:13px;
-
-}
-
-.fund-top strong{
-
-    font-size:18px;
-
-    color:#111827;
-
-}
-
-.fund-footer{
-
-    display:flex;
-
-    justify-content:flex-end;
-
-    color:#64748B;
-
-    font-size:13px;
-
-}
-/* ==========================================
-   LINKED PROJECTS
-========================================== */
-
-.linked-projects-card{
-
-    margin-top:24px;
-
-    background:#fff;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:18px;
-
-    overflow:hidden;
-
-}
-
-.linked-projects-table{
-
-    overflow-x:auto;
-
-}
-
-.linked-projects-table table{
-
-    width:100%;
-
-    border-collapse:collapse;
-
-}
-
-.linked-projects-table thead{
-
-    background:#F8FAFC;
-
-}
-
-.linked-projects-table th{
-
-    text-align:left;
-
-    padding:18px 22px;
-
-    color:#475569;
-
-    font-size:13px;
-
-    font-weight:700;
-
-    border-bottom:1px solid #E5E7EB;
-
-}
-
-.linked-projects-table td{
-
-    padding:18px 22px;
-
-    border-bottom:1px solid #EEF2F7;
-
-    font-size:14px;
-
-    color:#334155;
-
-}
-
-.linked-projects-table tbody tr:hover{
-
-    background:#FAFBFC;
-
-}
-
-.project-name{
-
-    font-weight:600;
-
-    color:#111827;
-
-}
-
-.project-progress{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:12px;
-
-}
-
-.project-progress .progress-track{
-
-    width:140px;
-
-}
-
-.project-progress span{
-
-    min-width:42px;
-
-    font-weight:600;
-
-    color:#2563EB;
-
-}
-/* ==========================================
-   AI INSIGHTS
-========================================== */
-
-.ai-insights-card{
-
-    margin-top:24px;
-
-    background:#fff;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:18px;
-
-    padding:24px;
-
-    box-shadow:0 8px 25px rgba(15,23,42,.05);
-
-}
-
-.ai-insights-list{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:18px;
-
-    margin-top:20px;
-
-}
-
-.ai-insight-row{
-
-    display:flex;
-
-    gap:18px;
-
-    padding:18px;
-
-    border:1px solid #EEF2F7;
-
-    border-radius:14px;
-
-    transition:.2s;
-
-}
-
-.ai-insight-row:hover{
-
-    background:#F8FAFC;
-
-}
-
-.ai-icon{
-
-    width:48px;
-
-    height:48px;
-
-    border-radius:14px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    flex-shrink:0;
-
-}
-
-.ai-content{
-
-    flex:1;
-
-}
-
-.ai-content h4{
-
-    margin-bottom:8px;
-
-    font-size:16px;
-
-    color:#111827;
-
-}
-
-.ai-content p{
-
-    color:#64748B;
-
-    line-height:1.7;
-
-    font-size:14px;
-
-}
-
-.ai-footer{
-
-    margin-top:24px;
-
-    display:flex;
-
-    justify-content:flex-end;
-
-}
-
-.ai-btn{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    background:#2563EB;
-
-    color:white;
-
-    border:none;
-
-    padding:12px 18px;
-
-    border-radius:12px;
-
-    cursor:pointer;
-
-    font-weight:600;
-
-    transition:.2s;
-
-}
-
-.ai-btn:hover{
-
-    background:#1D4ED8;
-
-}
-/* ==========================================
-   RECENT ACTIVITY
-========================================== */
-
-.recent-activity-card{
-
-    margin-top:24px;
-
-    background:#fff;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:18px;
-
-    padding:24px;
-
-    box-shadow:0 8px 24px rgba(15,23,42,.05);
-
-}
-
-.activity-list{
-
-    display:flex;
-
-    flex-direction:column;
-
-    gap:18px;
-
-    margin-top:20px;
-
-}
-
-.activity-row{
-
-    display:flex;
-
-    gap:18px;
-
-    align-items:flex-start;
-
-    padding-bottom:18px;
-
-    border-bottom:1px solid #EEF2F7;
-
-}
-
-.activity-row:last-child{
-
-    border-bottom:none;
-
-    padding-bottom:0;
-
-}
-
-.activity-icon{
-
-    width:46px;
-
-    height:46px;
-
-    border-radius:14px;
-
-    background:#EFF6FF;
-
-    color:#2563EB;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    flex-shrink:0;
-
-}
-
-.activity-content{
-
-    flex:1;
-
-}
-
-.activity-content h4{
-
-    font-size:15px;
-
-    color:#111827;
-
-    line-height:1.5;
-
-    margin-bottom:6px;
-
-}
-
-.activity-content span{
-
-    font-size:13px;
-
-    color:#64748B;
 
 }

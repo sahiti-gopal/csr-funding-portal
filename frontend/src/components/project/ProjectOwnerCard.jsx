@@ -1,24 +1,45 @@
+import Collapsible from "./Collapsible";
+
 export default function ProjectOwnerCard({ members = [] }) {
   const owner = members[0];
 
-  if (!owner) return null;
+  if (!owner) {
+    return (
+      <Collapsible
+        title="Project Owner"
+        wrapperClassName="card project-owner-card"
+      >
+        <p className="pd-empty-note">
+          No project owner assigned yet.
+        </p>
+      </Collapsible>
+    );
+  }
 
   return (
-    <div className="card project-owner-card">
-
-      <h3 className="pd-section-title">
-        Project Owner
-      </h3>
+    <Collapsible
+      title="Project Owner"
+      wrapperClassName="card project-owner-card"
+    >
 
       <div className="owner-profile">
 
-        <div className="owner-avatar">
+        <div
+          className="owner-avatar"
+          style={!owner.image ? { background: owner.color } : undefined}
+        >
 
-          <img
-            src={owner.image}
-            alt={owner.name}
-            className="owner-avatar-img"
-          />
+          {owner.image ? (
+            <img
+              src={owner.image}
+              alt={owner.name}
+              className="owner-avatar-img"
+            />
+          ) : (
+            <span className="pd-avatar-fallback">
+              {owner.initials}
+            </span>
+          )}
 
         </div>
 
@@ -50,6 +71,6 @@ export default function ProjectOwnerCard({ members = [] }) {
 
       </div>
 
-    </div>
+    </Collapsible>
   );
 }

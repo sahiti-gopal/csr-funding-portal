@@ -45,7 +45,7 @@ export default function AIInsights({
 
             <h3>
 
-              <Sparkles size={18}/>
+              <Sparkles size={15}/>
 
               AI Insights
 
@@ -74,7 +74,7 @@ export default function AIInsights({
           <h3>
 
             <Sparkles
-              size={18}
+              size={15}
             />
 
             AI Insights
@@ -112,7 +112,7 @@ export default function AIInsights({
                 }}
               >
 
-                <Icon size={20}/>
+                <Icon size={15}/>
 
               </div>
 

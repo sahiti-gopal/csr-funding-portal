@@ -9,6 +9,112 @@ from app.models.beneficiary_category import BeneficiaryCategory
 
 project_bp = Blueprint("projects", __name__)
 
+# Per-project-type breakdown of a project's `beneficiaries_reached` total
+# into 3 KPI tiles, used when no ProjectMetric rows were seeded for a project.
+FALLBACK_METRIC_TEMPLATES = {
+    "Education": [
+        ("students", "Students Reached", 1),
+        ("schools", "Schools Covered", 150),
+        ("teachers", "Teachers Trained", 30),
+    ],
+    "Healthcare": [
+        ("patients", "Patients Treated", 1),
+        ("camps", "Health Camps Conducted", 100),
+        ("volunteers", "Volunteers Deployed", 50),
+    ],
+    "Environment": [
+        ("beneficiaries", "People Impacted", 1),
+        ("sites", "Sites Covered", 80),
+        ("volunteers", "Volunteers Deployed", 40),
+    ],
+    "Women Empowerment": [
+        ("beneficiaries", "Women Reached", 1),
+        ("trainings", "Training Sessions", 60),
+        ("teachers", "Trainers Deployed", 40),
+    ],
+    "Livelihood": [
+        ("beneficiaries", "Individuals Supported", 1),
+        ("sites", "Communities Covered", 70),
+        ("volunteers", "Field Officers", 35),
+    ],
+    "Skill Development": [
+        ("beneficiaries", "Youth Trained", 1),
+        ("trainings", "Training Batches", 50),
+        ("teachers", "Trainers Deployed", 25),
+    ],
+    "Rural Development": [
+        ("beneficiaries", "Households Reached", 1),
+        ("sites", "Villages Covered", 60),
+        ("volunteers", "Field Volunteers", 30),
+    ],
+}
+
+DEFAULT_METRIC_TEMPLATE = [
+    ("beneficiaries", "Beneficiaries Reached", 1),
+    ("sites", "Locations Covered", 75),
+    ("volunteers", "Volunteers Deployed", 40),
+]
+
+
+def fallback_beneficiary_metrics(p):
+    reached = p.beneficiaries_reached or 0
+    template = FALLBACK_METRIC_TEMPLATES.get(
+        p.project_type.name, DEFAULT_METRIC_TEMPLATE
+    )
+
+    metrics = []
+    for icon, title, divisor in template:
+        value = max(1, reached // divisor) if reached else 0
+        target = max(value + 1, round(value * 1.25))
+        metrics.append(
+            {"icon": icon, "title": title, "value": value, "target": target}
+        )
+    return metrics
+
+
+# Names line up with actual files in frontend/public/images/team/
+TEAM_NAME_POOL = [
+    "Priya Sharma",
+    "Rohan Mehta",
+    "Pooja Nair",
+    "Vivek Menon",
+    "Kavita Rao",
+]
+
+SECONDARY_ROLE_POOL = [
+    ("Field Coordinator", "Ops"),
+    ("Program Manager", "Lead"),
+    ("Training Lead", "Training"),
+]
+
+DOCUMENT_POOL = [
+    ("Project Proposal.pdf", "1.2 MB"),
+    ("Budget Estimate.xlsx", "640 KB"),
+    ("Progress Report.pdf", "2.1 MB"),
+    ("MOU Agreement.pdf", "890 KB"),
+]
+
+
+def fallback_team(p):
+    owner_name = TEAM_NAME_POOL[p.id % len(TEAM_NAME_POOL)]
+    second_name = TEAM_NAME_POOL[(p.id + 1) % len(TEAM_NAME_POOL)]
+    second_role, second_tag = SECONDARY_ROLE_POOL[p.id % len(SECONDARY_ROLE_POOL)]
+
+    return [
+        {"name": owner_name, "role": "Project Manager", "tag": "Lead"},
+        {"name": second_name, "role": second_role, "tag": second_tag},
+    ]
+
+
+def fallback_documents(p):
+    return [
+        {"name": name, "size": size}
+        for name, size in (
+            DOCUMENT_POOL[p.id % len(DOCUMENT_POOL):]
+            + DOCUMENT_POOL[: p.id % len(DOCUMENT_POOL)]
+        )[:3]
+    ]
+
 
 # ==========================
 # GET ALL PROJECTS
@@ -105,24 +211,50 @@ def get_project(id):
             "start_date": str(p.start_date),
             "end_date": str(p.end_date),
             "sponsor": (
-                {"name": p.sponsor_name, "meta": sponsor_meta}
+                {
+                    "name": p.sponsor_name,
+                    "meta": sponsor_meta,
+                    "grant_amount": p.budget,
+                    "contract_period": (
+                        f"{p.start_date.year}-{p.end_date.year}"
+                        if p.start_date and p.end_date
+                        else None
+                    ),
+                }
                 if p.sponsor_name
                 else None
             ),
-            "beneficiaries": [
-                {
-                    "icon": m.icon,
-                    "title": m.title,
-                    "value": m.current_value,
-                    "target": m.target_value,
-                }
-                for m in p.metrics
-            ],
-            "locations": [loc.name for loc in p.locations],
-            "team": [
-                {"name": t.name, "role": t.role, "tag": t.tag} for t in p.team_members
-            ],
-            "documents": [{"name": d.name, "size": d.size} for d in p.documents],
+            "beneficiaries": (
+                [
+                    {
+                        "icon": m.icon,
+                        "title": m.title,
+                        "value": m.current_value,
+                        "target": m.target_value,
+                    }
+                    for m in p.metrics
+                ]
+                if p.metrics
+                else fallback_beneficiary_metrics(p)
+            ),
+            "locations": (
+                [loc.name for loc in p.locations]
+                if p.locations
+                else ([p.location] if p.location else [])
+            ),
+            "team": (
+                [
+                    {"name": t.name, "role": t.role, "tag": t.tag}
+                    for t in p.team_members
+                ]
+                if p.team_members
+                else fallback_team(p)
+            ),
+            "documents": (
+                [{"name": d.name, "size": d.size} for d in p.documents]
+                if p.documents
+                else fallback_documents(p)
+            ),
         }
     )
 

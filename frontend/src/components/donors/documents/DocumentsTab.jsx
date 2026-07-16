@@ -85,7 +85,7 @@ export default function DocumentsTab() {
 
       <div className="document-toolbar">
 
-        <div className="toolbar-left">
+        <div className="doc-toolbar-left">
 
           <span>
             Showing documents for

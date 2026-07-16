@@ -39,7 +39,7 @@ export default function ProjectTable({
       <div className="project-toolbar">
 
         <div className="search-box-wrap">
-          <Search size={18} className="search-icon" />
+          <Search size={16} className="search-icon" />
           <input
             className="search-box"
             placeholder="Search by name, region, or company..."
@@ -48,7 +48,7 @@ export default function ProjectTable({
           />
         </div>
 
-        <SlidersHorizontal size={18} className="filter-icon" />
+        <SlidersHorizontal size={16} className="filter-icon" />
 
         <div className="status-filters">
           {STATUS_FILTERS.map((option) => (

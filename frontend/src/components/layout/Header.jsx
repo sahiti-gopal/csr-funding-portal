@@ -20,8 +20,6 @@ const greeting = () => {
 
 export default function Header({
   userName = "Sahiti",
-  filters,
-  onFilterChange,
 }) {
   const navigate = useNavigate();
 
@@ -99,64 +97,6 @@ export default function Header({
       </h1>
 
       <div className="header-right">
-
-        {filters && (
-          <div className="header-filters">
-
-            <select
-              value={filters.region}
-              onChange={(e) =>
-                onFilterChange(
-                  "region",
-                  e.target.value
-                )
-              }
-            >
-              <option value="all">
-                All Regions
-              </option>
-              <option value="South">
-                South
-              </option>
-              <option value="West">
-                West
-              </option>
-              <option value="North">
-                North
-              </option>
-              <option value="East">
-                East
-              </option>
-            </select>
-
-            <select
-              value={filters.fy}
-              onChange={(e) =>
-                onFilterChange(
-                  "fy",
-                  e.target.value
-                )
-              }
-            >
-              <option value="all">
-                All Years
-              </option>
-              <option value="2023-24">
-                FY 2023-24
-              </option>
-              <option value="2024-25">
-                FY 2024-25
-              </option>
-              <option value="2025-26">
-                FY 2025-26
-              </option>
-              <option value="2026-27">
-                FY 2026-27
-              </option>
-            </select>
-
-          </div>
-        )}
 
         <div
           className="notification-wrapper"

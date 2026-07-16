@@ -2,13 +2,13 @@ import { Sparkles } from "lucide-react";
 
 export default function AIRecommendation() {
   return (
-    <div className="ai-card">
+    <div className="docai-card">
 
-      <div className="ai-icon">
-        <Sparkles size={22} />
+      <div className="docai-icon">
+        <Sparkles size={16} />
       </div>
 
-      <div className="ai-content">
+      <div className="docai-content">
 
         <h3>AI Recommendation</h3>
 
@@ -20,7 +20,7 @@ export default function AIRecommendation() {
 
       </div>
 
-      <button className="ai-btn">
+      <button className="docai-btn">
         Generate Request
       </button>
 

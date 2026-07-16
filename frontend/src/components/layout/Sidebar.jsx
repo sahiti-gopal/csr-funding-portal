@@ -44,7 +44,7 @@ export default function Sidebar() {
 
       <div className="sidebar-user">
         <img
-  src="/images/Profilepic.jpg"
+  src="/images/team/Woman-3.png"
   alt="Sahiti"
   className="sidebar-user-avatar-img"
 />

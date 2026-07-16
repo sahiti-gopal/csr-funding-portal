@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useNavigate, useOutletContext } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   HeartHandshake,
@@ -7,6 +7,10 @@ import {
   FileText,
   Shield,
   CheckCircle,
+  IndianRupee,
+  Wallet,
+  FolderKanban,
+  Users2,
 } from "lucide-react";
 
 import OverviewCards from "../components/dashboard/OverviewCards";
@@ -100,7 +104,14 @@ const decorateRisk = (risk) => ({
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const { filters } = useOutletContext();
+  const [filters, setFilters] = useState({
+    region: "all",
+    fy: "all",
+  });
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
 
   const [stats, setStats] =
     useState([]);
@@ -110,6 +121,28 @@ export default function Dashboard() {
 
   const [risks, setRisks] =
     useState([]);
+
+  // ---------- Risk panel scroll-linked fade ----------
+  const riskScrollRef = useRef(null);
+  const [riskAtBottom, setRiskAtBottom] = useState(false);
+
+  const handleRiskScroll = () => {
+    const el = riskScrollRef.current;
+    if (!el) return;
+
+    // Also treat "nothing to scroll" (content shorter than the panel) as at-bottom,
+    // so the fade never shows over a fully-visible list.
+    const atBottom =
+      el.scrollHeight - el.scrollTop - el.clientHeight < 4;
+
+    setRiskAtBottom(atBottom);
+  };
+
+  useEffect(() => {
+    // Re-check once risks load / change, in case the list is short enough
+    // to not need scrolling at all.
+    handleRiskScroll();
+  }, [risks]);
 
   useEffect(() => {
     axios
@@ -133,6 +166,7 @@ export default function Dashboard() {
               10000000
             ).toFixed(1)} Cr`,
             subtitle: `${d.sponsors} sponsors`,
+            icon: IndianRupee,
           },
           {
             title: "Utilized",
@@ -141,11 +175,13 @@ export default function Dashboard() {
               10000000
             ).toFixed(1)} Cr`,
             subtitle: `${d.utilization_pct}% utilization`,
+            icon: Wallet,
           },
           {
             title: "Projects",
             value: d.funded,
             subtitle: "funded",
+            icon: FolderKanban,
           },
           {
             title: "Beneficiaries",
@@ -153,23 +189,7 @@ export default function Dashboard() {
               d.beneficiaries ?? 0
             ).toLocaleString(),
             subtitle: "reached",
-          },
-          {
-            title: "Registered",
-            value: d.registered,
-            subtitle: "projects",
-          },
-          {
-            title: "Completed",
-            value: d.completed,
-            subtitle: "projects",
-          },
-          {
-            title:
-              "Needs Attention",
-            value:
-              d.needs_attention,
-            subtitle: "projects",
+            icon: Users2,
           },
         ]);
       })
@@ -213,6 +233,68 @@ export default function Dashboard() {
   return (
   <div className="dashboard">
 
+    <div className="dashboard-head">
+      <div className="dashboard-title">
+        <h4 className="section-heading">Portfolio overview</h4>
+      </div>
+
+      <div className="dashboard-filters">
+
+        <select
+          value={filters.region}
+          onChange={(e) =>
+            handleFilterChange(
+              "region",
+              e.target.value
+            )
+          }
+        >
+          <option value="all">
+            All Regions
+          </option>
+          <option value="South">
+            South
+          </option>
+          <option value="West">
+            West
+          </option>
+          <option value="North">
+            North
+          </option>
+          <option value="East">
+            East
+          </option>
+        </select>
+
+        <select
+          value={filters.fy}
+          onChange={(e) =>
+            handleFilterChange(
+              "fy",
+              e.target.value
+            )
+          }
+        >
+          <option value="all">
+            All Years
+          </option>
+          <option value="2023-24">
+            FY 2023-24
+          </option>
+          <option value="2024-25">
+            FY 2024-25
+          </option>
+          <option value="2025-26">
+            FY 2025-26
+          </option>
+          <option value="2026-27">
+            FY 2026-27
+          </option>
+        </select>
+
+      </div>
+    </div>
+
     {/* ---------------- KPI Cards ---------------- */}
 
     <OverviewCards
@@ -244,6 +326,8 @@ export default function Dashboard() {
 
               Donor Outreach Readiness
 
+              <span className="panel-count">{donors.length}</span>
+
             </h3>
 
             <div className="panel-scroll">
@@ -269,6 +353,8 @@ export default function Dashboard() {
 
               🌍 SDG Impact
 
+              <span className="panel-count">17</span>
+
             </h3>
 
             <div className="panel-body">
@@ -285,7 +371,7 @@ export default function Dashboard() {
 
         <div className="dashboard-right">
 
-          <div className="panel risk-panel">
+          <div className={`panel risk-panel ${riskAtBottom ? "at-bottom" : ""}`}>
 
             <h3 className="panel-title">
 
@@ -296,19 +382,26 @@ export default function Dashboard() {
 
               Upcoming Risks
 
+              <span className="panel-count">{risks.length}</span>
+
             </h3>
 
-            <div className="panel-scroll">
+            <div
+              className="panel-scroll"
+              ref={riskScrollRef}
+              onScroll={handleRiskScroll}
+            >
 
               {risks.map((risk) => (
 
                 <RiskCard
-                  key={risk.title}
+                  key={risk.id}
                   {...risk}
                 />
 
               ))}
-                        </div>
+
+            </div>
 
           </div>
 

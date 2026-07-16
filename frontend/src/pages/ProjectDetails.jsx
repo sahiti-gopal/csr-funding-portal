@@ -31,8 +31,25 @@ const initials = (name = "") =>
 const TEAM_IMAGES = {
   "Priya Sharma": "/images/team/priya.png",
   "Rohan Mehta": "/images/team/rohan.png",
-  "Anita Desai": "/images/team/anita.png",
-  "Vikram Rao": "/images/team/vikram.png",
+  "Pooja Nair": "/images/team/pooja.png",
+  "Vivek Menon": "/images/team/vivek.png",
+  "Kavita Rao": "/images/team/priya.png",
+  "Tata Trusts": "/images/team/tata.png",
+};
+
+const PROJECT_GALLERY = {
+  "Andhra Maternal Care": [
+    {
+      id: "mc-1",
+      url: "/images/gallery/maternalcare/Commentary_Nutrition-1.jpg",
+      caption: "Nutrition counselling session",
+    },
+    {
+      id: "mc-2",
+      url: "/images/gallery/maternalcare/mc_2.webp",
+      caption: "Maternal care outreach",
+    },
+  ],
 };
 
 const decorateTeam = (team = []) =>
@@ -40,8 +57,8 @@ const decorateTeam = (team = []) =>
     ...member,
     initials: initials(member.name),
     color: TAG_COLORS[member.tag] ?? "#64748b",
-    image: TEAM_IMAGES[member.name] || "/images/team/default-avatar.png",
-  }));  
+    image: TEAM_IMAGES[member.name] ?? null,
+  }));
 const formatMetrics = (metrics = []) =>
   metrics.map((metric) => ({
     ...metric,
@@ -95,6 +112,7 @@ export default function ProjectDetails() {
             <BeneficiaryCard
               metrics={formatMetrics(project.beneficiaries)}
               locations={project.locations}
+              locationsCount={project.locations?.length}
             />
 
           </section>
@@ -118,7 +136,13 @@ export default function ProjectDetails() {
           </section>
         </>
       ) : (
-        <Gallery images={project.gallery ?? []} />
+        <Gallery
+          images={
+            project.gallery?.length
+              ? project.gallery
+              : PROJECT_GALLERY[project.project_name] ?? []
+          }
+        />
       )}
     </div>
   );

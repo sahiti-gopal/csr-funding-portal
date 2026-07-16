@@ -8,11 +8,11 @@
 
     border:1px solid #E5E7EB;
 
-    border-radius:20px;
+    border-radius:16px;
 
-    padding:24px;
+    padding:16px;
 
-    margin-top:22px;
+    margin-top:16px;
 
     box-shadow:0 10px 30px rgba(15,23,42,.05);
 
@@ -20,9 +20,9 @@
 
 .health-card h3{
 
-    font-size:22px;
+    font-size:16px;
 
-    margin-bottom:20px;
+    margin-bottom:12px;
 
     color:#111827;
 
@@ -34,7 +34,7 @@
 
     grid-template-columns:repeat(3,1fr);
 
-    gap:18px;
+    gap:12px;
 
 }
 
@@ -42,10 +42,9 @@
 
     border:1px solid #E5E7EB;
 
-    border-radius:18px;
+    border-radius:14px;
 
-    padding:22px;
-
+    padding:14px;
 }
 
 .health-top{
@@ -56,33 +55,35 @@
 
     align-items:flex-start;
 
-    margin-bottom:18px;
+    margin-bottom:10px;
 
 }
 
 .health-value{
 
-    font-size:34px;
+    font-size:23px;
 
     font-weight:700;
 
+    line-height:1.15;
 }
 
 .health-title{
 
-    margin-top:4px;
+    margin-top:2px;
 
-    font-size:15px;
+    font-size:12px;
 
+    font-weight:600;
 }
 
 .health-icon{
 
-    width:46px;
+    width:26px;
 
-    height:46px;
+    height:26px;
 
-    border-radius:12px;
+    border-radius:8px;
 
     display:flex;
 
@@ -96,13 +97,17 @@
 
     margin:0;
 
-    font-size:26px;
+    font-size:16px;
+
+    font-weight:700;
 
     color:#111827;
 
 }
 
 .health-item span{
+
+    font-size:12px;
 
     color:#64748B;
 
@@ -173,9 +178,9 @@ display:grid;
 
 grid-template-columns:1fr 1fr;
 
-gap:24px;
+gap:12px;
 
-margin:24px 0;
+margin:12px 0;
 
 }
 
@@ -183,9 +188,9 @@ margin:24px 0;
 
 background:white;
 
-border-radius:20px;
+border-radius:14px;
 
-padding:24px;
+padding:14px;
 
 border:1px solid #E5E7EB;
 
@@ -195,9 +200,9 @@ box-shadow:0 10px 28px rgba(15,23,42,.05);
 
 .chart-header h3{
 
-font-size:20px;
+font-size:14px;
 
-margin-bottom:4px;
+margin-bottom:2px;
 
 color:#111827;
 
@@ -207,9 +212,9 @@ color:#111827;
 
 color:#94A3B8;
 
-font-size:14px;
+font-size:12px;
 
-margin-bottom:18px;
+margin-bottom:10px;
 
 }
 
@@ -221,7 +226,7 @@ justify-content:space-between;
 
 align-items:center;
 
-gap:24px;
+gap:14px;
 
 }
 
@@ -229,9 +234,9 @@ gap:24px;
 
 position:relative;
 
-width:180px;
+width:110px;
 
-height:180px;
+height:110px;
 
 }
 
@@ -245,7 +250,7 @@ left:50%;
 
 transform:translate(-50%,-50%);
 
-font-size:16px;
+font-size:12px;
 
 font-weight:700;
 
@@ -261,7 +266,7 @@ display:flex;
 
 flex-direction:column;
 
-gap:16px;
+gap:8px;
 
 }
 
@@ -273,7 +278,7 @@ justify-content:space-between;
 
 align-items:center;
 
-font-size:15px;
+font-size:12px;
 
 }
 
@@ -283,7 +288,7 @@ display:flex;
 
 align-items:center;
 
-gap:10px;
+gap:8px;
 
 color:#475569;
 
@@ -291,9 +296,9 @@ color:#475569;
 
 .legend-dot{
 
-width:10px;
+width:8px;
 
-height:10px;
+height:8px;
 
 border-radius:50%;
 
@@ -321,11 +326,11 @@ grid-template-columns:1fr;
 
   border:1px solid #E5E7EB;
 
-  border-radius:18px;
+  border-radius:14px;
 
-  padding:20px 22px;
+  padding:12px 16px;
 
-  margin-bottom:18px;
+  margin-bottom:0;
 
   transition:.25s;
 
@@ -340,14 +345,14 @@ grid-template-columns:1fr;
 .donor-left{
   display:flex;
   align-items:center;
-  gap:18px;
+  gap:12px;
 }
 
 .donor-avatar{
-  width:58px;
-  height:58px;
+  width:40px;
+  height:40px;
 
-  border-radius:16px;
+  border-radius:12px;
 
   display:flex;
   align-items:center;
@@ -362,26 +367,26 @@ grid-template-columns:1fr;
 }
 
 .donor-name{
-  font-size:18px;
-  font-weight:700;
+  font-size:14px;
+  font-weight:600;
   color:#111827;
 }
 
 .donor-category{
-  margin-top:4px;
+  margin-top:2px;
 
-  font-size:14px;
+  font-size:12px;
 
   color:#64748B;
 }
 
 .donor-progress{
-  margin-top:14px;
+  margin-top:8px;
 }
 
 .progress-track{
-  width:220px;
-  height:8px;
+  width:180px;
+  height:6px;
 
   background:#E5E7EB;
 
@@ -401,15 +406,15 @@ grid-template-columns:1fr;
   display:flex;
   flex-direction:column;
   align-items:flex-end;
-  gap:12px;
+  gap:8px;
 }
 
 .likelihood-pill{
-  padding:7px 14px;
+  padding:5px 12px;
 
   border-radius:999px;
 
-  font-size:13px;
+  font-size:12px;
 
   font-weight:700;
 }
@@ -419,7 +424,7 @@ grid-template-columns:1fr;
   align-items:center;
   gap:6px;
 
-  font-size:13px;
+  font-size:12px;
 
   color:#64748B;
 }
@@ -434,9 +439,11 @@ grid-template-columns:1fr;
 
   border:none;
 
-  border-radius:10px;
+  border-radius:8px;
 
-  padding:9px 16px;
+  padding:6px 12px;
+
+  font-size:13px;
 
   cursor:pointer;
 
@@ -489,119 +496,25 @@ grid-template-columns:1fr;
 ===================================================== */
 
 .donors-page{
-    padding:28px;
-    background:#F8FAFC;
-    min-height:100vh;
+    max-width:1600px;
+    margin:auto;
+    padding:8px 30px 30px;
+    background:#F7F9FC;
+    box-sizing:border-box;
 }
 
-.page-header{
-    margin-bottom:24px;
-}
-
-.page-header h1{
-    font-size:32px;
-    font-weight:700;
-    color:#111827;
-}
-
-.page-header p{
-    margin-top:6px;
-    color:#64748B;
-}
-
-/* =====================================================
-   CHART
-===================================================== */
-
-.donors-chart-section{
-    margin:24px 0;
-}
-
-/* =====================================================
-   TOOLBAR
-===================================================== */
-
-.donors-toolbar{
-    display:flex;
-    gap:16px;
-    align-items:center;
-    margin-bottom:24px;
-}
-
-.search-box{
-    flex:1;
-}
-
-.search-box input{
-    width:100%;
-    padding:12px 16px;
-    border:1px solid #E5E7EB;
-    border-radius:12px;
-    background:white;
-    font-size:14px;
-}
-
-.donors-toolbar select{
-    padding:12px 16px;
-    border:1px solid #E5E7EB;
-    border-radius:12px;
-    background:white;
-    font-size:14px;
-    cursor:pointer;
-}
-
-.loading-card{
-    padding:60px;
-    text-align:center;
-    border:1px dashed #CBD5E1;
-    border-radius:16px;
-    background:white;
-    color:#64748B;
-}
-/* =====================================================
-   DONOR GRID
-===================================================== */
-
-.donors-grid{
-    display:flex;
-    flex-direction:column;
-    gap:18px;
-    margin-bottom:30px;
+.donors-page .dashboard-head{
+    margin-bottom:12px;
 }
 
 /* =====================================================
    RESPONSIVE
 ===================================================== */
 
-@media (max-width:1024px){
-
-    .donors-toolbar{
-        flex-direction:column;
-        align-items:stretch;
-    }
-
-    .search-box{
-        width:100%;
-    }
-
-    .donors-toolbar select{
-        width:100%;
-    }
-
-}
-
 @media (max-width:768px){
 
     .donors-page{
-        padding:18px;
-    }
-
-    .page-header h1{
-        font-size:28px;
-    }
-
-    .page-header p{
-        font-size:14px;
+        padding:8px 18px 18px;
     }
 
 }
@@ -609,7 +522,7 @@ grid-template-columns:1fr;
 @media (max-width:600px){
 
     .donors-page{
-        padding:14px;
+        padding:8px 14px 14px;
     }
 
 }
@@ -621,8 +534,8 @@ grid-template-columns:1fr;
     display:flex;
     justify-content:space-between;
     align-items:center;
-    gap:18px;
-    margin:24px 0;
+    gap:12px;
+    margin:16px 0;
 }
 
 .toolbar-left{
@@ -631,16 +544,16 @@ grid-template-columns:1fr;
 
 .toolbar-right{
     display:flex;
-    gap:12px;
+    gap:10px;
 }
 
 .donor-search{
     width:100%;
-    height:46px;
-    padding:0 16px;
+    height:36px;
+    padding:0 14px;
     border:1px solid #E5E7EB;
-    border-radius:12px;
-    font-size:14px;
+    border-radius:10px;
+    font-size:13px;
     outline:none;
 }
 
@@ -649,23 +562,24 @@ grid-template-columns:1fr;
 }
 
 .toolbar-right select{
-    height:46px;
-    padding:0 16px;
+    height:36px;
+    padding:0 14px;
     border:1px solid #E5E7EB;
-    border-radius:12px;
+    border-radius:10px;
     background:#fff;
+    font-size:13px;
     cursor:pointer;
 }
 
 .donors-chart-wrapper{
-    margin-top:20px;
+    margin-top:14px;
 }
 
 .donors-list{
     display:flex;
     flex-direction:column;
-    gap:18px;
-    margin-top:20px;
+    gap:10px;
+    margin-top:14px;
 }
 
 .loading-card{
@@ -686,9 +600,9 @@ grid-template-columns:1fr;
 
     grid-template-columns:1fr 1fr;
 
-    gap:24px;
+    gap:12px;
 
-    margin-top:28px;
+    margin-top:14px;
 
 }
 
@@ -698,9 +612,9 @@ grid-template-columns:1fr;
 
     border:1px solid #E5E7EB;
 
-    border-radius:18px;
+    border-radius:14px;
 
-    padding:22px;
+    padding:16px;
 
     box-shadow:0 6px 18px rgba(15,23,42,.05);
 
@@ -708,9 +622,9 @@ grid-template-columns:1fr;
 
 .summary-card h3{
 
-    margin-bottom:18px;
+    margin-bottom:8px;
 
-    font-size:20px;
+    font-size:14px;
 
     color:#111827;
 
@@ -724,7 +638,9 @@ grid-template-columns:1fr;
 
     justify-content:space-between;
 
-    padding:14px 0;
+    padding:8px 0;
+
+    font-size:13px;
 
     border-bottom:1px solid #F1F5F9;
 
@@ -771,17 +687,17 @@ grid-template-columns:1fr;
 
 .donor-tabs{
     display:flex;
-    gap:14px;
-    margin:18px 0 20px;
+    gap:10px;
+    margin:12px 0 14px;
 }
 
 .donor-tabs button{
-    padding:12px 22px;
-    border-radius:12px;
+    padding:8px 16px;
+    border-radius:10px;
     border:1px solid #E5E7EB;
     background:#fff;
     cursor:pointer;
-    font-size:14px;
+    font-size:13px;
     font-weight:600;
     transition:.25s;
 }

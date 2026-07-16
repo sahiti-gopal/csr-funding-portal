@@ -11,7 +11,7 @@ export default function UploadBanner() {
 
         <div className="upload-icon">
 
-          <UploadCloud size={26} />
+          <UploadCloud size={18} />
 
         </div>
 

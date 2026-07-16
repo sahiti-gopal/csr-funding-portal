@@ -40,7 +40,7 @@ export default function PaymentKPIs({ data }) {
                   color: item.color,
                 }}
               >
-                <Icon size={22} />
+                <Icon size={15} />
               </div>
 
             </div>

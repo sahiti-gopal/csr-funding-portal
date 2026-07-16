@@ -19,11 +19,18 @@ body,
   height: 100%;
   max-width: 1600px;
   margin: auto;
-  padding: 8px 30px;
+  padding: 11px 24px;
   display: flex;
   flex-direction: column;
   overflow: hidden;
   background: #f7f9fc;
+}
+
+/* .app-content reserves a 40px bottom padding for scrollable pages;
+   the dashboard doesn't scroll, so drop it here to avoid clipping
+   the bottom of the panels within the one-screen layout. */
+.app-content:has(.dashboard) {
+  padding-bottom: 0;
 }
 
 .dashboard-head {
@@ -31,13 +38,41 @@ body,
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   flex-shrink: 0;
 }
 
 .dashboard-title {
   display: flex;
   flex-direction: column;
+}
+
+.dashboard-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-filters select {
+  height: 30px;
+  min-width: 100px;
+  border: 1px solid #dbe3ef;
+  border-radius: 8px;
+  padding: 0 8px;
+  background: white;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.dashboard-filters select:hover {
+  border-color: #2563eb;
+}
+
+.dashboard-filters select:focus {
+  outline: none;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
 }
 
 /* Big page heading, e.g. "Good afternoon, Sahiti!" */
@@ -68,7 +103,7 @@ body,
 
 .section-heading {
   margin: 0;
-  font-size: 28px;
+  font-size: 16px;
   font-weight: 700;
   color: #1f2937;
   line-height: 1.1;
@@ -78,6 +113,43 @@ body,
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+/* ===========================================================
+   EMPTY STATE (unbuilt pages)
+=========================================================== */
+
+.empty-state-panel {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px dashed #cbd5e1;
+  border-radius: 18px;
+  padding: 60px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  color: #94a3b8;
+  margin-bottom: 6px;
+}
+
+.empty-state-panel h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.empty-state-panel p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #94a3b8;
 }
 
 /* ===========================================================
@@ -122,25 +194,27 @@ body,
 
 .overview-grid {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  margin-top: 6px;
-  margin-bottom: 14px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-top: 4px;
+  margin-bottom: 10px;
 }
 
 .overview-card {
+  position: relative;
   background: #fff;
   border-radius: 12px;
   border: 1px solid #edf2f7;
-  padding: 10px 12px;
-  min-height: 72px;
+  padding: 10px 14px;
+  min-height: 68px;
   min-width: 0;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 
 .overview-card:hover {
   transform: translateY(-3px);
+  border-color: #e2e8f0;
   box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
 }
 
@@ -149,11 +223,25 @@ body,
   background: #eff6ff;
 }
 
+.overview-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  color: #64748b;
+  background: #f1f5f9;
+}
+
 .overview-title {
   font-size: 11px;
   font-weight: 600;
   color: #64748b;
   margin-bottom: 4px;
+  margin-right: 28px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -162,6 +250,7 @@ body,
 .overview-value {
   font-size: 19px;
   font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: #0f172a;
   line-height: 1.15;
   white-space: nowrap;
@@ -170,19 +259,12 @@ body,
 }
 
 .overview-subtitle {
-  margin-top: 4px;
+  margin-top: 2px;
   font-size: 11px;
   color: #94a3b8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* Below this width, 7-across stops fitting comfortably */
-@media (max-width: 1100px) {
-  .overview-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
 }
 
 @media (max-width: 640px) {
@@ -198,20 +280,22 @@ body,
 .dashboard-grid {
   height: 100%;
   display: grid;
-  grid-template-columns: 42% 58%;
-  gap: 24px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 14px;
   min-height: 0;
 }
 
 .dashboard-left {
   display: grid;
-  grid-template-rows: 0.9fr 1.1fr;
-  gap: 18px;
+  grid-template-rows: minmax(160px, 1fr) auto;
+  gap: 10px;
   min-height: 0;
+  min-width: 0;
 }
 
 .dashboard-right {
   min-height: 0;
+  min-width: 0;
 }
 
 .dashboard-right .panel {
@@ -242,8 +326,8 @@ body,
 /* ===========================================================
    PANELS
 =========================================================== */
-
 .panel {
+  position: relative;
   background: #ffffff;
   border-radius: 18px;
   border: 1px solid #e5e7eb;
@@ -251,15 +335,15 @@ body,
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  min-height: 0;
+  min-height:0;
 }
 
 .panel-title {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 12px 18px;
-  font-size: 15px;
+  padding: 8px 14px;
+  font-size: 13.5px;
   font-weight: 700;
   color: #0f172a;
   border-bottom: 1px solid #eef2f7;
@@ -269,6 +353,16 @@ body,
 
 .panel-title-icon {
   flex-shrink: 0;
+}
+
+.panel-count {
+  margin-left: auto;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 11.5px;
+  font-weight: 700;
 }
 
 .icon-blue,
@@ -284,16 +378,17 @@ body,
 .panel-body {
   flex: 1;
   min-height: 0;
-  padding: 14px;
+  padding: 8px;
 }
 
 .panel-scroll {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  padding: 8px 14px;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+  padding: 8px 14px 40px 14px;   /* was 22px — now clears the 28px fade with room to spare */
 }
-
 .panel-scroll::-webkit-scrollbar {
   width: 8px;
 }
@@ -310,11 +405,30 @@ body,
   min-height: 0;
 }
 
+.donor-panel::after,
+.risk-panel::after {
+  content: "";
+  position: absolute;
+  left: 1px;
+  right: 1px;
+  bottom: 1px;
+  height: 28px;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.96));
+  border-radius: 0 0 17px 17px;
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.15s ease;
+}
+
+.risk-panel.at-bottom::after {
+  opacity: 0;   /* fade disappears once you've scrolled to the end */
+}
+
 .sdg-panel .panel-body {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 /* ===========================================================
@@ -448,25 +562,26 @@ body,
 
 .risk-card {
   border: 1px solid #eef1f6;
-  border-radius: 12px;
-  padding: 11px 13px;
-  margin-bottom: 9px;
+  border-radius: 10px;
+  padding: 8px 10px;
+  margin-bottom: 7px;
   flex-shrink: 0;
 }
 
 .risk-top {
   display: flex;
-  gap: 11px;
+  gap: 9px;
   align-items: flex-start;
+  min-width: 0;             /* NEW — lets flex children shrink instead of overflowing */
 }
 
 .risk-icon {
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 26px;
+  height: 26px;
   flex-shrink: 0;
-  border-radius: 9px;
+  border-radius: 8px;
 }
 
 .risk-icon-high {
@@ -486,16 +601,20 @@ body,
 
 .risk-body h4 {
   margin: 0;
-  font-size: 13.5px;
+  font-size: 12.5px;
   font-weight: 700;
   color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;      /* NEW — title truncates instead of pushing risk-meta out */
 }
 
 .risk-body p {
-  margin-top: 3px;
+  margin-top: 2px;
+  max-width: 62ch;
   color: #94a3b8;
-  font-size: 12px;
-  line-height: 1.35;
+  font-size: 11px;
+  line-height: 1.3;
 }
 
 .risk-meta {
@@ -503,7 +622,8 @@ body,
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
-  flex-shrink: 0;
+  flex-shrink: 0;           /* NEW — was missing; this is the real fix */
+  min-width: 76px;
 }
 
 .badge {
@@ -533,12 +653,12 @@ body,
 }
 
 .risk-time-label {
-  font-size: 11px;
+  font-size: 10px;
   color: #94a3b8;
 }
 
 .risk-time {
-  font-size: 13.5px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -555,11 +675,11 @@ body,
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  margin-top: 10px;
-  padding: 8px 12px;
+  margin-top: 8px;
+  padding: 6px 10px;
   border: none;
-  border-radius: 9px;
-  font-size: 12.5px;
+  border-radius: 8px;
+  font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
   transition: filter 0.2s ease;
@@ -580,24 +700,370 @@ body,
 }
 
 /* ===========================================================
+   RISK MODAL (MOU re-upload / compliance action dialog)
+=========================================================== */
+
+.risk-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(3px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.risk-modal {
+  position: relative;
+  width: 440px;
+  max-width: 100%;
+  max-height: calc(100vh - 48px);
+  overflow-y: auto;
+  background: #ffffff;
+  border-radius: 16px;
+  border-top: 3px solid #dc2626;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28), 0 4px 14px rgba(15, 23, 42, 0.12);
+  padding: 28px 28px 24px;
+  animation: risk-modal-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.risk-modal-medium {
+  border-top-color: #d97706;
+}
+
+.risk-modal-low {
+  border-top-color: #16a34a;
+}
+
+@keyframes risk-modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.risk-modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.risk-modal-close:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.risk-modal-header {
+  padding-right: 28px;
+  margin-bottom: 18px;
+}
+
+.risk-modal-eyebrow {
+  display: inline-block;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.risk-modal-eyebrow-high {
+  color: #dc2626;
+}
+
+.risk-modal-eyebrow-medium {
+  color: #d97706;
+}
+
+.risk-modal-eyebrow-low {
+  color: #16a34a;
+}
+
+.risk-modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+
+.risk-modal-stats {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 14px 16px;
+  background: #f8fafc;
+  border: 1px solid #eef1f6;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.risk-modal-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.risk-modal-stat-label {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.risk-modal-stat-value {
+  font-size: 13.5px;
+  font-weight: 700;
+}
+
+.risk-modal-stat-value.high {
+  color: #dc2626;
+}
+
+.risk-modal-stat-value.medium {
+  color: #d97706;
+}
+
+.risk-modal-stat-value.low {
+  color: #16a34a;
+}
+
+.risk-modal-stat-divider {
+  width: 1px;
+  align-self: stretch;
+  background: #e2e8f0;
+}
+
+.risk-modal-description {
+  margin: 0 0 18px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #475569;
+}
+
+.risk-modal-divider {
+  height: 1px;
+  background: #eef1f6;
+  margin-bottom: 18px;
+}
+
+.risk-modal-upload-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.risk-modal-upload-label svg {
+  color: #94a3b8;
+}
+
+.risk-upload-input {
+  display: none;
+}
+
+.risk-dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 26px 16px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.risk-dropzone:hover,
+.risk-dropzone-active {
+  border-color: #2563eb;
+  background: #eff6ff;
+}
+
+.risk-dropzone-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: #e2e8f0;
+  color: #475569;
+  margin-bottom: 4px;
+}
+
+.risk-dropzone-title {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #334155;
+  text-align: center;
+}
+
+.risk-dropzone-hint {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.risk-dropzone-filled {
+  padding: 12px 14px;
+  cursor: default;
+  border-style: solid;
+  border-color: #e2e8f0;
+  background: #ffffff;
+}
+
+.risk-dropzone-file {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.risk-dropzone-file-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.risk-dropzone-file-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.risk-dropzone-filename {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1e293b;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.risk-dropzone-filesize {
+  font-size: 11px;
+  color: #94a3b8;
+}
+
+.risk-dropzone-remove {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.risk-dropzone-remove:hover {
+  background: #e2e8f0;
+  color: #1e293b;
+}
+
+.risk-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.risk-modal-cancel {
+  padding: 9px 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #475569;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.risk-modal-cancel:hover {
+  background: #f8fafc;
+}
+
+.risk-modal-submit {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  color: #ffffff;
+  transition: filter 0.15s ease;
+}
+
+.risk-modal-submit:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.risk-modal-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.risk-modal-submit-high {
+  background: #dc2626;
+}
+
+.risk-modal-submit-medium {
+  background: #d97706;
+}
+
+.risk-modal-submit-low {
+  background: #16a34a;
+}
+
+/* ===========================================================
    SDG GRID
 =========================================================== */
 
 .sdg-grid {
   display: grid;
-  grid-template-columns: repeat(6, 1fr);
+  grid-template-columns: repeat(9, 1fr);
   gap: 6px;
   width: 100%;
+  align-content: center;
 }
 
 .sdg-card {
-  min-height: 52px;
+  position: relative;
+  aspect-ratio: 1;
   border-radius: 9px;
-  color: white;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  overflow: hidden;
   cursor: pointer;
   transition: 0.25s;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -607,15 +1073,29 @@ body,
   transform: translateY(-3px) scale(1.03);
 }
 
-.sdg-number {
-  font-size: 15px;
-  font-weight: 700;
+.sdg-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }
 
-.sdg-title {
-  font-size: 8px;
+.sdg-caption {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: 3px 4px 4px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.72), transparent);
+  color: #fff;
+  font-size: 9.5px;
   font-weight: 600;
+  line-height: 1.15;
   text-align: center;
-  padding: 2px 4px 0;
-  line-height: 1.2;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sdg-card:hover .sdg-caption {
+  opacity: 1;
+  transform: translateY(0);
 }
