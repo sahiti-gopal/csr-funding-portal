@@ -1,0 +1,834 @@
+/* =====================================================
+   DOCUMENTS PAGE
+===================================================== */
+
+.documents-page{
+    padding:0;
+    background:transparent;
+}
+
+/* =====================================================
+   TOP TABS
+===================================================== */
+
+.documents-tabs{
+    display:flex;
+    gap:12px;
+    margin-bottom:28px;
+}
+
+.documents-tabs button{
+    border:none;
+    background:white;
+    color:#64748B;
+    padding:12px 22px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:600;
+    cursor:pointer;
+    transition:.25s;
+    border:1px solid #E5E7EB;
+}
+
+.documents-tabs button:hover{
+    background:#EFF6FF;
+    color:#2563EB;
+}
+
+.documents-tabs .active-tab{
+    background:#2563EB;
+    color:white;
+    border-color:#2563EB;
+}
+/* ==========================================
+   KPI CARDS
+========================================== */
+
+.document-stats{
+
+    display:grid;
+
+    grid-template-columns:repeat(5,1fr);
+
+    gap:10px;
+
+    margin:10px 0 18px;
+
+}
+
+.document-stat-card{
+
+    background:#fff;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:8px;
+
+    padding:12px 14px;
+
+    box-shadow:0 1px 4px rgba(15,23,42,.05);
+
+    min-height:62px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+}
+
+.document-stat-card:hover{
+
+    box-shadow:0 2px 8px rgba(15,23,42,.08);
+
+}
+
+.stat-number{
+
+    margin-top:6px;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    line-height:1;
+
+}
+
+.stat-title{
+
+    font-size:12px;
+
+    color:#64748B;
+
+    font-weight:500;
+
+    line-height:1.2;
+
+}
+
+/* =====================================================
+   TOOLBAR
+===================================================== */
+
+.document-toolbar{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:14px;
+
+}
+
+.toolbar-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    color:#475569;
+
+    font-weight:600;
+
+}
+
+.toolbar-left select{
+
+    padding:11px 18px;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:12px;
+
+    background:white;
+
+    cursor:pointer;
+
+    outline:none;
+
+}
+
+.toolbar-left select:focus{
+
+    border-color:#2563EB;
+
+}
+
+/* =====================================================
+   DOCUMENT LIST
+===================================================== */
+
+.document-list{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:18px;
+
+}
+
+.document-card{
+
+    background:white;
+
+    border-radius:18px;
+
+    border:1px solid #E5E7EB;
+
+    padding:22px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    transition:.25s;
+
+    box-shadow:0 8px 20px rgba(15,23,42,.05);
+
+}
+
+.document-card:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 18px 35px rgba(15,23,42,.08);
+
+}
+
+.missing-document{
+
+    border-left:5px solid #EF4444;
+
+}
+
+.document-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.document-file-icon{
+
+    width:52px;
+
+    height:52px;
+
+    border-radius:14px;
+
+    background:#DBEAFE;
+
+    color:#2563EB;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.document-file-icon.danger{
+
+    background:#FEE2E2;
+
+    color:#DC2626;
+
+}
+
+.document-title-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+}
+
+.document-title-row h3{
+
+    margin:0;
+
+    font-size:19px;
+
+    color:#111827;
+
+}
+
+.document-left p{
+
+    margin-top:8px;
+
+    color:#64748B;
+
+    font-size:14px;
+
+}
+/* =====================================================
+   STATUS PILLS
+===================================================== */
+
+.status-pill{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px 14px;
+
+    border-radius:999px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.status-pill.pending{
+
+    background:#FEF3C7;
+
+    color:#B45309;
+
+}
+
+.status-pill.missing{
+
+    background:#FEE2E2;
+
+    color:#DC2626;
+
+}
+
+.severity-pill{
+
+    padding:6px 12px;
+
+    border-radius:999px;
+
+    font-size:12px;
+
+    font-weight:700;
+
+}
+
+.severity-pill.medium{
+
+    background:#FEF3C7;
+
+    color:#B45309;
+
+}
+
+.severity-pill.critical{
+
+    background:#FEE2E2;
+
+    color:#DC2626;
+
+}
+
+/* =====================================================
+   ACTION BUTTONS
+===================================================== */
+
+.document-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+}
+
+.review-btn,
+.upload-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    border:none;
+
+    cursor:pointer;
+
+    padding:10px 18px;
+
+    border-radius:10px;
+
+    font-weight:600;
+
+    transition:.2s;
+
+}
+
+.review-btn{
+
+    background:#2563EB;
+
+    color:white;
+
+}
+
+.review-btn:hover{
+
+    background:#1D4ED8;
+
+}
+
+.upload-btn{
+
+    background:#DC2626;
+
+    color:white;
+
+}
+
+.upload-btn:hover{
+
+    background:#B91C1C;
+
+}
+
+/* =====================================================
+   RISK BANNER
+===================================================== */
+
+.risk-banner{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    margin-top:22px;
+
+    padding:18px;
+
+    border-radius:16px;
+
+    background:#FEF2F2;
+
+    color:#B91C1C;
+
+    border:1px solid #FECACA;
+
+}
+
+/* =====================================================
+   AI CARD
+===================================================== */
+
+.ai-card{
+
+    margin-top:14px;
+
+    background:linear-gradient(
+        135deg,
+        #7C3AED,
+        #9333EA
+    );
+
+    color:white;
+
+    border-radius:22px;
+
+    padding:28px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    gap:24px;
+
+    box-shadow:0 18px 40px rgba(124,58,237,.28);
+
+}
+
+.ai-icon{
+
+    width:60px;
+
+    height:60px;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,.15);
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.ai-content{
+
+    flex:1;
+
+}
+
+.ai-content h3{
+
+    margin-bottom:8px;
+
+    font-size:22px;
+
+}
+
+.ai-content p{
+
+    line-height:1.7;
+
+    opacity:.95;
+
+}
+
+.ai-btn{
+
+    border:none;
+
+    background:white;
+
+    color:#7C3AED;
+
+    padding:14px 22px;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+.ai-btn:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* =====================================================
+   UPLOAD BANNER
+===================================================== */
+
+.upload-banner{
+
+    margin:14px 0;
+
+    background:white;
+
+    border-radius:20px;
+
+    border:2px dashed #CBD5E1;
+
+    padding:28px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.upload-left{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+}
+
+.upload-icon{
+
+    width:58px;
+
+    height:58px;
+
+    border-radius:16px;
+
+    background:#EFF6FF;
+
+    color:#2563EB;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.upload-banner h3{
+
+    margin-bottom:6px;
+
+    color:#111827;
+
+}
+
+.upload-banner p{
+
+    color:#64748B;
+
+}
+
+.upload-banner-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    background:#2563EB;
+
+    color:white;
+
+    border:none;
+
+    padding:14px 22px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-weight:600;
+
+}
+
+/* =====================================================
+   CATEGORY CARDS
+===================================================== */
+
+.document-category{
+
+    background:white;
+
+    border-radius:18px;
+
+    border:1px solid #E5E7EB;
+
+    padding:22px;
+
+    margin-bottom:12px;
+
+}
+
+.category-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.category-left{
+
+    display:flex;
+
+    gap:16px;
+
+    align-items:center;
+
+}
+
+.category-icon{
+
+    width:50px;
+
+    height:50px;
+
+    border-radius:14px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+}
+
+.category-left h3{
+
+    margin:0;
+
+    color:#111827;
+
+}
+
+.category-left p{
+
+    margin-top:4px;
+
+    color:#64748B;
+
+}
+
+.category-right{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    font-weight:700;
+
+}
+
+.category-progress{
+
+    margin-top:20px;
+
+}
+
+.category-track{
+
+    width:100%;
+
+    height:8px;
+
+    background:#E5E7EB;
+
+    border-radius:999px;
+
+    overflow:hidden;
+
+}
+
+.category-fill{
+
+    height:100%;
+
+    border-radius:999px;
+
+}
+
+.category-progress span{
+
+    display:block;
+
+    margin-top:10px;
+
+    color:#64748B;
+
+    font-size:13px;
+
+}
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media(max-width:1100px){
+
+    .document-stats{
+
+        grid-template-columns:repeat(2,1fr);
+
+    }
+
+    .document-card{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:18px;
+
+    }
+
+    .document-right{
+
+        width:100%;
+
+        justify-content:space-between;
+
+    }
+
+    .ai-card{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+    .upload-banner{
+
+        flex-direction:column;
+
+        gap:20px;
+
+        align-items:flex-start;
+
+    }
+
+}
+
+@media(max-width:700px){
+
+    .document-stats{
+
+        grid-template-columns:1fr;
+
+    }
+
+    .documents-tabs{
+
+        flex-wrap:wrap;
+
+    }
+
+    .document-toolbar{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+        gap:14px;
+
+    }
+
+    .toolbar-left{
+
+        flex-direction:column;
+
+        align-items:flex-start;
+
+    }
+
+}
+.donor-tab-content{
+    width:100%;
+}
