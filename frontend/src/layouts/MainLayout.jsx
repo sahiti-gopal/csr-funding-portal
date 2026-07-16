@@ -1,8 +1,8 @@
 import { Outlet } from "react-router-dom";
-import { Bot } from "lucide-react";
 
 import Sidebar from "../components/layout/Sidebar";
 import Header from "../components/layout/Header";
+import ChatWidget from "../components/layout/ChatWidget";
 
 export default function MainLayout() {
   return (
@@ -17,9 +17,7 @@ export default function MainLayout() {
         </main>
       </div>
 
-      <button className="ai-fab" aria-label="AI assistant">
-        <Bot size={22} />
-      </button>
+      <ChatWidget />
     </div>
   );
 }

@@ -6,14 +6,10 @@ export default function DonorCard({
   color,
 }) {
   return (
-    <div className="donor-bullet">
-
-      <div className="donor-status">
-        <span
-          className="status-dot"
-          style={{ background: color }}
-        />
-      </div>
+    <div
+      className="donor-bullet"
+      style={{ borderLeftColor: color }}
+    >
 
       <div className="donor-content">
 
@@ -21,10 +17,7 @@ export default function DonorCard({
 
           <h4>{donor}</h4>
 
-          <span
-            className="donor-score"
-            style={{ color }}
-          >
+          <span className="donor-score">
             {likelihood}%
           </span>
 

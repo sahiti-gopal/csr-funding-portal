@@ -20,6 +20,13 @@ import SDGImpact from "../components/dashboard/SDGImpact";
 
 import "../styles/dashboard.css";
 
+const utilizationStatus = (pct) => {
+  if (pct >= 85) return "Excellent";
+  if (pct >= 65) return "On Track";
+  if (pct >= 40) return "In Progress";
+  return "Needs Attention";
+};
+
 const LIKELIHOOD_COLOR = (value) => {
   if (value >= 85) return "#16A34A";
   if (value >= 70) return "#D97706";
@@ -167,6 +174,7 @@ export default function Dashboard() {
             ).toFixed(1)} Cr`,
             subtitle: `${d.sponsors} sponsors`,
             icon: IndianRupee,
+            accent: "raised",
           },
           {
             title: "Utilized",
@@ -174,14 +182,18 @@ export default function Dashboard() {
               d.utilized_amount /
               10000000
             ).toFixed(1)} Cr`,
-            subtitle: `${d.utilization_pct}% utilization`,
+            subtitle: "of funds raised",
             icon: Wallet,
+            accent: "utilized",
+            percent: d.utilization_pct,
+            status: utilizationStatus(d.utilization_pct),
           },
           {
             title: "Projects",
             value: d.funded,
             subtitle: "funded",
             icon: FolderKanban,
+            accent: "projects",
           },
           {
             title: "Beneficiaries",
@@ -190,6 +202,7 @@ export default function Dashboard() {
             ).toLocaleString(),
             subtitle: "reached",
             icon: Users2,
+            accent: "beneficiaries",
           },
         ]);
       })

@@ -6,6 +6,7 @@ load_dotenv()
 
 class Config:
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret")
+    ANTHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY", "")
 
     SQLALCHEMY_DATABASE_URI = (
         f"mysql+pymysql://"

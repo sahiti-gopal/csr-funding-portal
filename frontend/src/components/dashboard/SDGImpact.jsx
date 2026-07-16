@@ -40,12 +40,18 @@ export default function SDGImpact() {
   return (
     <div className="sdg-grid">
       {goals.map((goal) => (
-        <div key={goal.id} className="sdg-card">
-          <img
-            src={goal.icon}
-            alt={`SDG ${goal.id}: ${goal.title}`}
-            className="sdg-icon"
-          />
+        <div
+          key={goal.id}
+          className="sdg-card"
+          title={`${goal.id}. ${goal.title}`}
+        >
+          <div className="sdg-icon-wrap">
+            <img
+              src={goal.icon}
+              alt={`SDG ${goal.id}: ${goal.title}`}
+              className="sdg-icon"
+            />
+          </div>
           <span className="sdg-caption">{goal.title}</span>
         </div>
       ))}

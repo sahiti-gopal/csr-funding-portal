@@ -12,6 +12,7 @@ from app.routes.risk_routes import risk_bp
 from app.routes.dashboard_routes import dashboard_bp
 from app.routes.alert_routes import alert_bp
 from app.routes.payments import payments_bp
+from app.routes.chat_routes import chat_bp
 
 def create_app():
 
@@ -49,6 +50,8 @@ def create_app():
     alert_bp,
     url_prefix="/api"
 )
+
+    app.register_blueprint(chat_bp, url_prefix="/api")
     print("\n========== REGISTERED ROUTES ==========")
 
     for rule in app.url_map.iter_rules():

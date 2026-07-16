@@ -38,13 +38,27 @@ body,
   justify-content: space-between;
   align-items: center;
   gap: 20px;
+  min-height: 30px; /* keeps header row height consistent across pages that don't have a filter <select> (e.g. Projects) */
   margin-bottom: 8px;
   flex-shrink: 0;
 }
 
 .dashboard-title {
+  position: relative;
   display: flex;
   flex-direction: column;
+  padding-left: 12px;
+}
+
+.dashboard-title::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1px;
+  bottom: 1px;
+  width: 4px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #2563eb, #7c3aed);
 }
 
 .dashboard-filters {
@@ -202,53 +216,48 @@ body,
 
 .overview-card {
   position: relative;
+  display: flex;
+  flex-direction: column;
   background: #fff;
-  border-radius: 12px;
+  border-radius: 14px;
   border: 1px solid #edf2f7;
-  padding: 10px 14px;
-  min-height: 68px;
+  padding: 12px 14px;
+  min-height: 116px;
   min-width: 0;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .overview-card:hover {
-  transform: translateY(-3px);
-  border-color: #e2e8f0;
-  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 .overview-card.active {
-  border: 2px solid #2563eb;
-  background: #eff6ff;
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
-.overview-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 8px;
-  color: #64748b;
-  background: #f1f5f9;
+.overview-card-top {
+  display: flex;
+  justify-content: flex-end;
+  align-items: flex-start;
+  min-height: 17px;
+  margin-bottom: 8px;
 }
 
 .overview-title {
   font-size: 11px;
   font-weight: 600;
   color: #64748b;
-  margin-bottom: 4px;
-  margin-right: 28px;
+  margin-bottom: 3px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .overview-value {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: #0f172a;
@@ -259,12 +268,103 @@ body,
 }
 
 .overview-subtitle {
-  margin-top: 2px;
+  margin-top: auto;
+  padding-top: 6px;
   font-size: 11px;
   color: #94a3b8;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ---------- Photo cards — each KPI carries its own illustration,
+   with our own readable text overlaid on the artwork's white/light
+   left panel ---------- */
+
+.overview-card-photo {
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+}
+
+.overview-card-photo.accent-raised {
+  background-image: url("/images/gallery/KPI cards/fundsraised.png");
+}
+
+.overview-card-photo.accent-utilized {
+  background-image: url("/images/gallery/KPI cards/fundsutilised.png");
+}
+
+.overview-card-photo.accent-projects {
+  background-image: url("/images/gallery/KPI cards/projects.png");
+}
+
+.overview-card-photo.accent-beneficiaries {
+  background-image: url("/images/gallery/KPI cards/beneficiaries.png");
+}
+
+.accent-raised .overview-value { color: #047857; }
+.accent-utilized .overview-value { color: #6d28d9; }
+.accent-projects .overview-value { color: #0f766e; }
+.accent-beneficiaries .overview-value { color: #15803d; }
+
+.overview-percent-badge {
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.8);
+  color: #1e293b;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.overview-progress-track {
+  margin-top: auto;
+  height: 5px;
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.08);
+  overflow: hidden;
+}
+
+.overview-progress-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: #7c3aed;
+  transition: width 0.4s ease;
+}
+
+.overview-status-pill {
+  display: inline-block;
+  width: max-content;
+  margin-top: 6px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+/* Cards without a real percent metric (Raised / Projects / Beneficiaries)
+   still get a bottom pill, matching Utilized's "On Track" treatment,
+   tinted to the card's own accent instead of a fabricated percentage. */
+.overview-subtitle-pill {
+  margin-top: auto;
+}
+
+.accent-raised .overview-subtitle-pill {
+  background: #dcfce7;
+  color: #047857;
+}
+
+.accent-projects .overview-subtitle-pill {
+  background: #ccfbf1;
+  color: #0f766e;
+}
+
+.accent-beneficiaries .overview-subtitle-pill {
+  background: #dcfce7;
+  color: #15803d;
 }
 
 @media (max-width: 640px) {
@@ -342,7 +442,9 @@ body,
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 14px;
+  /* right padding = panel-scroll's 14px + the 8px scrollbar-gutter it
+     reserves, so the count badge stays flush with the list below it */
+  padding: 8px 22px 8px 14px;
   font-size: 13.5px;
   font-weight: 700;
   color: #0f172a;
@@ -353,6 +455,11 @@ body,
 
 .panel-title-icon {
   flex-shrink: 0;
+  box-sizing: border-box;
+  width: 26px;
+  height: 26px;
+  padding: 5px;
+  border-radius: 8px;
 }
 
 .panel-count {
@@ -365,14 +472,31 @@ body,
   font-weight: 700;
 }
 
-.icon-blue,
-.panel-title-icon.icon-blue {
-  color: #2563eb;
+/* flush with the donor percentages below: panel-title and panel-scroll
+   share the same 14px right inset, so the badge lines up with the list */
+.donor-panel .panel-count {
+  background: #f0fff4;
+  color: #2f855a;
 }
 
-.icon-amber,
+.icon-blue {
+  color: #475569;
+}
+
+.icon-amber {
+  color: #b7791f;
+}
+
+/* neutral corporate slate — donor icon isn't an alert, it's informational */
+.panel-title-icon.icon-blue {
+  color: #475569;
+  background: #f1f5f9;
+}
+
+/* muted amber/gold — risk icon signals attention without shouting */
 .panel-title-icon.icon-amber {
-  color: #f59e0b;
+  color: #b7791f;
+  background: #fef9e7;
 }
 
 .panel-body {
@@ -438,27 +562,10 @@ body,
 .donor-bullet {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 8px 4px;
+  gap: 12px;
+  padding: 10px 0 10px 12px;
+  border-left: 3px solid transparent;
   flex-shrink: 0;
-  border-bottom: 1px solid #f1f5f9;
-}
-
-.donor-bullet:last-child {
-  border-bottom: none;
-}
-
-.donor-status {
-  display: flex;
-  align-items: center;
-  height: 20px;
-  flex-shrink: 0;
-}
-
-.status-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
 }
 
 .donor-content {
@@ -475,9 +582,9 @@ body,
 
 .donor-row h4 {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  color: #0f172a;
+  color: #2d3748;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -485,14 +592,16 @@ body,
 
 .donor-score {
   flex-shrink: 0;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2f855a;
 }
 
 .donor-meta {
   margin-top: 2px;
-  font-size: 11.5px;
-  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 400;
+  color: #718096;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -561,11 +670,26 @@ body,
 =========================================================== */
 
 .risk-card {
-  border: 1px solid #eef1f6;
-  border-radius: 10px;
-  padding: 8px 10px;
-  margin-bottom: 7px;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 8px;
   flex-shrink: 0;
+  background: #fff;
+}
+
+/* soft, desaturated washes instead of stark alert colors — urgency
+   without breaking the calm, premium feel of the rest of the page */
+.risk-card-high {
+  background: #fff5f5;
+}
+
+.risk-card-medium {
+  background: #fefcbf;
+}
+
+.risk-card-low {
+  background: #f0fff4;
 }
 
 .risk-top {
@@ -585,13 +709,13 @@ body,
 }
 
 .risk-icon-high {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #ffe3e3;
+  color: #9b2c2c;
 }
 
 .risk-icon-medium {
-  background: #fef3c7;
-  color: #d97706;
+  background: #fdf3ad;
+  color: #9c4221;
 }
 
 .risk-body {
@@ -636,14 +760,14 @@ body,
 
 .badge.high,
 .status-pill.high {
-  background: #fee2e2;
-  color: #dc2626;
+  background: #ffe3e3;
+  color: #9b2c2c;
 }
 
 .badge.medium,
 .status-pill.medium {
-  background: #fef3c7;
-  color: #d97706;
+  background: #fdf3ad;
+  color: #9c4221;
 }
 
 .badge.low,
@@ -663,40 +787,34 @@ body,
 }
 
 .risk-time.high {
-  color: #dc2626;
+  color: #9b2c2c;
 }
 
 .risk-time.medium {
-  color: #d97706;
+  color: #9c4221;
 }
 
+/* clean text link with an inline arrow, one consistent accent color
+   regardless of severity — the wash already carries the urgency */
 .risk-action {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: space-between;
-  width: 100%;
+  gap: 4px;
+  width: max-content;
   margin-top: 8px;
-  padding: 6px 10px;
+  padding: 0;
   border: none;
-  border-radius: 8px;
+  background: transparent;
   font-size: 11.5px;
   font-weight: 600;
+  color: #2563eb;
   cursor: pointer;
-  transition: filter 0.2s ease;
+  transition: gap 0.15s ease, color 0.15s ease;
 }
 
 .risk-action:hover {
-  filter: brightness(0.97);
-}
-
-.risk-action-high {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.risk-action-medium {
-  background: #fffbeb;
-  color: #d97706;
+  gap: 7px;
+  color: #1d4ed8;
 }
 
 /* ===========================================================
@@ -1053,24 +1171,39 @@ body,
 
 .sdg-grid {
   display: grid;
-  grid-template-columns: repeat(9, 1fr);
-  gap: 6px;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 4px;
   width: 100%;
   align-content: center;
 }
 
 .sdg-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+/* the official SDG artwork carries its own vivid color + baked-in
+   number/title, which clashes with the corporate palette and is
+   unreadable at this size — mute it to a neutral chip by default and
+   only reveal the full-color, official version on hover/focus */
+.sdg-icon-wrap {
   position: relative;
+  width: 100%;
   aspect-ratio: 1;
   border-radius: 9px;
   overflow: hidden;
-  cursor: pointer;
-  transition: 0.25s;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-.sdg-card:hover {
-  transform: translateY(-3px) scale(1.03);
+.sdg-card:hover .sdg-icon-wrap,
+.sdg-card:focus-visible .sdg-icon-wrap {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.16);
 }
 
 .sdg-icon {
@@ -1078,24 +1211,33 @@ body,
   height: 100%;
   object-fit: cover;
   display: block;
+  filter: grayscale(1) brightness(1.35) contrast(0.85);
+  opacity: 0.9;
+  transition: filter 0.25s ease, opacity 0.25s ease;
 }
 
-.sdg-caption {
-  position: absolute;
-  inset: auto 0 0 0;
-  padding: 3px 4px 4px;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.72), transparent);
-  color: #fff;
-  font-size: 9.5px;
-  font-weight: 600;
-  line-height: 1.15;
-  text-align: center;
-  opacity: 0;
-  transform: translateY(4px);
-  transition: opacity 0.2s ease, transform 0.2s ease;
-}
-
-.sdg-card:hover .sdg-caption {
+.sdg-card:hover .sdg-icon,
+.sdg-card:focus-visible .sdg-icon {
+  filter: none;
   opacity: 1;
-  transform: translateY(0);
+}
+
+/* our own readable label, since the icon's baked-in text is illegible
+   at this scale — plain text below the chip instead of a hover scrim */
+.sdg-caption {
+  width: 100%;
+  font-size: 7.5px;
+  font-weight: 600;
+  line-height: 1.05;
+  color: #718096;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.2s ease;
+}
+
+.sdg-card:hover .sdg-caption,
+.sdg-card:focus-visible .sdg-caption {
+  color: #2d3748;
 }

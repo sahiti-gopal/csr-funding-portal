@@ -47,7 +47,7 @@ export default function RiskCard({
   const closePanel = () => setOpen(false);
 
   return (
-    <div className="risk-card">
+    <div className={`risk-card risk-card-${tone}`}>
       <div className="risk-top">
         <span className={`risk-icon risk-icon-${tone}`}>
           {Icon && <Icon size={18} />}
@@ -66,11 +66,11 @@ export default function RiskCard({
       </div>
 
       <button
-        className={`risk-action risk-action-${tone}`}
+        className="risk-action"
         onClick={() => setOpen(true)}
       >
         <span>{action}</span>
-        <ChevronRight size={16} />
+        <ChevronRight size={14} />
       </button>
 
       {open &&
