@@ -1,40 +1,4 @@
-import {
-  HeartHandshake,
-  FileText,
-  FileBarChart2,
-  Settings2,
-} from "lucide-react";
-
-const CATEGORY = {
-  "DONOR RISK": {
-    icon: HeartHandshake,
-    className: "risk",
-    label: "DONOR RISK",
-  },
-  DOCUMENTS: {
-    icon: FileText,
-    className: "documents",
-    label: "DOCUMENTS",
-  },
-  REPORTS: {
-    icon: FileBarChart2,
-    className: "reports",
-    label: "REPORTS",
-  },
-  SYSTEM: {
-    icon: Settings2,
-    className: "system",
-    label: "SYSTEM",
-  },
-};
-
 export default function AlertCard({ alert }) {
-  const item =
-    CATEGORY[alert.type?.toUpperCase()] ??
-    CATEGORY.SYSTEM;
-
-  const Icon = item.icon;
-
   return (
     <div
       className={`alert-card priority-${alert.priority.toLowerCase()}`}
@@ -44,12 +8,6 @@ export default function AlertCard({ alert }) {
       <div className="alert-content">
 
         <div className="alert-row">
-
-          <span
-            className={`alert-pill ${item.className}`}
-          >
-            {item.label}
-          </span>
 
           <div className="alert-title">
             {alert.title}

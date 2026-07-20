@@ -12,24 +12,18 @@ export default function DonorOverview({
       title: "At Risk",
       value: summary.atRisk ?? 0,
       amount: summary.atRiskAmount ?? "₹0",
-      color: "#EF4444",
-      bg: "#FEE2E2",
       icon: TriangleAlert,
     },
     {
       title: "Needs Attention",
       value: summary.attention ?? 0,
       amount: summary.attentionAmount ?? "₹0",
-      color: "#F59E0B",
-      bg: "#FEF3C7",
       icon: CircleAlert,
     },
     {
       title: "Healthy",
       value: summary.healthy ?? 0,
       amount: summary.healthyAmount ?? "₹0",
-      color: "#22C55E",
-      bg: "#DCFCE7",
       icon: CircleCheck,
     },
   ];
@@ -55,11 +49,8 @@ export default function DonorOverview({
       : ((summary.healthy ?? 0) / total) * 100;
 
   return (
-    <div className="health-card">
-
-      <h3>Donor Health Overview</h3>
-
-      <div className="health-grid">
+    <>
+      <div className="overview-grid donor-kpi-grid">
 
         {cards.map((card) => {
           const Icon = card.icon;
@@ -67,47 +58,23 @@ export default function DonorOverview({
           return (
             <div
               key={card.title}
-              className="health-item"
+              className="overview-card stat-card"
             >
-              <div className="health-top">
+              <span className="stat-icon">
+                <Icon size={15} />
+              </span>
 
-                <div>
+              <span className="eyebrow">
+                {card.title}
+              </span>
 
-                  <div
-                    className="health-value"
-                    style={{
-                      color: card.color,
-                    }}
-                  >
-                    {card.value}
-                  </div>
-
-                  <div
-                    className="health-title"
-                    style={{
-                      color: card.color,
-                    }}
-                  >
-                    {card.title}
-                  </div>
-
-                </div>
-
-                <div
-                  className="health-icon"
-                  style={{
-                    background: card.bg,
-                    color: card.color,
-                  }}
-                >
-                  <Icon size={15} />
-                </div>
-
+              <div className="overview-value">
+                {card.value}
               </div>
 
-              <h4>{card.amount}</h4>
-
-              <span>Committed</span>
+              <div className="overview-delta">
+                {card.amount} · Committed
+              </div>
 
             </div>
           );
@@ -115,7 +82,7 @@ export default function DonorOverview({
 
       </div>
 
-      <div className="distribution">
+      <div className="distribution-band">
 
         <div className="distribution-bar">
 
@@ -153,7 +120,6 @@ export default function DonorOverview({
         </div>
 
       </div>
-
-    </div>
+    </>
   );
 }

@@ -15,38 +15,12 @@
    KPI CARDS
 ========================================== */
 
+/* KPI tiles reuse .overview-card / .stat-card (dashboard.css) for the
+   same radius, shadow, hover and typography tokens as the Overview
+   page; only the 5-column count is page-specific. */
 .document-stats{
-    display:grid;
     grid-template-columns:repeat(5,1fr);
-    gap:10px;
-    margin:0 0 14px;
-}
-
-.document-stat-card{
-    background:#fff;
-    border:1px solid #E5E7EB;
-    border-radius:12px;
-    padding:12px 14px;
-    box-shadow:0 1px 4px rgba(15,23,42,.05);
-    transition:.2s;
-}
-
-.document-stat-card:hover{
-    box-shadow:0 4px 12px rgba(15,23,42,.08);
-}
-
-.stat-title{
-    font-size:12px;
-    color:#64748B;
-    font-weight:500;
-    line-height:1.2;
-}
-
-.stat-number{
-    margin-top:4px;
-    font-size:18px;
-    font-weight:700;
-    line-height:1;
+    margin-bottom:14px;
 }
 
 /* =====================================================

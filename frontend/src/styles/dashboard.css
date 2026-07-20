@@ -23,7 +23,7 @@ body,
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: #f7f9fc;
+  background: var(--surface-muted);
 }
 
 /* .app-content reserves a 40px bottom padding for scrollable pages;
@@ -47,6 +47,7 @@ body,
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: 4px;
   padding-left: 12px;
 }
 
@@ -58,75 +59,92 @@ body,
   bottom: 1px;
   width: 4px;
   border-radius: 4px;
-  background: linear-gradient(180deg, #2563eb, #7c3aed);
-}
-
-.dashboard-filters {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dashboard-filters select {
-  height: 30px;
-  min-width: 100px;
-  border: 1px solid #dbe3ef;
-  border-radius: 8px;
-  padding: 0 8px;
-  background: white;
-  font-size: 11.5px;
-  cursor: pointer;
-  transition: .2s;
-}
-
-.dashboard-filters select:hover {
-  border-color: #2563eb;
-}
-
-.dashboard-filters select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, .12);
-}
-
-/* Big page heading, e.g. "Good afternoon, Sahiti!" */
-.page-title {
-  font-size: 30px;
-  font-weight: 700;
-  color: #0f172a;
-  letter-spacing: -0.3px;
+  background: var(--brand-gradient);
 }
 
 .dashboard-subtitle {
   margin-top: 4px;
   font-size: 14px;
-  color: #6b7280;
+  color: var(--ink-600);
 }
 
-/* NOTE: .section-label was originally a small overline label (14px, gray),
-   but a later block redefined it as a 28px bold heading — the two
-   definitions were fighting for the same class. Split into two classes
-   so both use cases keep working; update your markup accordingly:
-     - small caption/overline text -> keep .section-label
-     - big heading (e.g. inside .dashboard-title) -> use .section-heading */
+/* small caption/overline text — distinct from .section-heading below */
 .section-label {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--ink-600);
 }
 
+/* page heading, used consistently across every page (Overview, Alerts,
+   Projects, Donors, Reports, Settings) so titles read as one system */
 .section-heading {
   margin: 0;
-  font-size: 16px;
-  font-weight: 700;
-  color: #1f2937;
-  line-height: 1.1;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--ink-900);
+  line-height: 1.15;
 }
 
 .dashboard-content {
   flex: 1;
   min-height: 0;
   overflow: hidden;
+}
+
+/* ===========================================================
+   SDG BAND (full-width, above the KPI strip)
+=========================================================== */
+
+.sdg-band {
+  flex-shrink: 0;
+  background: var(--surface-white);
+  border-radius: var(--radius-xl);
+  border: 1px solid #e5e7eb;
+  box-shadow: var(--shadow-card);
+  padding: 10px 14px 10px;
+  margin-bottom: 6px;
+}
+
+.sdg-band-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.sdg-band-count {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--ink-400);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.sdg-band-count strong {
+  color: var(--ink-900);
+  font-weight: 700;
+}
+
+.sdg-band-clear {
+  padding: 2px 9px;
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-full);
+  background: #fff;
+  color: var(--ink-600);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.sdg-band-clear:hover {
+  border-color: var(--brand-green);
+  color: var(--brand-green);
 }
 
 /* ===========================================================
@@ -167,205 +185,98 @@ body,
 }
 
 /* ===========================================================
-   TOOLBAR / FILTERS
-=========================================================== */
-
-.dashboard-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-left: auto;
-  margin-bottom: 16px;
-}
-
-.dashboard-toolbar select {
-  height: 36px;
-  min-width: 150px;
-  padding: 0 12px;
-  border: 1px solid #d9e2ec;
-  border-radius: 8px;
-  background: #ffffff;
-  font-size: 13px;
-  font-weight: 500;
-  color: #374151;
-  cursor: pointer;
-  outline: none;
-  transition: 0.2s;
-}
-
-.dashboard-toolbar select:hover {
-  border-color: #2563eb;
-}
-
-.dashboard-toolbar select:focus {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
-}
-
-/* ===========================================================
    KPI GRID (Overview)
 =========================================================== */
 
 .overview-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  gap: 10px;
   margin-top: 4px;
-  margin-bottom: 10px;
+  margin-bottom: 6px;
 }
 
+/* plain card — label (eyebrow) + big Sora value + small delta line,
+   matching the mockup's minimal .kpi treatment instead of per-metric
+   pastel accent colors */
 .overview-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border-radius: 14px;
-  border: 1px solid #edf2f7;
-  padding: 12px 14px;
-  min-height: 116px;
+  background: var(--surface-white);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-xl);
+  padding: 9px 14px 10px;
   min-width: 0;
   cursor: pointer;
+  box-shadow: var(--shadow-card);
   transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
 .overview-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .overview-card.active {
-  border-color: #2563eb;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+  border-color: rgba(20, 24, 31, 0.16);
+  box-shadow: 0 0 0 3px rgba(22, 163, 74, 0.16), var(--shadow-card-hover);
 }
 
-.overview-card-top {
-  display: flex;
-  justify-content: flex-end;
-  align-items: flex-start;
-  min-height: 17px;
-  margin-bottom: 8px;
+.overview-card .eyebrow {
+  margin-bottom: 4px;
 }
 
-.overview-title {
-  font-size: 11px;
-  font-weight: 600;
-  color: #64748b;
-  margin-bottom: 3px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.overview-card .eyebrow::before {
+  display: none;
 }
 
 .overview-value {
-  font-size: 20px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: #0f172a;
-  line-height: 1.15;
+  color: var(--ink-900);
+  line-height: 1;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.overview-subtitle {
-  margin-top: auto;
-  padding-top: 6px;
+.overview-delta {
+  margin-top: 3px;
   font-size: 11px;
-  color: #94a3b8;
+  font-weight: 500;
+  color: var(--ink-400);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* ---------- Photo cards — each KPI carries its own illustration,
-   with our own readable text overlaid on the artwork's white/light
-   left panel ---------- */
-
-.overview-card-photo {
-  background-color: #ffffff;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+/* corner-icon modifier for .overview-card — used wherever a KPI tile
+   needs a small icon badge (Alerts, Donors), so every KPI row across
+   the app shares one visual language */
+.stat-card {
+  position: relative;
 }
 
-.overview-card-photo.accent-raised {
-  background-image: url("/images/gallery/KPI cards/fundsraised.png");
-}
-
-.overview-card-photo.accent-utilized {
-  background-image: url("/images/gallery/KPI cards/fundsutilised.png");
-}
-
-.overview-card-photo.accent-projects {
-  background-image: url("/images/gallery/KPI cards/projects.png");
-}
-
-.overview-card-photo.accent-beneficiaries {
-  background-image: url("/images/gallery/KPI cards/beneficiaries.png");
-}
-
-.accent-raised .overview-value { color: #047857; }
-.accent-utilized .overview-value { color: #6d28d9; }
-.accent-projects .overview-value { color: #0f766e; }
-.accent-beneficiaries .overview-value { color: #15803d; }
-
-.overview-percent-badge {
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.8);
-  color: #1e293b;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.overview-progress-track {
-  margin-top: auto;
-  height: 5px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.08);
+.stat-card .eyebrow {
+  margin-right: 28px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.overview-progress-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: #7c3aed;
-  transition: width 0.4s ease;
+.stat-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 8px;
+  color: var(--ink-600);
+  background: var(--ink-100);
 }
 
-.overview-status-pill {
-  display: inline-block;
-  width: max-content;
-  margin-top: 6px;
-  padding: 2px 9px;
-  border-radius: 999px;
-  font-size: 10px;
-  font-weight: 700;
-  background: #ede9fe;
-  color: #6d28d9;
-}
-
-/* Cards without a real percent metric (Raised / Projects / Beneficiaries)
-   still get a bottom pill, matching Utilized's "On Track" treatment,
-   tinted to the card's own accent instead of a fabricated percentage. */
-.overview-subtitle-pill {
-  margin-top: auto;
-}
-
-.accent-raised .overview-subtitle-pill {
-  background: #dcfce7;
-  color: #047857;
-}
-
-.accent-projects .overview-subtitle-pill {
-  background: #ccfbf1;
-  color: #0f766e;
-}
-
-.accent-beneficiaries .overview-subtitle-pill {
-  background: #dcfce7;
-  color: #15803d;
-}
 
 @media (max-width: 640px) {
   .overview-grid {
@@ -374,10 +285,10 @@ body,
 }
 
 /* ===========================================================
-   MAIN CONTENT GRID (left column + right panel)
+   MAIN CONTENT ROW (donor panel + risk panel)
 =========================================================== */
 
-.dashboard-grid {
+.overview-row2 {
   height: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -385,40 +296,12 @@ body,
   min-height: 0;
 }
 
-.dashboard-left {
-  display: grid;
-  grid-template-rows: minmax(160px, 1fr) auto;
-  gap: 10px;
-  min-height: 0;
-  min-width: 0;
-}
-
-.dashboard-right {
-  min-height: 0;
-  min-width: 0;
-}
-
-.dashboard-right .panel {
-  width: 100%;
-}
-
-/* Legacy two-column row (kept in case older markup still uses it) */
-.dashboard-row {
+.overview-row2 .panel {
   height: 100%;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-  align-items: stretch;
 }
 
 @media (max-width: 1024px) {
-  .dashboard-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 1200px) {
-  .dashboard-grid {
+  .overview-row2 {
     grid-template-columns: 1fr;
   }
 }
@@ -429,7 +312,7 @@ body,
 .panel {
   position: relative;
   background: #ffffff;
-  border-radius: 18px;
+  border-radius: var(--radius-xl);
   border: 1px solid #e5e7eb;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
   display: flex;
@@ -445,9 +328,10 @@ body,
   /* right padding = panel-scroll's 14px + the 8px scrollbar-gutter it
      reserves, so the count badge stays flush with the list below it */
   padding: 8px 22px 8px 14px;
-  font-size: 13.5px;
+  font-family: var(--font-display);
+  font-size: 13px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--ink-900);
   border-bottom: 1px solid #eef2f7;
   background: #ffffff;
   flex-shrink: 0;
@@ -468,15 +352,15 @@ body,
   border-radius: 999px;
   background: #f1f5f9;
   color: #64748b;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 700;
 }
 
 /* flush with the donor percentages below: panel-title and panel-scroll
    share the same 14px right inset, so the badge lines up with the list */
 .donor-panel .panel-count {
-  background: #f0fff4;
-  color: #2f855a;
+  background: var(--success-bg);
+  color: var(--accent-raised-fg);
 }
 
 .icon-blue {
@@ -489,14 +373,21 @@ body,
 
 /* neutral corporate slate — donor icon isn't an alert, it's informational */
 .panel-title-icon.icon-blue {
-  color: #475569;
-  background: #f1f5f9;
+  color: var(--ink-600);
+  background: var(--ink-100);
 }
 
 /* muted amber/gold — risk icon signals attention without shouting */
 .panel-title-icon.icon-amber {
   color: #b7791f;
-  background: #fef9e7;
+  background: var(--warning-bg);
+}
+
+/* brand green — SDG impact is the flagship section, so it gets the
+   accent color instead of the neutral/warning tones used elsewhere */
+.panel-title-icon.icon-green {
+  color: var(--brand-green);
+  background: var(--success-bg);
 }
 
 .panel-body {
@@ -523,14 +414,95 @@ body,
 }
 
 .donor-panel,
-.sdg-panel,
-.risk-panel {
+.risk-panel,
+.ai-summary-panel {
   height: 100%;
   min-height: 0;
 }
 
-.donor-panel::after,
-.risk-panel::after {
+.ai-summary-donor-select {
+  margin-left: auto;
+  max-width: 180px;
+  padding: 4px 8px;
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-full);
+  background: var(--surface-white);
+  color: var(--ink-700);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ai-summary-body {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.ai-summary-body p {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--ink-700);
+}
+
+.ai-summary-section-title {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--ink-400);
+  margin-bottom: 4px;
+}
+
+.ai-summary-risk-list {
+  margin: 0;
+  padding-left: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink-700);
+}
+
+.ai-summary-attribution {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--ink-400);
+  font-weight: 600;
+  margin-top: auto;
+}
+
+.ai-summary-skeleton {
+  flex: 1;
+  min-height: 80px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    90deg,
+    var(--surface-sunken) 25%,
+    var(--ink-100) 50%,
+    var(--surface-sunken) 75%
+  );
+  background-size: 200% 100%;
+  animation: ai-summary-shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes ai-summary-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+.donor-panel::after {
   content: "";
   position: absolute;
   left: 1px;
@@ -538,21 +510,93 @@ body,
   bottom: 1px;
   height: 28px;
   background: linear-gradient(to bottom, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.96));
-  border-radius: 0 0 17px 17px;
+  border-radius: 0 0 13px 13px;
   pointer-events: none;
   opacity: 1;
   transition: opacity 0.15s ease;
 }
 
-.risk-panel.at-bottom::after {
-  opacity: 0;   /* fade disappears once you've scrolled to the end */
+/* ===========================================================
+   RISK CAROUSEL
+=========================================================== */
+
+.risk-carousel {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 6px 14px 6px;
+  overflow: hidden;
 }
 
-.sdg-panel .panel-body {
+.risk-carousel-viewport {
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.risk-carousel-track {
+  display: flex;
+  align-items: flex-start;
+  transition: transform 0.25s ease;
+}
+
+.risk-carousel-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  display: flex;
+}
+
+.risk-carousel-controls {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  gap: 10px;
+  margin-top: 6px;
+  flex-shrink: 0;
+}
+
+.risk-carousel-nav {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #e2e8f0;
+  border-radius: 50%;
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: 0.15s;
+}
+
+.risk-carousel-nav:hover {
+  border-color: var(--brand-green);
+  color: var(--brand-green);
+}
+
+.risk-carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.risk-carousel-dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: #d9e2ec;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.risk-carousel-dot.active {
+  width: 16px;
+  border-radius: 4px;
+  background: var(--brand-green, #2f855a);
 }
 
 /* ===========================================================
@@ -563,9 +607,21 @@ body,
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  padding: 10px 0 10px 12px;
+  padding: 8px 8px 8px 12px;
+  margin-right: -8px;
   border-left: 3px solid transparent;
+  border-radius: 0 8px 8px 0;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.donor-bullet:hover {
+  background: var(--ink-100);
+}
+
+.donor-bullet-active {
+  background: var(--success-bg);
 }
 
 .donor-content {
@@ -582,8 +638,8 @@ body,
 
 .donor-row h4 {
   margin: 0;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   color: #2d3748;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -592,14 +648,16 @@ body,
 
 .donor-score {
   flex-shrink: 0;
-  font-size: 14px;
-  font-weight: 600;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
   color: #2f855a;
 }
 
 .donor-meta {
   margin-top: 2px;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 400;
   color: #718096;
   overflow: hidden;
@@ -670,26 +728,30 @@ body,
 =========================================================== */
 
 .risk-card {
+  width: 100%;
+  min-height: 96px;
   border: none;
   border-radius: 12px;
-  padding: 10px 12px;
-  margin-bottom: 8px;
-  flex-shrink: 0;
+  padding: 8px 10px 6px;
   background: #fff;
+  display: flex;
+  flex-direction: column;
 }
 
 /* soft, desaturated washes instead of stark alert colors — urgency
-   without breaking the calm, premium feel of the rest of the page */
+   without breaking the calm, premium feel of the rest of the page.
+   Reuses the shared semantic tokens instead of one-off hexes so risk
+   severity reads the same everywhere it appears (Alerts, Projects, …). */
 .risk-card-high {
-  background: #fff5f5;
+  background: var(--danger-bg);
 }
 
 .risk-card-medium {
-  background: #fefcbf;
+  background: var(--warning-bg);
 }
 
 .risk-card-low {
-  background: #f0fff4;
+  background: var(--success-bg);
 }
 
 .risk-top {
@@ -725,7 +787,7 @@ body,
 
 .risk-body h4 {
   margin: 0;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: #1e293b;
   overflow: hidden;
@@ -737,8 +799,12 @@ body,
   margin-top: 2px;
   max-width: 62ch;
   color: #94a3b8;
-  font-size: 11px;
+  font-size: 10.5px;
   line-height: 1.3;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .risk-meta {
@@ -751,11 +817,11 @@ body,
 }
 
 .badge {
-  padding: 4px 11px;
+  padding: 3px 9px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
-  margin-bottom: 8px;
+  margin-bottom: 0;
 }
 
 .badge.high,
@@ -782,7 +848,7 @@ body,
 }
 
 .risk-time {
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
 }
 
@@ -801,11 +867,14 @@ body,
   align-items: center;
   gap: 4px;
   width: max-content;
-  margin-top: 8px;
-  padding: 0;
+  margin-top: auto;
+  padding-top: 8px;
+  padding-left: 0;
+  padding-right: 0;
+  padding-bottom: 0;
   border: none;
   background: transparent;
-  font-size: 11.5px;
+  font-size: 11px;
   font-weight: 600;
   color: #2563eb;
   cursor: pointer;
@@ -1166,78 +1235,226 @@ body,
 }
 
 /* ===========================================================
-   SDG GRID
+   SDG TILES — colored per official SDG identity, shown at full
+   strength (no fabricated "actively funded" state since we have
+   no per-goal funding data to back that distinction honestly)
 =========================================================== */
 
-.sdg-grid {
+.sdg-tiles {
   display: grid;
-  grid-template-columns: repeat(10, 1fr);
-  gap: 4px;
-  width: 100%;
-  align-content: center;
+  grid-template-columns: repeat(17, 1fr);
+  gap: 6px;
 }
 
-.sdg-card {
+@media (max-width: 1200px) {
+  .sdg-tiles {
+    grid-template-columns: repeat(9, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .sdg-tiles {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.sdg-tile {
+  position: relative;
+  border-radius: 9px;
+  min-height: 68px;
+  padding: 8px 4px 5px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
-  min-width: 0;
-  cursor: pointer;
-}
-
-/* the official SDG artwork carries its own vivid color + baked-in
-   number/title, which clashes with the corporate palette and is
-   unreadable at this size — mute it to a neutral chip by default and
-   only reveal the full-color, official version on hover/focus */
-.sdg-icon-wrap {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1;
-  border-radius: 9px;
-  overflow: hidden;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.06);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.sdg-card:hover .sdg-icon-wrap,
-.sdg-card:focus-visible .sdg-icon-wrap {
-  transform: translateY(-2px) scale(1.06);
-  box-shadow: 0 8px 16px rgba(15, 23, 42, 0.16);
-}
-
-.sdg-icon {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  filter: grayscale(1) brightness(1.35) contrast(0.85);
-  opacity: 0.9;
-  transition: filter 0.25s ease, opacity 0.25s ease;
-}
-
-.sdg-card:hover .sdg-icon,
-.sdg-card:focus-visible .sdg-icon {
-  filter: none;
-  opacity: 1;
-}
-
-/* our own readable label, since the icon's baked-in text is illegible
-   at this scale — plain text below the chip instead of a hover scrim */
-.sdg-caption {
-  width: 100%;
-  font-size: 7.5px;
-  font-weight: 600;
-  line-height: 1.05;
-  color: #718096;
+  justify-content: center;
+  gap: 4px;
+  background: var(--ink-400);
+  color: #fff;
   text-align: center;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  transition: color 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-.sdg-card:hover .sdg-caption,
-.sdg-card:focus-visible .sdg-caption {
-  color: #2d3748;
+.sdg-tile-funded {
+  background: var(--brand-green);
+}
+
+.sdg-tile:hover,
+.sdg-tile:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.18);
+  z-index: 2;
+}
+
+.sdg-tile-num {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  font-family: var(--font-display);
+  font-size: 9px;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+.sdg-tile svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sdg-tile-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: 0.1px;
+}
+
+.sdg-tile-tooltip {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  min-width: 168px;
+  max-width: 220px;
+  background: var(--surface-white);
+  color: var(--ink-900);
+  border: 1px solid var(--ink-200);
+  border-radius: var(--radius-lg);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-card-hover);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  z-index: 5;
+  text-align: left;
+}
+
+.sdg-tile-tooltip::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: var(--surface-white);
+}
+
+.sdg-tile:hover .sdg-tile-tooltip,
+.sdg-tile:focus-visible .sdg-tile-tooltip,
+.sdg-tile-tooltip:hover {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Edge tiles: keep the tooltip from overflowing the viewport left/right */
+.sdg-tile:nth-child(1) .sdg-tile-tooltip,
+.sdg-tile:nth-child(2) .sdg-tile-tooltip {
+  left: 0;
+  transform: translateY(-4px);
+}
+
+.sdg-tile:nth-child(1):hover .sdg-tile-tooltip,
+.sdg-tile:nth-child(2):hover .sdg-tile-tooltip,
+.sdg-tile:nth-child(1):focus-visible .sdg-tile-tooltip,
+.sdg-tile:nth-child(2):focus-visible .sdg-tile-tooltip {
+  transform: translateY(0);
+}
+
+.sdg-tile:nth-child(1) .sdg-tile-tooltip::after,
+.sdg-tile:nth-child(2) .sdg-tile-tooltip::after {
+  left: 24px;
+  transform: none;
+}
+
+.sdg-tile:nth-last-child(1) .sdg-tile-tooltip,
+.sdg-tile:nth-last-child(2) .sdg-tile-tooltip {
+  left: auto;
+  right: 0;
+  transform: translateY(-4px);
+}
+
+.sdg-tile:nth-last-child(1):hover .sdg-tile-tooltip,
+.sdg-tile:nth-last-child(2):hover .sdg-tile-tooltip,
+.sdg-tile:nth-last-child(1):focus-visible .sdg-tile-tooltip,
+.sdg-tile:nth-last-child(2):focus-visible .sdg-tile-tooltip {
+  transform: translateY(0);
+}
+
+.sdg-tile:nth-last-child(1) .sdg-tile-tooltip::after,
+.sdg-tile:nth-last-child(2) .sdg-tile-tooltip::after {
+  left: auto;
+  right: 24px;
+  transform: none;
+}
+
+.sdg-tile-tooltip-title {
+  display: block;
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ink-400);
+  margin-bottom: 8px;
+}
+
+.sdg-tile-tooltip-logos {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.sdg-tile-tooltip-more-row {
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.sdg-tile-tooltip-logo {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 1px solid var(--ink-200);
+  background: #fff;
+  object-fit: contain;
+  padding: 3px;
+}
+
+.sdg-tile-tooltip-logo-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-sunken);
+  color: var(--ink-600);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.sdg-tile-tooltip-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--ink-700);
+  border-top: 1px solid var(--ink-100);
+  padding-top: 8px;
+}
+
+.sdg-tile-tooltip-stats strong {
+  color: var(--brand-green);
+  font-weight: 800;
+}
+
+.sdg-tile-tooltip-more {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 20px;
+  padding: 0 8px;
+  border-radius: var(--radius-full);
+  background: var(--surface-sunken);
+  color: var(--ink-600);
+  font-size: 10.5px;
+  font-weight: 800;
 }

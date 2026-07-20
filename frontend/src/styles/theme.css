@@ -1,0 +1,113 @@
+/* ============================================================
+   DESIGN TOKENS
+   Shared palette/shape system for the visual revamp. Hand-written
+   CSS still powers each page (Tailwind is present in package.json
+   but not wired into the build) — these custom properties let
+   every stylesheet reference one source of truth instead of
+   hardcoding hex values per file.
+============================================================ */
+
+:root {
+  /* brand / CTA */
+  --brand-gradient: linear-gradient(135deg, #16a34a, #22c55e);
+  --brand-green: #16a34a;
+  --brand-green-light: #22c55e;
+  --brand-green-dark: #0f1f3d;
+
+  /* semantic — single source of truth for status/severity across every page.
+     Risk cards, tags, badges, and pills should reference these, not invent
+     their own reds/ambers/greens per stylesheet. */
+  --success: #16a34a;
+  --success-bg: #ecfdf3;
+  --warning: #d97706;
+  --warning-bg: #fffbeb;
+  --danger: #dc2626;
+  --danger-bg: #fef2f2;
+  --info: #2563eb;
+  --info-bg: #eff6ff;
+
+  /* still referenced by the donor panel's count badge */
+  --accent-raised-fg: #047857;
+
+  /* shape / elevation */
+  --radius-full: 999px;
+  --radius-2xl: 20px;
+  --radius-xl: 14px;
+  --radius-lg: 10px;
+  --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px rgba(15, 23, 42, 0.06);
+  --shadow-card-hover: 0 12px 28px rgba(15, 23, 42, 0.1);
+
+  /* spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-7: 32px;
+  --space-8: 40px;
+
+  /* neutrals reused across shell + forms */
+  --ink-900: #14181f;
+  --ink-700: #334155;
+  --ink-600: #5b6470;
+  --ink-400: #98a0aa;
+  --ink-200: #e2e8f0;
+  --ink-100: #f1f5f9;
+  --surface-white: #ffffff;
+  --surface-muted: #fafaf8;
+  --surface-sunken: #eef1f6;
+
+  /* type — Sora for display (headings, KPI figures, initials),
+     IBM Plex Sans for everything else */
+  --font-display: "Sora", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+/* ============================================================
+   SIGNATURE ELEMENT — the small green-dash "eyebrow" used above
+   every section/panel header ("— SDG impact", "— RAISED"). Draws
+   in on mount; reused across every page for a consistent tell.
+============================================================ */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+}
+
+.eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 16px;
+  height: 2px;
+  border-radius: var(--radius-full);
+  background: var(--brand-green);
+  animation: eyebrow-draw 0.4s ease-out;
+}
+
+@keyframes eyebrow-draw {
+  from { width: 0; opacity: 0; }
+  to { width: 16px; opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .eyebrow::before {
+    animation: none;
+  }
+}
+
+.dash-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-900);
+}

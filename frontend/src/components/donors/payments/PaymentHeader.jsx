@@ -1,4 +1,4 @@
-import { Plus, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 export default function PaymentHeader({
   donor,
@@ -8,86 +8,40 @@ export default function PaymentHeader({
 
   return (
 
-    <div className="payment-header">
+    <div className="payment-select">
 
-      <div className="payment-header-left">
+      <select
 
-        <div className="payment-avatar">
+        value={donor?.id || ""}
 
-          {donor?.name
-            ?.split(" ")
-            .map((x) => x[0])
-            .join("")
-            .slice(0, 2)}
+        onChange={(e) =>
+          onChange(e.target.value)
+        }
 
-        </div>
+      >
 
-        <div className="payment-header-info">
+        {donors.map((item) => (
 
-          <h2>
+          <option
 
-            {donor?.name || "Select Donor"}
+            key={item.id}
 
-          </h2>
-
-          <p>
-
-            {donor?.focus_area || "CSR Donor"}
-
-          </p>
-
-        </div>
-
-        <div className="payment-select">
-
-          <select
-
-            value={donor?.id || ""}
-
-            onChange={(e) =>
-              onChange(e.target.value)
-            }
+            value={item.id}
 
           >
 
-            {donors.map((item) => (
+            {item.name}
 
-              <option
+          </option>
 
-                key={item.id}
+        ))}
 
-                value={item.id}
+      </select>
 
-              >
-
-                {item.name}
-
-              </option>
-
-            ))}
-
-          </select>
-
-          <ChevronDown
-            size={18}
-            className="select-icon"
-          />
-
-        </div>
-
-      </div>
-
-      <div className="payment-header-right">
-
-        <button className="payment-add-btn">
-
-          <Plus size={18} />
-
-          Add Donor
-
-        </button>
-
-      </div>
+      <ChevronDown
+        size={18}
+        className="select-icon"
+      />
 
     </div>
 

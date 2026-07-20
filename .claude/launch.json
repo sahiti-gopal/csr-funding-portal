@@ -5,7 +5,20 @@
       "name": "frontend",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["--prefix", "frontend", "run", "dev"],
-      "port": 5173
+      "port": 5173,
+      "autoPort": true
+    },
+    {
+      "name": "backend",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["backend/run.py"],
+      "port": 5000
+    },
+    {
+      "name": "mockup",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8743", "--directory", "C:\\Users\\LENOVO\\AppData\\Local\\Temp\\claude\\D--Tibil-csr-funding-portal\\16206043-8837-41ac-92bf-2235990353a0\\scratchpad"],
+      "port": 8743
     }
   ]
 }

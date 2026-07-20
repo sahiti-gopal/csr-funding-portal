@@ -12,6 +12,8 @@ from app.models.donor import Donor
 from app.models.donor_payment import DonorPayment
 from app.models.risk import Risk
 from app.models.alert import Alert
+from app.models.report import Report
+from app.routes.report_routes import _generate_report
 
 app = create_app()
 
@@ -21,6 +23,7 @@ with app.app_context():
     # Clear Existing Data
     # -----------------------------
     Alert.query.delete()
+    Report.query.delete()
     ProjectMetric.query.delete()
     ProjectLocation.query.delete()
     ProjectTeamMember.query.delete()
@@ -93,10 +96,13 @@ with app.app_context():
     healthcare = ProjectType.query.filter_by(name="Healthcare").first()
     environment = ProjectType.query.filter_by(name="Environment").first()
     women_emp = ProjectType.query.filter_by(name="Women Empowerment").first()
+    livelihood = ProjectType.query.filter_by(name="Livelihood").first()
+    rural_dev = ProjectType.query.filter_by(name="Rural Development").first()
 
     students = BeneficiaryCategory.query.filter_by(name="Students").first()
     women = BeneficiaryCategory.query.filter_by(name="Women").first()
     children = BeneficiaryCategory.query.filter_by(name="Children").first()
+    farmers = BeneficiaryCategory.query.filter_by(name="Farmers").first()
 
     # ===================================================
     # DONORS
@@ -110,6 +116,7 @@ with app.app_context():
             status="Ready",
             likelihood=95,
             last_contact=date(2026, 7, 10),
+            logo_url="/images/logos/infosys-foundation.png",
         ),
 
         Donor(
@@ -118,6 +125,7 @@ with app.app_context():
             status="Ready",
             likelihood=92,
             last_contact=date(2026, 7, 9),
+            logo_url="/images/logos/tata-trusts.png",
         ),
 
         Donor(
@@ -126,6 +134,7 @@ with app.app_context():
             status="Interested",
             likelihood=90,
             last_contact=date(2026, 7, 8),
+            logo_url="/images/logos/reliance-foundation.png",
         ),
 
         Donor(
@@ -134,6 +143,7 @@ with app.app_context():
             status="Ready",
             likelihood=88,
             last_contact=date(2026, 7, 12),
+            logo_url="/images/logos/wipro-cares.png",
         ),
 
         Donor(
@@ -142,6 +152,7 @@ with app.app_context():
             status="Proposal Sent",
             likelihood=82,
             last_contact=date(2026, 7, 6),
+            logo_url="/images/logos/hcl-foundation.png",
         ),
 
         Donor(
@@ -150,6 +161,7 @@ with app.app_context():
             status="Interested",
             likelihood=79,
             last_contact=date(2026, 7, 3),
+            logo_url="/images/logos/mahindra-rise.png",
         ),
 
         Donor(
@@ -158,6 +170,7 @@ with app.app_context():
             status="Ready",
             likelihood=87,
             last_contact=date(2026, 7, 11),
+            logo_url="/images/logos/aditya-birla-csr.png",
         ),
 
         Donor(
@@ -166,6 +179,7 @@ with app.app_context():
             status="Proposal Sent",
             likelihood=81,
             last_contact=date(2026, 7, 2),
+            logo_url="/images/logos/jsw-foundation.png",
         ),
 
         Donor(
@@ -174,6 +188,7 @@ with app.app_context():
             status="Negotiation",
             likelihood=76,
             last_contact=date(2026, 7, 5),
+            logo_url="/images/logos/vedanta-foundation.png",
         ),
 
         Donor(
@@ -182,6 +197,7 @@ with app.app_context():
             status="Ready",
             likelihood=89,
             last_contact=date(2026, 7, 13),
+            logo_url="/images/logos/sbi-foundation.png",
         ),
 
         Donor(
@@ -190,6 +206,7 @@ with app.app_context():
             status="Interested",
             likelihood=78,
             last_contact=date(2026, 7, 4),
+            logo_url="/images/logos/axis-bank-foundation.png",
         ),
 
         Donor(
@@ -198,6 +215,7 @@ with app.app_context():
             status="Ready",
             likelihood=91,
             last_contact=date(2026, 7, 14),
+            logo_url="/images/logos/lt-public-charitable-trust.png",
         ),
 
     ]
@@ -228,6 +246,38 @@ with app.app_context():
         name="Wipro Cares"
     ).first()
 
+    jsw = Donor.query.filter_by(
+        name="JSW Foundation"
+    ).first()
+
+    aditya_birla = Donor.query.filter_by(
+        name="Aditya Birla CSR"
+    ).first()
+
+    mahindra = Donor.query.filter_by(
+        name="Mahindra Rise"
+    ).first()
+
+    hcl = Donor.query.filter_by(
+        name="HCL Foundation"
+    ).first()
+
+    sbi = Donor.query.filter_by(
+        name="SBI Foundation"
+    ).first()
+
+    vedanta = Donor.query.filter_by(
+        name="Vedanta Foundation"
+    ).first()
+
+    axis = Donor.query.filter_by(
+        name="Axis Bank Foundation"
+    ).first()
+
+    lt_trust = Donor.query.filter_by(
+        name="L&T Public Charitable Trust"
+    ).first()
+
     projects = [
 
         Project(
@@ -241,8 +291,7 @@ with app.app_context():
             status="Active",
             start_date=date(2026, 1, 15),
             end_date=date(2026, 12, 31),
-            sponsor_name="Infosys Foundation",
-            sponsor_sector="Education",
+            donor_id=infosys.id,
             raised_amount=500000,
             utilized_amount=420000,
             beneficiaries_reached=1800,
@@ -279,8 +328,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 2, 1),
             end_date=date(2026, 8, 30),
-            sponsor_name="Tata Trusts",
-            sponsor_sector="Healthcare",
+            donor_id=tata.id,
             raised_amount=750000,
             utilized_amount=410000,
             beneficiaries_reached=950,
@@ -297,8 +345,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2025, 7, 1),
             end_date=date(2025, 10, 1),
-            sponsor_name="Reliance Foundation",
-            sponsor_sector="Environment",
+            donor_id=reliance.id,
             raised_amount=300000,
             utilized_amount=300000,
             beneficiaries_reached=2400,
@@ -315,8 +362,7 @@ with app.app_context():
             status="Active",
             start_date=date(2026, 3, 1),
             end_date=date(2027, 3, 1),
-            sponsor_name="Wipro Cares",
-            sponsor_sector="Skill Development",
+            donor_id=wipro.id,
             raised_amount=900000,
             utilized_amount=540000,
             beneficiaries_reached=720,
@@ -333,8 +379,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 5, 10),
             end_date=date(2026, 11, 30),
-            sponsor_name="Infosys Foundation",
-            sponsor_sector="Education",
+            donor_id=infosys.id,
             raised_amount=450000,
             utilized_amount=180000,
             beneficiaries_reached=640,
@@ -354,8 +399,7 @@ with app.app_context():
             status="Active",
             start_date=date(2026, 1, 10),
             end_date=date(2026, 12, 20),
-            sponsor_name="Tata Trusts",
-            sponsor_sector="Education",
+            donor_id=tata.id,
             raised_amount=1200000,
             utilized_amount=980000,
             beneficiaries_reached=12000,
@@ -414,6 +458,45 @@ with app.app_context():
         ),
 
         # ---------------------------------------------
+        # Livelihood / Rural Development — rounds out the project-type
+        # mix so the SDG Impact band reflects a fuller goal spread.
+        # ---------------------------------------------
+
+        Project(
+            project_name="Farmer Livelihood Support",
+            project_type_id=livelihood.id,
+            beneficiary_category_id=farmers.id,
+            budget=430000,
+            location="Nagpur",
+            region="West",
+            financial_year="2025-26",
+            status="Active",
+            start_date=date(2025, 4, 1),
+            end_date=date(2026, 3, 31),
+            donor_id=sbi.id,
+            raised_amount=430000,
+            utilized_amount=260000,
+            beneficiaries_reached=810,
+        ),
+
+        Project(
+            project_name="Rural Infrastructure Uplift",
+            project_type_id=rural_dev.id,
+            beneficiary_category_id=farmers.id,
+            budget=520000,
+            location="Nashik",
+            region="West",
+            financial_year="2025-26",
+            status="Active",
+            start_date=date(2025, 5, 1),
+            end_date=date(2026, 4, 30),
+            donor_id=reliance.id,
+            raised_amount=520000,
+            utilized_amount=300000,
+            beneficiaries_reached=1050,
+        ),
+
+        # ---------------------------------------------
         # Dummy data covering every Region x FY combo
         # ---------------------------------------------
 
@@ -428,8 +511,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 6, 1),
             end_date=date(2024, 2, 28),
-            sponsor_name="JSW Foundation",
-            sponsor_sector="Education",
+            donor_id=jsw.id,
             raised_amount=380000,
             utilized_amount=380000,
             beneficiaries_reached=1450,
@@ -446,8 +528,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 5, 1),
             end_date=date(2025, 1, 31),
-            sponsor_name="Aditya Birla CSR",
-            sponsor_sector="Healthcare",
+            donor_id=aditya_birla.id,
             raised_amount=520000,
             utilized_amount=490000,
             beneficiaries_reached=1100,
@@ -464,8 +545,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 4, 1),
             end_date=date(2024, 3, 20),
-            sponsor_name="Mahindra Rise",
-            sponsor_sector="Healthcare",
+            donor_id=mahindra.id,
             raised_amount=610000,
             utilized_amount=610000,
             beneficiaries_reached=2600,
@@ -482,8 +562,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 6, 15),
             end_date=date(2025, 2, 10),
-            sponsor_name="HCL Foundation",
-            sponsor_sector="Environment",
+            donor_id=hcl.id,
             raised_amount=430000,
             utilized_amount=400000,
             beneficiaries_reached=1900,
@@ -500,8 +579,7 @@ with app.app_context():
             status="Active",
             start_date=date(2025, 6, 1),
             end_date=date(2026, 5, 31),
-            sponsor_name="Mahindra Rise",
-            sponsor_sector="Women Empowerment",
+            donor_id=mahindra.id,
             raised_amount=560000,
             utilized_amount=310000,
             beneficiaries_reached=680,
@@ -518,8 +596,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 7, 1),
             end_date=date(2024, 1, 15),
-            sponsor_name="Axis Bank Foundation",
-            sponsor_sector="Education",
+            donor_id=axis.id,
             raised_amount=340000,
             utilized_amount=340000,
             beneficiaries_reached=1600,
@@ -536,8 +613,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 4, 1),
             end_date=date(2025, 3, 1),
-            sponsor_name="SBI Foundation",
-            sponsor_sector="Healthcare",
+            donor_id=sbi.id,
             raised_amount=470000,
             utilized_amount=455000,
             beneficiaries_reached=980,
@@ -554,8 +630,7 @@ with app.app_context():
             status="Active",
             start_date=date(2025, 5, 1),
             end_date=date(2026, 4, 30),
-            sponsor_name="Vedanta Foundation",
-            sponsor_sector="Environment",
+            donor_id=vedanta.id,
             raised_amount=650000,
             utilized_amount=380000,
             beneficiaries_reached=1200,
@@ -572,8 +647,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 4, 1),
             end_date=date(2027, 3, 31),
-            sponsor_name="Wipro Cares",
-            sponsor_sector="Skill Development",
+            donor_id=wipro.id,
             raised_amount=720000,
             utilized_amount=90000,
             beneficiaries_reached=210,
@@ -590,8 +664,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 5, 1),
             end_date=date(2024, 3, 31),
-            sponsor_name="L&T Public Charitable Trust",
-            sponsor_sector="Education",
+            donor_id=lt_trust.id,
             raised_amount=410000,
             utilized_amount=410000,
             beneficiaries_reached=1750,
@@ -608,8 +681,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 6, 1),
             end_date=date(2025, 2, 28),
-            sponsor_name="Tata Trusts",
-            sponsor_sector="Healthcare",
+            donor_id=tata.id,
             raised_amount=390000,
             utilized_amount=375000,
             beneficiaries_reached=1050,
@@ -626,8 +698,7 @@ with app.app_context():
             status="Active",
             start_date=date(2025, 4, 1),
             end_date=date(2026, 3, 31),
-            sponsor_name="Reliance Foundation",
-            sponsor_sector="Women Empowerment",
+            donor_id=reliance.id,
             raised_amount=480000,
             utilized_amount=260000,
             beneficiaries_reached=590,
@@ -644,8 +715,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 5, 1),
             end_date=date(2027, 4, 30),
-            sponsor_name="Infosys Foundation",
-            sponsor_sector="Education",
+            donor_id=infosys.id,
             raised_amount=550000,
             utilized_amount=60000,
             beneficiaries_reached=140,
@@ -668,8 +738,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 6, 15),
             end_date=date(2024, 3, 10),
-            sponsor_name="JSW Foundation",
-            sponsor_sector="Education",
+            donor_id=jsw.id,
             raised_amount=420000,
             utilized_amount=420000,
             beneficiaries_reached=1320,
@@ -686,8 +755,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 5, 15),
             end_date=date(2025, 2, 20),
-            sponsor_name="Aditya Birla CSR",
-            sponsor_sector="Healthcare",
+            donor_id=aditya_birla.id,
             raised_amount=560000,
             utilized_amount=540000,
             beneficiaries_reached=870,
@@ -704,8 +772,7 @@ with app.app_context():
             status="Active",
             start_date=date(2025, 5, 1),
             end_date=date(2026, 4, 30),
-            sponsor_name="Mahindra Rise",
-            sponsor_sector="Women Empowerment",
+            donor_id=mahindra.id,
             raised_amount=610000,
             utilized_amount=350000,
             beneficiaries_reached=760,
@@ -722,8 +789,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 6, 1),
             end_date=date(2027, 1, 31),
-            sponsor_name="Vedanta Foundation",
-            sponsor_sector="Environment",
+            donor_id=vedanta.id,
             raised_amount=340000,
             utilized_amount=40000,
             beneficiaries_reached=310,
@@ -740,8 +806,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 8, 1),
             end_date=date(2024, 1, 20),
-            sponsor_name="HCL Foundation",
-            sponsor_sector="Environment",
+            donor_id=hcl.id,
             raised_amount=280000,
             utilized_amount=280000,
             beneficiaries_reached=980,
@@ -758,8 +823,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 7, 1),
             end_date=date(2025, 1, 15),
-            sponsor_name="Tata Trusts",
-            sponsor_sector="Healthcare",
+            donor_id=tata.id,
             raised_amount=395000,
             utilized_amount=380000,
             beneficiaries_reached=1420,
@@ -776,8 +840,7 @@ with app.app_context():
             status="Active",
             start_date=date(2025, 7, 1),
             end_date=date(2026, 6, 30),
-            sponsor_name="Wipro Cares",
-            sponsor_sector="Skill Development",
+            donor_id=wipro.id,
             raised_amount=530000,
             utilized_amount=290000,
             beneficiaries_reached=640,
@@ -794,8 +857,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 4, 15),
             end_date=date(2027, 2, 28),
-            sponsor_name="Axis Bank Foundation",
-            sponsor_sector="Education",
+            donor_id=axis.id,
             raised_amount=470000,
             utilized_amount=75000,
             beneficiaries_reached=260,
@@ -812,8 +874,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 9, 1),
             end_date=date(2024, 3, 15),
-            sponsor_name="SBI Foundation",
-            sponsor_sector="Education",
+            donor_id=sbi.id,
             raised_amount=360000,
             utilized_amount=360000,
             beneficiaries_reached=1380,
@@ -830,8 +891,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 8, 1),
             end_date=date(2025, 2, 15),
-            sponsor_name="Aditya Birla CSR",
-            sponsor_sector="Healthcare",
+            donor_id=aditya_birla.id,
             raised_amount=410000,
             utilized_amount=395000,
             beneficiaries_reached=920,
@@ -848,8 +908,7 @@ with app.app_context():
             status="Active",
             start_date=date(2025, 6, 1),
             end_date=date(2026, 5, 31),
-            sponsor_name="HCL Foundation",
-            sponsor_sector="Environment",
+            donor_id=hcl.id,
             raised_amount=500000,
             utilized_amount=270000,
             beneficiaries_reached=1050,
@@ -866,8 +925,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 5, 15),
             end_date=date(2027, 3, 31),
-            sponsor_name="Reliance Foundation",
-            sponsor_sector="Rural Development",
+            donor_id=reliance.id,
             raised_amount=440000,
             utilized_amount=50000,
             beneficiaries_reached=180,
@@ -884,8 +942,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2023, 7, 15),
             end_date=date(2024, 2, 10),
-            sponsor_name="L&T Public Charitable Trust",
-            sponsor_sector="Education",
+            donor_id=lt_trust.id,
             raised_amount=370000,
             utilized_amount=370000,
             beneficiaries_reached=1240,
@@ -902,8 +959,7 @@ with app.app_context():
             status="Completed",
             start_date=date(2024, 5, 20),
             end_date=date(2025, 1, 10),
-            sponsor_name="Tata Trusts",
-            sponsor_sector="Healthcare",
+            donor_id=tata.id,
             raised_amount=400000,
             utilized_amount=385000,
             beneficiaries_reached=1150,
@@ -920,8 +976,7 @@ with app.app_context():
             status="Active",
             start_date=date(2025, 6, 15),
             end_date=date(2026, 5, 15),
-            sponsor_name="Wipro Cares",
-            sponsor_sector="Skill Development",
+            donor_id=wipro.id,
             raised_amount=310000,
             utilized_amount=165000,
             beneficiaries_reached=420,
@@ -938,8 +993,7 @@ with app.app_context():
             status="Planning",
             start_date=date(2026, 6, 1),
             end_date=date(2027, 2, 28),
-            sponsor_name="Vedanta Foundation",
-            sponsor_sector="Environment",
+            donor_id=vedanta.id,
             raised_amount=350000,
             utilized_amount=45000,
             beneficiaries_reached=200,
@@ -1145,5 +1199,36 @@ with app.app_context():
     db.session.commit()
 
     print("Payments inserted.")
+
+    # ===================================================
+    # REPORTS (real generation, seeded into a few review states)
+    # ===================================================
+
+    tata = Donor.query.filter_by(name="Tata Trusts").first()
+    infosys = Donor.query.filter_by(name="Infosys Foundation").first()
+    hcl = Donor.query.filter_by(name="HCL Foundation").first()
+
+    approved_report = _generate_report(tata.id, "2024-25")
+    approved_report.review_status = "Approved"
+    approved_report.delivery_status = "Delivered"
+
+    pending_report = _generate_report(infosys.id, "2026-27")
+    pending_report.review_status = "Pending review"
+    pending_report.delivery_status = "Awaiting"
+
+    db.session.commit()
+
+    failed_report = Report(
+        donor_id=hcl.id,
+        financial_year="2024-25",
+        title="Annual CSR Report FY 2024-25",
+        review_status="Failed",
+        delivery_status="Awaiting",
+        error_message="Generation timed out while summarizing linked projects.",
+    )
+    db.session.add(failed_report)
+    db.session.commit()
+
+    print("Reports inserted.")
 
     print("Database seeded successfully!")

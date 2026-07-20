@@ -1,27 +1,30 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import { Bell } from "lucide-react";
 
 import NotificationDropdown from "./NotificationDropdown";
+import { getGreeting } from "../../utils/greeting";
 
 import "../../styles/layout.css";
 
 const API = "http://127.0.0.1:5000/api";
 
-const greeting = () => {
-  const hour = new Date().getHours();
-
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-
-  return "Good evening";
-};
-
 export default function Header({
   userName = "Sahiti",
 }) {
-  const navigate = useNavigate();
+  const location = useLocation();
+  const isMainPage = location.pathname === "/";
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  const region = searchParams.get("region") || "all";
+  const fy = searchParams.get("fy") || "all";
+
+  const handleFilterChange = (key, value) => {
+    const next = new URLSearchParams(searchParams);
+    next.set(key, value);
+    setSearchParams(next);
+  };
 
   const [alerts, setAlerts] = useState([]);
 
@@ -92,11 +95,43 @@ export default function Header({
   return (
     <header className="header">
 
-      <h1 className="header-greeting">
-        {greeting()}, {userName}! ☀️
-      </h1>
+      {isMainPage && (
+        <h1 className="header-greeting">
+          {getGreeting()}, {userName}!
+        </h1>
+      )}
 
       <div className="header-right">
+
+        {isMainPage && (
+          <div className="header-filters">
+            <select
+              value={region}
+              onChange={(e) =>
+                handleFilterChange("region", e.target.value)
+              }
+            >
+              <option value="all">All Regions</option>
+              <option value="South">South</option>
+              <option value="West">West</option>
+              <option value="North">North</option>
+              <option value="East">East</option>
+            </select>
+
+            <select
+              value={fy}
+              onChange={(e) =>
+                handleFilterChange("fy", e.target.value)
+              }
+            >
+              <option value="all">All Years</option>
+              <option value="2023-24">FY 2023-24</option>
+              <option value="2024-25">FY 2024-25</option>
+              <option value="2025-26">FY 2025-26</option>
+              <option value="2026-27">FY 2026-27</option>
+            </select>
+          </div>
+        )}
 
         <div
           className="notification-wrapper"
@@ -108,7 +143,7 @@ export default function Header({
             aria-label="Notifications"
             onClick={openNotifications}
           >
-            <Bell size={20} />
+            <Bell size={17} />
 
             {unreadCount > 0 && (
               <span className="header-bell-badge">

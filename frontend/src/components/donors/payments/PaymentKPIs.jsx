@@ -18,7 +18,7 @@ const icons = {
 
 export default function PaymentKPIs({ data }) {
   return (
-    <div className="payment-kpis">
+    <div className="overview-grid payment-kpis">
 
       {data.map((item, index) => {
 
@@ -29,47 +29,19 @@ export default function PaymentKPIs({ data }) {
 
           <div
             key={item.title}
-            className="payment-kpi-card"
+            className="overview-card stat-card"
           >
 
-            <div className="kpi-header">
+            <span className="stat-icon">
+              <Icon size={15} />
+            </span>
 
-              <div
-                className="kpi-icon"
-                style={{
-                  color: item.color,
-                }}
-              >
-                <Icon size={15} />
-              </div>
-
-            </div>
-
-            <div
-              className="kpi-value"
-              style={{
-                color: item.color,
-              }}
-            >
-              {item.value}
-            </div>
-
-            <div className="kpi-title">
-
+            <span className="eyebrow">
               {item.title}
+            </span>
 
-            </div>
-
-            <div className="kpi-progress">
-
-              <div
-                className="kpi-progress-fill"
-                style={{
-                  background: item.color,
-                  width: `${55 + index * 7}%`,
-                }}
-              />
-
+            <div className="overview-value">
+              {item.value}
             </div>
 
           </div>

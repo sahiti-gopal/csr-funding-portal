@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import {
   RefreshCcw,
@@ -6,12 +6,19 @@ import {
 } from "lucide-react";
 
 import AlertStats from "../components/alerts/AlertStats";
-import AlertFilters from "../components/alerts/AlertFilters";
 import AlertCard from "../components/alerts/AlertCard";
 
+import "../styles/dashboard.css";
 import "../styles/alerts.css";
 
 const API = "http://127.0.0.1:5000/api";
+
+const CARD_FILTERS = {
+  total: () => true,
+  unread: (a) => !a.is_read,
+  high: (a) => a.priority === "HIGH",
+  resolved: (a) => a.is_resolved,
+};
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
@@ -25,8 +32,7 @@ export default function Alerts() {
 
   const [loading, setLoading] = useState(true);
 
-  const [category, setCategory] = useState("All");
-  const [priority, setPriority] = useState("All");
+  const [activeCard, setActiveCard] = useState("total");
 
   const loadSummary = async () => {
     try {
@@ -44,18 +50,12 @@ export default function Alerts() {
     try {
       setLoading(true);
 
-      const res = await axios.get(`${API}/alerts`, {
-        params: {
-          category,
-          priority,
-        },
-      });
+      const res = await axios.get(`${API}/alerts`);
 
       console.log("ALERTS API:", res.data);
 
       const mapped = res.data.map((a) => ({
         id: a.id,
-        type: a.category,
         title: a.title,
         description: a.description,
         meta: a.meta ?? "",
@@ -77,7 +77,12 @@ export default function Alerts() {
 
   useEffect(() => {
     loadAlerts();
-  }, [category, priority]);
+  }, []);
+
+  const filteredAlerts = useMemo(() => {
+    const matches = CARD_FILTERS[activeCard] ?? CARD_FILTERS.total;
+    return alerts.filter(matches);
+  }, [alerts, activeCard]);
 
   const exportAlerts = () => {
     window.open(`${API}/alerts/export`, "_blank");
@@ -87,19 +92,16 @@ export default function Alerts() {
     <div className="alerts-page">
 
       <div className="alerts-header">
+        <div className="dashboard-title">
+          <span className="eyebrow">Compliance &amp; risk</span>
+          <h4 className="section-heading">Alerts</h4>
+        </div>
+      </div>
 
-  <div>
-    <h4>Alerts</h4>
-  </div>
-
-</div>
-      <AlertStats summary={summary} />
-
-      <AlertFilters
-        category={category}
-        priority={priority}
-        onCategoryChange={setCategory}
-        onPriorityChange={setPriority}
+      <AlertStats
+        summary={summary}
+        activeCard={activeCard}
+        onCardClick={setActiveCard}
       />
 
       <div className="alerts-list">
@@ -108,12 +110,12 @@ export default function Alerts() {
           <div className="loading-card">
             Loading alerts...
           </div>
-        ) : alerts.length === 0 ? (
+        ) : filteredAlerts.length === 0 ? (
           <div className="loading-card">
             No alerts found.
           </div>
         ) : (
-          alerts.map((alert) => (
+          filteredAlerts.map((alert) => (
             <AlertCard
               key={alert.id}
               alert={alert}

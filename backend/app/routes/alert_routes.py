@@ -15,7 +15,6 @@ print("✅ alert_routes.py loaded")
 def get_alerts():
 
     search = request.args.get("search", "")
-    category = request.args.get("category", "All")
     priority = request.args.get("priority", "All")
 
     query = Alert.query
@@ -24,14 +23,8 @@ def get_alerts():
         query = query.filter(
             or_(
                 Alert.title.ilike(f"%{search}%"),
-                Alert.description.ilike(f"%{search}%"),
-                Alert.category.ilike(f"%{search}%")
+                Alert.description.ilike(f"%{search}%")
             )
-        )
-
-    if category != "All":
-        query = query.filter(
-            Alert.category == category.upper()
         )
 
     if priority != "All":
@@ -49,7 +42,6 @@ def get_alerts():
             "id": a.id,
             "title": a.title,
             "description": a.description,
-            "category": a.category,
             "priority": a.priority,
             "status": a.status,
             "is_read": a.is_read,

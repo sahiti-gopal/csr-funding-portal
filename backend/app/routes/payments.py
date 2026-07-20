@@ -8,10 +8,6 @@ from app.models.donor import Donor
 from app.models.project import Project
 
 from app.models.donor_payment import DonorPayment
-from app.models.payment_document import PaymentDocument
-from app.models.fund_allocation import FundAllocation
-from app.models.payment_activity import PaymentActivity
-from app.models.ai_payment_insight import AIPaymentInsight
 
 
 payments_bp = Blueprint(
@@ -36,28 +32,9 @@ def get_donor_payments(donor_id):
         .all()
     )
 
-    allocations = (
-        FundAllocation.query
-        .filter_by(donor_id=donor_id)
-        .all()
-    )
-
-    activities = (
-        PaymentActivity.query
-        .filter_by(donor_id=donor_id)
-        .order_by(
-            PaymentActivity.activity_date.desc()
-        )
-        .limit(15)
-        .all()
-    )
-
-    insights = (
-        AIPaymentInsight.query
-        .filter_by(donor_id=donor_id)
-        .order_by(
-            AIPaymentInsight.created_at.desc()
-        )
+    donor_projects = (
+        Project.query
+        .filter(Project.donor_id == donor_id)
         .all()
     )
 
@@ -88,8 +65,8 @@ def get_donor_payments(donor_id):
     )
 
     total_utilized = sum(
-        float(a.utilized_amount)
-        for a in allocations
+        float(p.utilized_amount or 0)
+        for p in donor_projects
     )
 
     remaining_balance = (
@@ -243,101 +220,105 @@ def get_donor_payments(donor_id):
 
     projects = []
 
-    for allocation in allocations:
+    for project in donor_projects:
 
-        project = allocation.project
+        allocated = float(project.budget or 0)
+        utilized = float(project.utilized_amount or 0)
 
         projects.append({
 
             "id":
-                allocation.id,
+                project.id,
 
             "projectId":
-                allocation.project_id,
+                project.id,
 
             "name":
-                project.name if project else "Unknown",
+                project.project_name,
 
             "location":
-                getattr(
-                    project,
-                    "location",
-                    None
-                ),
+                project.location,
 
             "allocated":
-                float(
-                    allocation.allocated_amount
-                ),
+                allocated,
 
             "utilized":
-                float(
-                    allocation.utilized_amount
-                ),
+                utilized,
 
             "remaining":
-                float(
-                    allocation.remaining_amount
-                ),
+                allocated - utilized,
 
             "progress":
-                allocation.utilization_percent()
+                round(utilized / allocated * 100, 1)
+                if allocated else 0
 
         })
 
     # ----------------------------------------
-    # RECENT ACTIVITY
+    # RECENT ACTIVITY (derived from payments/documents,
+    # no separate activity-log table)
     # ----------------------------------------
 
     activity = []
 
-    for item in activities:
+    for payment in payments:
 
-        activity.append({
+        if payment.status == "Paid" and payment.received_date:
+            activity.append({
+                "id": f"payment-{payment.id}",
+                "title": f"Payment received: {payment.installment_name}",
+                "type": "PAYMENT_RECEIVED",
+                "icon": "bank",
+                "date": payment.received_date.isoformat(),
+            })
+        elif payment.status == "Overdue":
+            activity.append({
+                "id": f"overdue-{payment.id}",
+                "title": f"Payment overdue: {payment.installment_name}",
+                "type": "PAYMENT_OVERDUE",
+                "icon": "alert",
+                "date": payment.due_date.isoformat() if payment.due_date else None,
+            })
+        elif payment.status == "Pending":
+            activity.append({
+                "id": f"pending-{payment.id}",
+                "title": f"Payment pending: {payment.installment_name}",
+                "type": "PAYMENT_PENDING",
+                "icon": "clock",
+                "date": payment.due_date.isoformat() if payment.due_date else None,
+            })
 
-    "id": item.id,
+        for document in payment.documents:
+            activity.append({
+                "id": f"doc-{document.id}",
+                "title": f"Document uploaded: {document.document_name}",
+                "type": (
+                    "DOCUMENT_VERIFIED"
+                    if document.verification_status == "Verified"
+                    else "DOCUMENT_UPLOADED"
+                ),
+                "icon": (
+                    "verified"
+                    if document.verification_status == "Verified"
+                    else "upload"
+                ),
+                "date": (
+                    document.uploaded_at.isoformat()
+                    if document.uploaded_at
+                    else None
+                ),
+            })
 
-    "title": item.title,
-
-    "type": item.activity_type,
-
-    "icon": item.icon(),
-
-    "date": (
-        item.activity_date.isoformat()
-        if item.activity_date
-        else None
-    )
-
-})
+    activity.sort(key=lambda a: a["date"] or "", reverse=True)
+    activity = activity[:15]
 
     # ----------------------------------------
     # AI INSIGHTS
+    # (no backing model anymore; kept as an empty list so the
+    # frontend's existing empty-state rendering just applies)
     # ----------------------------------------
 
     ai_insights = []
-
-    for insight in insights:
-
-        ai_insights.append({
-
-    "id": insight.id,
-
-    "title": insight.title,
-
-    "description": insight.description,
-
-    "priority": insight.priority,
-
-    "priorityColor": insight.priority_color(),
-
-    "createdAt": (
-        insight.created_at.isoformat()
-        if insight.created_at
-        else None
-    )
-
-})
 
     # ----------------------------------------
     # DONOR SUMMARY

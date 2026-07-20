@@ -76,10 +76,10 @@ export default function ProjectRow({ project }) {
 
       <td>
         <button
-          className="view-btn"
+          className="project-view-btn"
           onClick={() => navigate(`/projects/${project.id}`)}
         >
-          <Eye size={18} />
+          <Eye size={14} />
           View
         </button>
       </td>

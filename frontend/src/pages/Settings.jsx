@@ -8,7 +8,7 @@ export default function Settings() {
 
       <div className="dashboard-head">
         <div className="dashboard-title">
-          <span className="section-label">Preferences</span>
+          <span className="eyebrow">Preferences</span>
           <h4 className="section-heading">Settings</h4>
           <p className="dashboard-subtitle">
             Manage your account, roles and portal preferences.

@@ -35,9 +35,11 @@ class Project(BaseModel):
 
     end_date = db.Column(db.Date)
 
-    sponsor_name = db.Column(db.String(200))
-
-    sponsor_sector = db.Column(db.String(150))
+    donor_id = db.Column(
+        db.Integer,
+        db.ForeignKey("donors.id"),
+        nullable=True,
+    )
 
     # Dashboard fields
     raised_amount = db.Column(db.Float, default=0)
@@ -53,6 +55,11 @@ class Project(BaseModel):
 
     beneficiary_category = db.relationship(
         "BeneficiaryCategory",
+        backref="projects"
+    )
+
+    donor = db.relationship(
+        "Donor",
         backref="projects"
     )
 

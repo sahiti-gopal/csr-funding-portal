@@ -10,9 +10,21 @@ export default function DonorCard({
   likelihood,
   lastContact,
   color = "#2563EB",
+  onClick,
 }) {
   return (
-    <div className="donor-card">
+    <div
+      className={`donor-card${onClick ? " donor-card-clickable" : ""}`}
+      onClick={onClick}
+      role={onClick ? "button" : undefined}
+      tabIndex={onClick ? 0 : undefined}
+      onKeyDown={(e) => {
+        if (onClick && (e.key === "Enter" || e.key === " ")) {
+          e.preventDefault();
+          onClick();
+        }
+      }}
+    >
 
       <div className="donor-left">
 

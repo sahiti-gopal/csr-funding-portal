@@ -10,31 +10,26 @@ const cards = [
   {
     key: "required",
     title: "Required documents",
-    color: "#2563EB",
     icon: FileText,
   },
   {
     key: "submitted",
     title: "Submitted",
-    color: "#16A34A",
     icon: CheckCircle2,
   },
   {
     key: "pending",
     title: "Pending review",
-    color: "#F59E0B",
     icon: Clock3,
   },
   {
     key: "missing",
     title: "Missing / expired",
-    color: "#EF4444",
     icon: TriangleAlert,
   },
   {
     key: "compliance",
     title: "Compliance score",
-    color: "#7C3AED",
     suffix: "%",
     icon: ShieldCheck,
   },
@@ -42,32 +37,33 @@ const cards = [
 
 export default function DocumentStats({ stats }) {
   return (
-    <div className="document-stats">
+    <div className="overview-grid document-stats">
 
-      {cards.map((card) => (
+      {cards.map((card) => {
+        const Icon = card.icon;
 
-        <div
-          key={card.key}
-          className="document-stat-card"
-        >
-
-          <div className="stat-title">
-            {card.title}
-          </div>
-
+        return (
           <div
-            className="stat-number"
-            style={{
-              color: card.color,
-            }}
+            key={card.key}
+            className="overview-card stat-card"
           >
-            {stats[card.key]}
-            {card.suffix ?? ""}
+
+            <span className="stat-icon">
+              <Icon size={15} />
+            </span>
+
+            <span className="eyebrow">
+              {card.title}
+            </span>
+
+            <div className="overview-value">
+              {stats[card.key]}
+              {card.suffix ?? ""}
+            </div>
+
           </div>
-
-        </div>
-
-      ))}
+        );
+      })}
 
     </div>
   );

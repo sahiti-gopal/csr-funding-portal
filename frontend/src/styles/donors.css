@@ -1,121 +1,29 @@
 /* ===========================
-   DONOR HEALTH
+   DONOR HEALTH — KPI row mirrors the Overview page's .overview-grid
+   / .overview-card / .stat-card exactly (only 3 tiles instead of 4).
 =========================== */
 
-.health-card{
-
-    background:#fff;
-
-    border:1px solid #E5E7EB;
-
-    border-radius:16px;
-
-    padding:16px;
-
-    margin-top:16px;
-
-    box-shadow:0 10px 30px rgba(15,23,42,.05);
-
-}
-
-.health-card h3{
-
-    font-size:16px;
-
-    margin-bottom:12px;
-
-    color:#111827;
-
-}
-
-.health-grid{
-
-    display:grid;
+.donor-kpi-grid{
 
     grid-template-columns:repeat(3,1fr);
 
-    gap:12px;
-
 }
 
-.health-item{
+.distribution-band{
 
-    border:1px solid #E5E7EB;
+    background:#fff;
 
-    border-radius:14px;
+    border:1px solid var(--ink-200);
 
-    padding:14px;
-}
+    border-radius:var(--radius-xl);
 
-.health-top{
+    padding:14px 16px;
 
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:flex-start;
+    margin-top:10px;
 
     margin-bottom:10px;
 
-}
-
-.health-value{
-
-    font-size:23px;
-
-    font-weight:700;
-
-    line-height:1.15;
-}
-
-.health-title{
-
-    margin-top:2px;
-
-    font-size:12px;
-
-    font-weight:600;
-}
-
-.health-icon{
-
-    width:26px;
-
-    height:26px;
-
-    border-radius:8px;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-}
-
-.health-item h4{
-
-    margin:0;
-
-    font-size:16px;
-
-    font-weight:700;
-
-    color:#111827;
-
-}
-
-.health-item span{
-
-    font-size:12px;
-
-    color:#64748B;
-
-}
-
-.distribution{
-
-    margin-top:24px;
+    box-shadow:var(--shadow-card);
 
 }
 
@@ -188,29 +96,31 @@ margin:12px 0;
 
 background:white;
 
-border-radius:14px;
+border-radius:var(--radius-xl);
 
 padding:14px;
 
-border:1px solid #E5E7EB;
+border:1px solid var(--ink-200);
 
-box-shadow:0 10px 28px rgba(15,23,42,.05);
+box-shadow:var(--shadow-card);
 
 }
 
 .chart-header h3{
 
+font-family:var(--font-display);
+
 font-size:14px;
 
 margin-bottom:2px;
 
-color:#111827;
+color:var(--ink-900);
 
 }
 
 .chart-header p{
 
-color:#94A3B8;
+color:var(--ink-400);
 
 font-size:12px;
 
@@ -324,22 +234,26 @@ grid-template-columns:1fr;
 
   background:#fff;
 
-  border:1px solid #E5E7EB;
+  border:1px solid var(--ink-200);
 
-  border-radius:14px;
+  border-radius:var(--radius-xl);
 
   padding:12px 16px;
 
   margin-bottom:0;
 
-  transition:.25s;
+  transition:transform .25s ease, box-shadow .25s ease;
 
-  box-shadow:0 6px 18px rgba(15,23,42,.04);
+  box-shadow:var(--shadow-card);
 }
 
 .donor-card:hover{
   transform:translateY(-3px);
-  box-shadow:0 12px 28px rgba(15,23,42,.08);
+  box-shadow:var(--shadow-card-hover);
+}
+
+.donor-card-clickable{
+  cursor:pointer;
 }
 
 .donor-left{
@@ -367,9 +281,9 @@ grid-template-columns:1fr;
 }
 
 .donor-name{
-  font-size:14px;
+  font-size:13.5px;
   font-weight:600;
-  color:#111827;
+  color:var(--ink-900);
 }
 
 .donor-category{
@@ -377,7 +291,7 @@ grid-template-columns:1fr;
 
   font-size:12px;
 
-  color:#64748B;
+  color:var(--ink-600);
 }
 
 .donor-progress{
@@ -496,15 +410,47 @@ grid-template-columns:1fr;
 ===================================================== */
 
 .donors-page{
+    height:100%;
     max-width:1600px;
     margin:auto;
-    padding:8px 30px 30px;
-    background:#F7F9FC;
+    padding:11px 24px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    background:var(--surface-muted);
     box-sizing:border-box;
 }
 
+/* .app-content reserves a 40px bottom padding for scrollable pages;
+   the donors page manages its own scroll region (.donors-scroll), so
+   drop it here to avoid dead space / clipping at the bottom. */
+.app-content:has(.donors-page) {
+  padding-bottom: 0;
+}
+
 .donors-page .dashboard-head{
-    margin-bottom:12px;
+    margin-bottom:8px;
+    flex-shrink:0;
+}
+
+/* internal scroll region — header, tabs and (on the overview tab) the
+   KPI row stay pinned like every other page's one-screen shell */
+.donors-scroll{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+    overflow-x:hidden;
+    scrollbar-gutter:stable;
+    padding-right:4px;
+}
+
+.donors-scroll::-webkit-scrollbar{
+    width:8px;
+}
+
+.donors-scroll::-webkit-scrollbar-thumb{
+    background:#cbd5e1;
+    border-radius:100px;
 }
 
 /* =====================================================
@@ -514,7 +460,7 @@ grid-template-columns:1fr;
 @media (max-width:768px){
 
     .donors-page{
-        padding:8px 18px 18px;
+        padding:11px 18px;
     }
 
 }
@@ -522,7 +468,7 @@ grid-template-columns:1fr;
 @media (max-width:600px){
 
     .donors-page{
-        padding:8px 14px 14px;
+        padding:11px 14px;
     }
 
 }
@@ -610,13 +556,13 @@ grid-template-columns:1fr;
 
     background:#fff;
 
-    border:1px solid #E5E7EB;
+    border:1px solid var(--ink-200);
 
-    border-radius:14px;
+    border-radius:var(--radius-xl);
 
     padding:16px;
 
-    box-shadow:0 6px 18px rgba(15,23,42,.05);
+    box-shadow:var(--shadow-card);
 
 }
 
@@ -685,32 +631,52 @@ grid-template-columns:1fr;
    DONOR TABS
 =========================================== */
 
+.donor-tabs-row{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:16px;
+    flex-shrink:0;
+    margin:0 0 10px;
+    padding-bottom:6px;
+    border-bottom:1px solid var(--ink-200);
+}
+
 .donor-tabs{
     display:flex;
-    gap:10px;
-    margin:12px 0 14px;
+    gap:22px;
+    flex-shrink:0;
 }
 
 .donor-tabs button{
-    padding:8px 16px;
-    border-radius:10px;
-    border:1px solid #E5E7EB;
-    background:#fff;
+    position:relative;
+    padding:10px 2px;
+    border:none;
+    background:transparent;
     cursor:pointer;
     font-size:13px;
     font-weight:600;
-    transition:.25s;
+    color:var(--ink-600);
+    transition:color .2s ease;
 }
 
 .donor-tabs button:hover{
-    background:#EFF6FF;
     color:#2563EB;
 }
 
 .donor-tabs button.active{
+    color:#2563EB;
+}
+
+.donor-tabs button.active::after{
+    content:"";
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:-1px;
+    height:2px;
+    border-radius:2px;
     background:#2563EB;
-    color:#fff;
-    border-color:#2563EB;
 }
 
 /* ===========================================

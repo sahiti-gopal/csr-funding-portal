@@ -16,6 +16,14 @@ from .alert import Alert
 # ----------------------------
 from .donor_payment import DonorPayment
 from .payment_document import PaymentDocument
-from .fund_allocation import FundAllocation
-from .payment_activity import PaymentActivity
-from .ai_payment_insight import AIPaymentInsight
+
+# ----------------------------
+# Chat Module
+# ----------------------------
+from .conversation import Conversation
+from .message import Message
+
+# ----------------------------
+# Reports Module
+# ----------------------------
+from .report import Report

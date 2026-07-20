@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 import DonorOverview from "../components/donors/DonorOverview";
@@ -7,6 +8,7 @@ import DonorCard from "../components/donors/DonorCard";
 
 import DocumentsTab from "../components/donors/documents/DocumentsTab";
 import PaymentsTab from "../components/donors/payments/PaymentsTab";
+import PaymentHeader from "../components/donors/payments/PaymentHeader";
 
 import "../styles/dashboard.css";
 import "../styles/donors.css";
@@ -20,6 +22,8 @@ const getColor = (score) => {
 };
 
 export default function Donors() {
+  const navigate = useNavigate();
+
   const [activeTab, setActiveTab] =
     useState("overview");
 
@@ -35,6 +39,15 @@ export default function Donors() {
 
   const [likelihood, setLikelihood] =
     useState("All");
+
+  const [selectedPaymentDonor, setSelectedPaymentDonor] =
+    useState(null);
+
+  useEffect(() => {
+    if (!selectedPaymentDonor && donors.length > 0) {
+      setSelectedPaymentDonor(donors[0]);
+    }
+  }, [donors, selectedPaymentDonor]);
 
   const loadDonors = async () => {
     try {
@@ -120,55 +133,80 @@ export default function Donors() {
 
         <div className="dashboard-title">
 
+          <span className="eyebrow">Relationships</span>
+
           <h4 className="section-heading">Donors</h4>
 
         </div>
 
       </div>
 
-      <div className="donor-tabs">
+      <div className="donor-tabs-row">
 
-        <button
-          className={
-            activeTab === "overview"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setActiveTab("overview")
-          }
-        >
-          Donor Overview
-        </button>
+        <div className="donor-tabs">
 
-        <button
-          className={
-            activeTab === "documents"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setActiveTab("documents")
-          }
-        >
-          Documents
-        </button>
+          <button
+            className={
+              activeTab === "overview"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setActiveTab("overview")
+            }
+          >
+            Donor Overview
+          </button>
 
-        <button
-          className={
-            activeTab === "payments"
-              ? "active"
-              : ""
-          }
-          onClick={() =>
-            setActiveTab("payments")
-          }
-        >
-          Payments
-        </button>
+          <button
+            className={
+              activeTab === "documents"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setActiveTab("documents")
+            }
+          >
+            Documents
+          </button>
+
+          <button
+            className={
+              activeTab === "payments"
+                ? "active"
+                : ""
+            }
+            onClick={() =>
+              setActiveTab("payments")
+            }
+          >
+            Payments
+          </button>
+
+        </div>
+
+        {activeTab === "payments" && (
+
+          <PaymentHeader
+            donor={selectedPaymentDonor}
+            donors={donors}
+            onChange={(id) => {
+              const donor = donors.find(
+                (d) => d.id === Number(id)
+              );
+
+              setSelectedPaymentDonor(donor);
+            }}
+          />
+
+        )}
 
       </div>
-            {activeTab === "overview" && (
+
+      <div className="donors-scroll">
+
+      {activeTab === "overview" && (
         <>
 
           <DonorOverview summary={summary} />
@@ -295,6 +333,9 @@ export default function Donors() {
                   color={getColor(
                     donor.likelihood
                   )}
+                  onClick={() =>
+                    navigate(`/donors/${donor.id}`)
+                  }
                 />
 
               ))
@@ -485,9 +526,12 @@ export default function Donors() {
 
       {activeTab === "payments" && (
 
-        <PaymentsTab />
+        <PaymentsTab donor={selectedPaymentDonor} />
 
       )}
-          </div>
+
+      </div>
+
+    </div>
   );
 }

@@ -1,22 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
 import {
-  HeartHandshake,
+  Sparkles,
   TriangleAlert,
   FileText,
   Shield,
   CheckCircle,
-  IndianRupee,
-  Wallet,
-  FolderKanban,
-  Users2,
+  ChevronLeft,
+  ChevronRight,
+  Target,
 } from "lucide-react";
 
 import OverviewCards from "../components/dashboard/OverviewCards";
-import DonorCard from "../components/dashboard/DonorCard";
 import RiskCard from "../components/dashboard/RiskCard";
 import SDGImpact from "../components/dashboard/SDGImpact";
+
+import { getDonor, getDonorAiSummary } from "../services/donorService";
 
 import "../styles/dashboard.css";
 
@@ -27,28 +27,11 @@ const utilizationStatus = (pct) => {
   return "Needs Attention";
 };
 
-const LIKELIHOOD_COLOR = (value) => {
-  if (value >= 85) return "#16A34A";
-  if (value >= 70) return "#D97706";
-  return "#DC2626";
-};
-
-const CATEGORY_CLASSES = [
-  "tag-blue",
-  "tag-purple",
-  "tag-green",
-];
-
-const categoryClass = (focusArea) => {
-  let hash = 0;
-
-  for (const char of focusArea ?? "") {
-    hash =
-      (hash + char.charCodeAt(0)) %
-      CATEGORY_CLASSES.length;
-  }
-
-  return CATEGORY_CLASSES[hash];
+const formatFunds = (amount) => {
+  const value = amount ?? 0;
+  if (value >= 10000000) return `₹${(value / 10000000).toFixed(1)} Cr`;
+  if (value >= 100000) return `₹${(value / 100000).toFixed(1)} L`;
+  return `₹${value.toLocaleString()}`;
 };
 
 const RISK_ICONS = {
@@ -56,49 +39,6 @@ const RISK_ICONS = {
   shield: Shield,
   check: CheckCircle,
 };
-
-const initials = (name = "") =>
-  name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((w) => w[0])
-    .join("")
-    .toUpperCase();
-
-const relativeTime = (dateStr) => {
-  if (!dateStr) return "—";
-
-  const days = Math.floor(
-    (Date.now() -
-      new Date(dateStr).getTime()) /
-      (1000 * 60 * 60 * 24)
-  );
-
-  if (days <= 0) return "today";
-  if (days === 1) return "1 day ago";
-  if (days < 14) return `${days} days ago`;
-  if (days < 60)
-    return `${Math.floor(days / 7)} wks ago`;
-
-  return `${Math.floor(days / 30)} mo ago`;
-};
-
-const decorateDonor = (donor) => ({
-  donor: donor.name,
-  initials: initials(donor.name),
-  category: donor.focus_area,
-  categoryClass: categoryClass(
-    donor.focus_area
-  ),
-  likelihood: donor.likelihood,
-  lastContact: relativeTime(
-    donor.last_contact
-  ),
-  color: LIKELIHOOD_COLOR(
-    donor.likelihood
-  ),
-});
 
 const decorateRisk = (risk) => ({
   ...risk,
@@ -111,45 +51,48 @@ const decorateRisk = (risk) => ({
 export default function Dashboard() {
   const navigate = useNavigate();
 
-  const [filters, setFilters] = useState({
-    region: "all",
-    fy: "all",
-  });
+  const [searchParams] = useSearchParams();
 
-  const handleFilterChange = (key, value) => {
-    setFilters((prev) => ({ ...prev, [key]: value }));
+  const filters = {
+    region: searchParams.get("region") || "all",
+    fy: searchParams.get("fy") || "all",
   };
 
-  const [stats, setStats] =
+  const [globalStats, setGlobalStats] =
     useState([]);
 
-  const [donors, setDonors] =
+  const [fundedSdgIds, setFundedSdgIds] =
     useState([]);
+
+  const [sdgImpactDetails, setSdgImpactDetails] =
+    useState({});
+
+  const [aiSummary, setAiSummary] = useState(null);
+  const [loadingAiSummary, setLoadingAiSummary] = useState(true);
+
+  const [donorsList, setDonorsList] = useState([]);
+  const [selectedDonorId, setSelectedDonorId] = useState("");
+  const [donorDetail, setDonorDetail] = useState(null);
+  const [donorAiSummary, setDonorAiSummary] = useState(null);
+  const [loadingDonorAi, setLoadingDonorAi] = useState(false);
+
+  const selectedDonorName = donorDetail?.name ?? "";
 
   const [risks, setRisks] =
     useState([]);
 
-  // ---------- Risk panel scroll-linked fade ----------
-  const riskScrollRef = useRef(null);
-  const [riskAtBottom, setRiskAtBottom] = useState(false);
-
-  const handleRiskScroll = () => {
-    const el = riskScrollRef.current;
-    if (!el) return;
-
-    // Also treat "nothing to scroll" (content shorter than the panel) as at-bottom,
-    // so the fade never shows over a fully-visible list.
-    const atBottom =
-      el.scrollHeight - el.scrollTop - el.clientHeight < 4;
-
-    setRiskAtBottom(atBottom);
-  };
+  const [riskIndex, setRiskIndex] = useState(0);
 
   useEffect(() => {
-    // Re-check once risks load / change, in case the list is short enough
-    // to not need scrolling at all.
-    handleRiskScroll();
+    // Clamp back in range when the list shrinks (or reloads).
+    setRiskIndex((i) => (risks.length ? Math.min(i, risks.length - 1) : 0));
   }, [risks]);
+
+  const goToPrevRisk = () =>
+    setRiskIndex((i) => (i - 1 + risks.length) % risks.length);
+
+  const goToNextRisk = () =>
+    setRiskIndex((i) => (i + 1) % risks.length);
 
   useEffect(() => {
     axios
@@ -165,26 +108,19 @@ export default function Dashboard() {
       .then((res) => {
         const d = res.data;
 
-        setStats([
+        setFundedSdgIds(d.funded_sdg_ids ?? []);
+        setSdgImpactDetails(d.sdg_impact_details ?? {});
+
+        setGlobalStats([
           {
             title: "Raised",
-            value: `₹${(
-              d.raised_amount /
-              10000000
-            ).toFixed(1)} Cr`,
+            value: formatFunds(d.raised_amount),
             subtitle: `${d.sponsors} sponsors`,
-            icon: IndianRupee,
-            accent: "raised",
           },
           {
             title: "Utilized",
-            value: `₹${(
-              d.utilized_amount /
-              10000000
-            ).toFixed(1)} Cr`,
+            value: formatFunds(d.utilized_amount),
             subtitle: "of funds raised",
-            icon: Wallet,
-            accent: "utilized",
             percent: d.utilization_pct,
             status: utilizationStatus(d.utilization_pct),
           },
@@ -192,8 +128,6 @@ export default function Dashboard() {
             title: "Projects",
             value: d.funded,
             subtitle: "funded",
-            icon: FolderKanban,
-            accent: "projects",
           },
           {
             title: "Beneficiaries",
@@ -201,34 +135,102 @@ export default function Dashboard() {
               d.beneficiaries ?? 0
             ).toLocaleString(),
             subtitle: "reached",
-            icon: Users2,
-            accent: "beneficiaries",
           },
         ]);
       })
       .catch(console.error);
-  }, [filters]);
+  }, [filters.region, filters.fy]);
 
   useEffect(() => {
     axios
+      .get("http://localhost:5000/api/donors", {
+        params: { region: filters.region },
+      })
+      .then((res) => setDonorsList(res.data ?? []))
+      .catch(console.error);
+  }, [filters.region]);
+
+  useEffect(() => {
+    // Clear the selection if the donor drops out of the list (e.g. after a
+    // region change) so the KPI cards/AI summary don't get stuck on stale data.
+    if (
+      selectedDonorId &&
+      donorsList.length &&
+      !donorsList.some((d) => String(d.id) === String(selectedDonorId))
+    ) {
+      setSelectedDonorId("");
+    }
+  }, [donorsList, selectedDonorId]);
+
+  useEffect(() => {
+    if (!selectedDonorId) {
+      setDonorDetail(null);
+      setDonorAiSummary(null);
+      return;
+    }
+
+    setLoadingDonorAi(true);
+
+    Promise.all([
+      getDonor(selectedDonorId),
+      getDonorAiSummary(selectedDonorId),
+    ])
+      .then(([detail, ai]) => {
+        setDonorDetail(detail);
+        setDonorAiSummary(ai);
+      })
+      .catch(console.error)
+      .finally(() => setLoadingDonorAi(false));
+  }, [selectedDonorId]);
+
+  const stats = selectedDonorId && donorDetail
+    ? [
+        {
+          title: "Raised",
+          value: formatFunds(donorDetail.raised_total),
+          subtitle: donorDetail.focus_area,
+        },
+        {
+          title: "Utilized",
+          value: formatFunds(donorDetail.utilized_total),
+          subtitle: "of funds raised",
+          percent: donorDetail.utilization_pct,
+          status: utilizationStatus(donorDetail.utilization_pct),
+        },
+        {
+          title: "Projects",
+          value: donorDetail.projects_total,
+          subtitle: "total",
+        },
+        {
+          title: "Beneficiaries",
+          value: (donorDetail.beneficiaries_total ?? 0).toLocaleString(),
+          subtitle: "reached",
+        },
+      ]
+    : globalStats;
+
+  useEffect(() => {
+    setLoadingAiSummary(true);
+
+    axios
       .get(
-        "http://localhost:5000/api/donors",
+        "http://localhost:5000/api/dashboard/ai-summary",
         {
           params: {
-            region:
-              filters.region,
+            region: filters.region,
+            fy: filters.fy,
           },
         }
       )
       .then((res) => {
-        setDonors(
-          res.data.map(
-            decorateDonor
-          )
-        );
+        setAiSummary(res.data);
       })
-      .catch(console.error);
+      .catch(console.error)
+      .finally(() => setLoadingAiSummary(false));
+  }, [filters.region, filters.fy]);
 
+  useEffect(() => {
     axios
       .get(
         "http://localhost:5000/api/risks"
@@ -248,64 +250,28 @@ export default function Dashboard() {
 
     <div className="dashboard-head">
       <div className="dashboard-title">
+        <span className="eyebrow">Funding &amp; impact</span>
         <h4 className="section-heading">Portfolio overview</h4>
       </div>
+    </div>
 
-      <div className="dashboard-filters">
+    {/* ---------------- SDG Impact (full width) ---------------- */}
 
-        <select
-          value={filters.region}
-          onChange={(e) =>
-            handleFilterChange(
-              "region",
-              e.target.value
-            )
-          }
-        >
-          <option value="all">
-            All Regions
-          </option>
-          <option value="South">
-            South
-          </option>
-          <option value="West">
-            West
-          </option>
-          <option value="North">
-            North
-          </option>
-          <option value="East">
-            East
-          </option>
-        </select>
+    <div className="sdg-band">
 
-        <select
-          value={filters.fy}
-          onChange={(e) =>
-            handleFilterChange(
-              "fy",
-              e.target.value
-            )
-          }
-        >
-          <option value="all">
-            All Years
-          </option>
-          <option value="2023-24">
-            FY 2023-24
-          </option>
-          <option value="2024-25">
-            FY 2024-25
-          </option>
-          <option value="2025-26">
-            FY 2025-26
-          </option>
-          <option value="2026-27">
-            FY 2026-27
-          </option>
-        </select>
+      <div className="sdg-band-head">
+        <h3 className="dash-heading">
+          <Target size={20} className="panel-title-icon icon-green" />
+          SDG impact
+        </h3>
 
+        <span className="sdg-band-count">
+          {fundedSdgIds.length} of 17 goals actively funded this FY
+        </span>
       </div>
+
+      <SDGImpact fundedIds={fundedSdgIds} impactByGoal={sdgImpactDetails} />
+
     </div>
 
     {/* ---------------- KPI Cards ---------------- */}
@@ -316,105 +282,166 @@ export default function Dashboard() {
       onCardClick={() => navigate("/projects")}
     />
 
-    {/* ---------------- Main Dashboard ---------------- */}
+    {/* ---------------- Donor + Risks ---------------- */}
 
     <div className="dashboard-content">
 
-      <div className="dashboard-grid">
+      <div className="overview-row2">
 
-        {/* ================= LEFT COLUMN ================= */}
+        <div className="panel ai-summary-panel">
 
-        <div className="dashboard-left">
+          <h3 className="panel-title">
 
-          {/* ---------- Donor Outreach ---------- */}
+            <Sparkles
+              size={20}
+              className="panel-title-icon icon-blue"
+            />
 
-          <div className="panel donor-panel">
+            AI Summary
 
-            <h3 className="panel-title">
-
-              <HeartHandshake
-                size={20}
-                className="panel-title-icon icon-blue"
-              />
-
-              Donor Outreach Readiness
-
-              <span className="panel-count">{donors.length}</span>
-
-            </h3>
-
-            <div className="panel-scroll">
-
-              {donors.map((donor) => (
-
-                <DonorCard
-                  key={donor.donor}
-                  {...donor}
-                />
-
+            <select
+              className="ai-summary-donor-select"
+              value={selectedDonorId}
+              onChange={(e) => setSelectedDonorId(e.target.value)}
+            >
+              <option value="">All Companies</option>
+              {donorsList.map((d) => (
+                <option key={d.id} value={d.id}>
+                  {d.name}
+                </option>
               ))}
+            </select>
 
-            </div>
+          </h3>
 
-          </div>
+          <div className="panel-body ai-summary-body">
 
-          {/* ---------- SDG Impact ---------- */}
+            {selectedDonorId ? (
 
-          <div className="panel sdg-panel">
+              loadingDonorAi ? (
+                <div className="ai-summary-skeleton" />
+              ) : (
+                <>
+                  <div className="ai-summary-section">
+                    <span className="ai-summary-section-title">Engagement</span>
+                    <p>{donorAiSummary?.engagement_summary}</p>
+                  </div>
 
-            <h3 className="panel-title">
+                  <div className="ai-summary-section">
+                    <span className="ai-summary-section-title">Key Risks</span>
+                    <ul className="ai-summary-risk-list">
+                      {donorAiSummary?.key_risks?.map((risk, i) => (
+                        <li key={i}>{risk}</li>
+                      ))}
+                    </ul>
+                  </div>
 
-              🌍 SDG Impact
+                  <div className="ai-summary-section">
+                    <span className="ai-summary-section-title">Project Health</span>
+                    <p>{donorAiSummary?.project_health_summary}</p>
+                  </div>
 
-              <span className="panel-count">17</span>
+                  <div className="ai-summary-attribution">
+                    <Sparkles size={12} />
+                    {donorAiSummary?.ai_generated
+                      ? `Generated by AI from ${selectedDonorName}'s data.`
+                      : "Computed summary (AI generation unavailable)."}
+                  </div>
+                </>
+              )
 
-            </h3>
+            ) : loadingAiSummary ? (
+              <div className="ai-summary-skeleton" />
+            ) : (
+              <>
+                <p>{aiSummary?.summary}</p>
 
-            <div className="panel-body">
-
-              <SDGImpact />
-
-            </div>
+                <div className="ai-summary-attribution">
+                  <Sparkles size={12} />
+                  {aiSummary?.ai_generated
+                    ? "Generated by AI from the current portfolio data."
+                    : "Computed summary (AI generation unavailable)."}
+                </div>
+              </>
+            )}
 
           </div>
 
         </div>
 
-        {/* ================= RIGHT COLUMN ================= */}
+        <div className="panel risk-panel">
 
-        <div className="dashboard-right">
+          <h3 className="panel-title">
 
-          <div className={`panel risk-panel ${riskAtBottom ? "at-bottom" : ""}`}>
+            <TriangleAlert
+              size={20}
+              className="panel-title-icon icon-amber"
+            />
 
-            <h3 className="panel-title">
+            Upcoming Risks
 
-              <TriangleAlert
-                size={20}
-                className="panel-title-icon icon-amber"
-              />
+            <span className="panel-count">{risks.length}</span>
 
-              Upcoming Risks
+          </h3>
 
-              <span className="panel-count">{risks.length}</span>
+          <div className="risk-carousel">
 
-            </h3>
+            <div className="risk-carousel-viewport">
 
-            <div
-              className="panel-scroll"
-              ref={riskScrollRef}
-              onScroll={handleRiskScroll}
-            >
+              <div
+                className="risk-carousel-track"
+                style={{ transform: `translateX(-${riskIndex * 100}%)` }}
+              >
 
-              {risks.map((risk) => (
+                {risks.map((risk) => (
 
-                <RiskCard
-                  key={risk.id}
-                  {...risk}
-                />
+                  <div className="risk-carousel-slide" key={risk.id}>
+                    <RiskCard {...risk} />
+                  </div>
 
-              ))}
+                ))}
+
+              </div>
 
             </div>
+
+            {risks.length > 1 && (
+
+              <div className="risk-carousel-controls">
+
+                <button
+                  type="button"
+                  className="risk-carousel-nav"
+                  onClick={goToPrevRisk}
+                  aria-label="Previous risk"
+                >
+                  <ChevronLeft size={16} />
+                </button>
+
+                <div className="risk-carousel-dots">
+                  {risks.map((_, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      className={`risk-carousel-dot ${i === riskIndex ? "active" : ""}`}
+                      onClick={() => setRiskIndex(i)}
+                      aria-label={`Go to risk ${i + 1}`}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  className="risk-carousel-nav"
+                  onClick={goToNextRisk}
+                  aria-label="Next risk"
+                >
+                  <ChevronRight size={16} />
+                </button>
+
+              </div>
+
+            )}
 
           </div>
 

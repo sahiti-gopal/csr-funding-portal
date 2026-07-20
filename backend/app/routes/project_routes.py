@@ -6,6 +6,7 @@ from app.models.project import Project
 from sqlalchemy import or_
 from app.models.project_type import ProjectType
 from app.models.beneficiary_category import BeneficiaryCategory
+from app.models.donor import Donor
 
 project_bp = Blueprint("projects", __name__)
 
@@ -131,6 +132,7 @@ def get_projects():
         Project.query
         .join(ProjectType)
         .join(BeneficiaryCategory)
+        .outerjoin(Donor, Project.donor_id == Donor.id)
     )
 
     if search:
@@ -138,8 +140,8 @@ def get_projects():
             or_(
                 Project.project_name.ilike(f"%{search}%"),
                 Project.location.ilike(f"%{search}%"),
-                Project.sponsor_name.ilike(f"%{search}%"),
-                Project.sponsor_sector.ilike(f"%{search}%"),
+                Donor.name.ilike(f"%{search}%"),
+                Donor.focus_area.ilike(f"%{search}%"),
                 ProjectType.name.ilike(f"%{search}%"),
                 BeneficiaryCategory.name.ilike(f"%{search}%")
             )
@@ -172,7 +174,7 @@ def get_projects():
                 "status": p.status,
                 "region": p.region,
                 "financial_year": p.financial_year,
-                "sponsor_name": p.sponsor_name,
+                "sponsor_name": p.donor.name if p.donor else None,
                 "raised_amount": p.raised_amount,
                 "utilized_amount": p.utilized_amount,
                 "beneficiaries_reached": p.beneficiaries_reached,
@@ -191,10 +193,10 @@ def get_project(id):
     p = Project.query.get_or_404(id)
 
     sponsor_meta = None
-    if p.sponsor_name:
+    if p.donor:
         parts = ["CSR Partner"]
-        if p.sponsor_sector:
-            parts.append(p.sponsor_sector)
+        if p.donor.focus_area:
+            parts.append(p.donor.focus_area)
         sponsor_meta = " · ".join(parts)
 
     return jsonify(
@@ -212,7 +214,7 @@ def get_project(id):
             "end_date": str(p.end_date),
             "sponsor": (
                 {
-                    "name": p.sponsor_name,
+                    "name": p.donor.name,
                     "meta": sponsor_meta,
                     "grant_amount": p.budget,
                     "contract_period": (
@@ -221,7 +223,7 @@ def get_project(id):
                         else None
                     ),
                 }
-                if p.sponsor_name
+                if p.donor
                 else None
             ),
             "beneficiaries": (

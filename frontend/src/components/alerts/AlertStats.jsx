@@ -28,28 +28,31 @@ const cards = [
   },
 ];
 
-export default function AlertStats({ summary }) {
+export default function AlertStats({ summary, activeCard, onCardClick }) {
   return (
-    <div className="alert-stats">
+    <div className="alert-stats overview-grid">
       {cards.map((card) => {
         const Icon = card.icon;
 
         return (
           <div
             key={card.key}
-            className="summary-card"
+            className={`overview-card stat-card ${
+              activeCard === card.key ? "active" : ""
+            }`}
+            onClick={() => onCardClick?.(card.key)}
           >
             {Icon && (
-              <span className="summary-icon">
+              <span className="stat-icon">
                 <Icon size={15} />
               </span>
             )}
 
-            <div className="summary-title">
+            <span className="eyebrow">
               {card.title}
-            </div>
+            </span>
 
-            <div className="summary-number">
+            <div className="overview-value">
               {summary[card.key]}
             </div>
           </div>

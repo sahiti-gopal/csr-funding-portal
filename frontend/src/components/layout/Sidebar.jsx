@@ -7,8 +7,9 @@ import {
   Settings,
   Leaf,
   BadgeCheck,
+  MessageSquare,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import "../../styles/layout.css";
 
 const NAV = [
@@ -16,6 +17,7 @@ const NAV = [
   { to: "/alerts", label: "Alerts", icon: AlertTriangle },
   { to: "/projects", label: "Projects", icon: FolderKanban },
   { to: "/donors", label: "Donors", icon: Users },
+  { to: "/chat", label: "Chat", icon: MessageSquare },
   { to: "/reports", label: "Reports", icon: FileText },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
@@ -23,7 +25,7 @@ const NAV = [
 export default function Sidebar() {
   return (
     <aside className="sidebar">
-      <div className="logo">
+      <Link to="/" className="logo">
         <div className="logo-circle">
           <Leaf size={22} />
         </div>
@@ -31,7 +33,7 @@ export default function Sidebar() {
           <h2>CSR Portal</h2>
           <p>Prayas Foundation</p>
         </div>
-      </div>
+      </Link>
 
       <nav>
         {NAV.map(({ to, label, icon: Icon, end }) => (
