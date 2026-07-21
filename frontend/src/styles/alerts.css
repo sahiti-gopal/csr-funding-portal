@@ -206,6 +206,25 @@
     box-shadow:var(--shadow-card-hover);
 }
 
+.alert-card-highlighted{
+    animation: alert-highlight-fade 3s ease forwards;
+}
+
+@keyframes alert-highlight-fade{
+    0%{
+        background:var(--info-bg);
+        box-shadow:0 0 0 2px var(--info);
+    }
+    70%{
+        background:var(--info-bg);
+        box-shadow:0 0 0 2px var(--info);
+    }
+    100%{
+        background:#fff;
+        box-shadow:var(--shadow-card);
+    }
+}
+
 .alert-left-bar{
     width:4px;
     align-self:stretch;
@@ -315,9 +334,7 @@
     color:var(--ink-600);
     font-size:12px;
     line-height:1.4;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    white-space:normal;
 }
 
 /* ======================================================

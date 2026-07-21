@@ -1,7 +1,12 @@
-export default function AlertCard({ alert }) {
+import { forwardRef } from "react";
+
+const AlertCard = forwardRef(function AlertCard({ alert, highlighted }, ref) {
   return (
     <div
-      className={`alert-card priority-${alert.priority.toLowerCase()}`}
+      ref={ref}
+      className={`alert-card priority-${alert.priority.toLowerCase()}${
+        highlighted ? " alert-card-highlighted" : ""
+      }`}
     >
       <div className="alert-left-bar" />
 
@@ -33,4 +38,6 @@ export default function AlertCard({ alert }) {
 
     </div>
   );
-}
+});
+
+export default AlertCard;

@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import {
   RefreshCcw,
@@ -21,6 +22,9 @@ const CARD_FILTERS = {
 };
 
 export default function Alerts() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [alerts, setAlerts] = useState([]);
 
   const [summary, setSummary] = useState({
@@ -33,6 +37,37 @@ export default function Alerts() {
   const [loading, setLoading] = useState(true);
 
   const [activeCard, setActiveCard] = useState("total");
+
+  const [highlightAlertId, setHighlightAlertId] = useState(
+    location.state?.highlightAlertId ?? null
+  );
+
+  const alertRefs = useRef({});
+
+  useEffect(() => {
+    if (!location.state?.highlightAlertId) return;
+
+    setActiveCard("total");
+
+    // clear the router state so a refresh/back-nav doesn't re-highlight
+    navigate(location.pathname, { replace: true, state: {} });
+  }, [location.state]);
+
+  useEffect(() => {
+    if (!highlightAlertId) return;
+
+    const timer = setTimeout(() => setHighlightAlertId(null), 3000);
+    return () => clearTimeout(timer);
+  }, [highlightAlertId]);
+
+  useEffect(() => {
+    if (!highlightAlertId) return;
+
+    alertRefs.current[highlightAlertId]?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
+    });
+  }, [highlightAlertId, alerts]);
 
   const loadSummary = async () => {
     try {
@@ -119,6 +154,11 @@ export default function Alerts() {
             <AlertCard
               key={alert.id}
               alert={alert}
+              ref={(el) => {
+                if (el) alertRefs.current[alert.id] = el;
+                else delete alertRefs.current[alert.id];
+              }}
+              highlighted={alert.id === highlightAlertId}
             />
           ))
         )}
