@@ -1,15 +1,20 @@
+import os
+
+from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
 from app import create_app
 from app.extensions import db
 from app.models import Role, User
 
+load_dotenv()
+
 DEMO_USERS = [
     {
-        "first_name": "CSR",
-        "last_name": "Admin",
-        "email": "admin@sevaimpact.org",
-        "password": "Admin@123",
+        "first_name": os.getenv("SEED_ADMIN_FIRST_NAME", "CSR"),
+        "last_name": os.getenv("SEED_ADMIN_LAST_NAME", "Admin"),
+        "email": os.getenv("SEED_ADMIN_EMAIL", "admin@sevaimpact.org"),
+        "password": os.getenv("SEED_ADMIN_PASSWORD", "Admin@123"),
         "role_name": "CSR Admin",
     },
 ]
