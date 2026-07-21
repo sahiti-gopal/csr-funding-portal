@@ -1,7 +1,7 @@
 import {
   Bell,
-  MailOpen,
   TriangleAlert,
+  CircleAlert,
   CircleCheck,
 } from "lucide-react";
 
@@ -12,18 +12,18 @@ const cards = [
     icon: Bell,
   },
   {
-    key: "unread",
-    title: "Unread",
-    icon: MailOpen,
-  },
-  {
     key: "high",
-    title: "High Priority",
+    title: "High",
     icon: TriangleAlert,
   },
   {
-    key: "resolved",
-    title: "Resolved",
+    key: "medium",
+    title: "Medium",
+    icon: CircleAlert,
+  },
+  {
+    key: "low",
+    title: "Low",
     icon: CircleCheck,
   },
 ];

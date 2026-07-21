@@ -8,6 +8,7 @@ import {
 
 import AlertStats from "../components/alerts/AlertStats";
 import AlertCard from "../components/alerts/AlertCard";
+import AlertDetailModal from "../components/alerts/AlertDetailModal";
 
 import "../styles/dashboard.css";
 import "../styles/alerts.css";
@@ -16,9 +17,9 @@ const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 const CARD_FILTERS = {
   total: () => true,
-  unread: (a) => !a.is_read,
   high: (a) => a.priority === "HIGH",
-  resolved: (a) => a.is_resolved,
+  medium: (a) => a.priority === "MEDIUM",
+  low: (a) => a.priority === "LOW",
 };
 
 export default function Alerts() {
@@ -29,14 +30,16 @@ export default function Alerts() {
 
   const [summary, setSummary] = useState({
     total: 0,
-    unread: 0,
     high: 0,
-    resolved: 0,
+    medium: 0,
+    low: 0,
   });
 
   const [loading, setLoading] = useState(true);
 
   const [activeCard, setActiveCard] = useState("total");
+
+  const [selectedAlert, setSelectedAlert] = useState(null);
 
   const [highlightAlertId, setHighlightAlertId] = useState(
     location.state?.highlightAlertId ?? null
@@ -93,9 +96,12 @@ export default function Alerts() {
         id: a.id,
         title: a.title,
         description: a.description,
+        category: a.category,
+        projectName: a.project_name,
         meta: a.meta ?? "",
         date: a.due_date,
         priority: a.priority,
+        status: a.status,
         is_read: a.is_read,
         is_resolved: a.is_resolved,
       }));
@@ -159,11 +165,19 @@ export default function Alerts() {
                 else delete alertRefs.current[alert.id];
               }}
               highlighted={alert.id === highlightAlertId}
+              onClick={() => setSelectedAlert(alert)}
             />
           ))
         )}
 
       </div>
+
+      {selectedAlert && (
+        <AlertDetailModal
+          alert={selectedAlert}
+          onClose={() => setSelectedAlert(null)}
+        />
+      )}
 
     </div>
   );

@@ -41,12 +41,15 @@ def get_alerts():
             "id": a.id,
             "title": a.title,
             "description": a.description,
+            "category": a.category,
             "priority": a.priority,
             "status": a.status,
             "is_read": a.is_read,
             "is_resolved": a.is_resolved,
             "due_date": a.due_date.strftime("%d %b %Y")
-            if a.due_date else None
+            if a.due_date else None,
+            "project_name": a.project.project_name
+            if a.project else None,
         }
         for a in alerts
     ])
@@ -59,27 +62,27 @@ def summary():
 
     total = Alert.query.count()
 
-    unread = Alert.query.filter_by(
-        is_read=False
-    ).count()
-
     high = Alert.query.filter_by(
         priority="HIGH"
     ).count()
 
-    resolved = Alert.query.filter_by(
-        is_resolved=True
+    medium = Alert.query.filter_by(
+        priority="MEDIUM"
+    ).count()
+
+    low = Alert.query.filter_by(
+        priority="LOW"
     ).count()
 
     return jsonify({
 
         "total": total,
 
-        "unread": unread,
-
         "high": high,
 
-        "resolved": resolved
+        "medium": medium,
+
+        "low": low
 
     })
 # ==========================
