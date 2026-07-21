@@ -99,7 +99,6 @@ export default function ProjectDetails() {
   return (
     <div className="project-details">
       <ProjectHeader
-        name={project.project_name}
         activeTab={activeTab}
         onTabChange={setActiveTab}
       />
@@ -142,6 +141,7 @@ export default function ProjectDetails() {
               ? project.gallery
               : PROJECT_GALLERY[project.project_name] ?? []
           }
+          project={project}
         />
       )}
     </div>

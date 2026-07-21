@@ -1,20 +1,31 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useMatch, useSearchParams } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Bell } from "lucide-react";
+import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
 
 import NotificationDropdown from "./NotificationDropdown";
 import { getGreeting } from "../../utils/greeting";
+import { getProject } from "../../services/projectService";
 
 import "../../styles/layout.css";
 
-const API = "http://127.0.0.1:5000/api";
+const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 export default function Header({
   userName = "Sahiti",
 }) {
   const location = useLocation();
   const isMainPage = location.pathname === "/";
+
+  const projectMatch = useMatch("/projects/:id");
+  const projectId = projectMatch?.params?.id;
+
+  const { data: project } = useQuery({
+    queryKey: ["project", projectId],
+    queryFn: () => getProject(projectId),
+    enabled: Boolean(projectId),
+  });
 
   const [searchParams, setSearchParams] = useSearchParams();
   const region = searchParams.get("region") || "all";
@@ -99,6 +110,19 @@ export default function Header({
         <h1 className="header-greeting">
           {getGreeting()}, {userName}!
         </h1>
+      )}
+
+      {projectMatch && (
+        <nav className="header-breadcrumb">
+          <Link to="/projects" className="header-crumb-link">
+            <ChevronLeft size={16} />
+            Projects
+          </Link>
+          <ChevronRight size={14} className="header-crumb-sep" />
+          <span className="header-crumb-current">
+            {project?.project_name ?? "…"}
+          </span>
+        </nav>
       )}
 
       <div className="header-right">
