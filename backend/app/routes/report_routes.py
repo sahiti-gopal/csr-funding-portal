@@ -5,6 +5,7 @@ from flask import Blueprint, jsonify, request
 from app.config import Config
 from app.extensions import db
 from app.models.donor import Donor
+from app.models.donor_payment import DonorPayment
 from app.models.project import Project
 from app.models.report import Report
 
@@ -15,6 +16,14 @@ def _fallback_target(achieved: int) -> int:
     if not achieved:
         return 0
     return max(achieved + 1, round(achieved * 1.25))
+
+
+def _fy_date_range(financial_year: str):
+    try:
+        start_year = int(financial_year.split("-")[0])
+    except (ValueError, IndexError, AttributeError):
+        return None, None
+    return datetime.date(start_year, 4, 1), datetime.date(start_year + 1, 3, 31)
 
 
 def _compute_report_stats(donor: Donor, financial_year: str) -> dict:
@@ -36,6 +45,9 @@ def _compute_report_stats(donor: Donor, financial_year: str) -> dict:
                 "target": target,
                 "achieved": achieved,
                 "progress_pct": round(achieved / target * 100, 1) if target else 0,
+                "status": p.status,
+                "start_date": p.start_date.isoformat() if p.start_date else None,
+                "end_date": p.end_date.isoformat() if p.end_date else None,
             }
         )
 
@@ -75,6 +87,26 @@ def _compute_report_stats(donor: Donor, financial_year: str) -> dict:
         for name, total in sorted(focus_area_totals.items(), key=lambda kv: kv[1], reverse=True)
     ]
 
+    fy_start, fy_end = _fy_date_range(financial_year)
+    payments_query = DonorPayment.query.filter_by(donor_id=donor.id)
+    if fy_start and fy_end:
+        payments_query = payments_query.filter(
+            DonorPayment.due_date >= fy_start, DonorPayment.due_date <= fy_end
+        )
+    payments = payments_query.order_by(DonorPayment.due_date).all()
+
+    payment_schedule = [
+        {
+            "installment": p.installment_name,
+            "amount": float(p.amount),
+            "due_date": p.due_date.isoformat() if p.due_date else None,
+            "received_date": p.received_date.isoformat() if p.received_date else None,
+            "payment_mode": p.payment_mode,
+            "status": p.status,
+        }
+        for p in payments
+    ]
+
     return {
         "donor": {"id": donor.id, "name": donor.name, "focus_area": donor.focus_area},
         "financial_year": financial_year,
@@ -83,6 +115,7 @@ def _compute_report_stats(donor: Donor, financial_year: str) -> dict:
         "funds_summary": funds_summary,
         "impact_by_focus_area": impact_by_focus_area,
         "locations": locations,
+        "payment_schedule": payment_schedule,
     }
 
 
@@ -120,14 +153,31 @@ def _generate_ai_narrative(stats: dict) -> str | None:
 
 
 def _report_to_summary_dict(report: Report) -> dict:
+    content = report.content or {}
+    impact = content.get("impact_highlights") or {}
+    funds = content.get("funds_summary") or {}
+
     return {
         "id": report.id,
         "title": report.title,
-        "donor": {"id": report.donor.id, "name": report.donor.name} if report.donor else None,
+        "donor": (
+            {
+                "id": report.donor.id,
+                "name": report.donor.name,
+                "focus_area": report.donor.focus_area,
+            }
+            if report.donor
+            else None
+        ),
         "financial_year": report.financial_year,
         "generated_at": report.generated_at.isoformat() if report.generated_at else None,
         "review_status": report.review_status,
         "delivery_status": report.delivery_status,
+        "project_count": impact.get("project_count"),
+        "beneficiaries_total": impact.get("beneficiaries_total"),
+        "locations_covered": impact.get("locations_covered"),
+        "committed": funds.get("committed"),
+        "utilization_pct": funds.get("utilization_pct"),
     }
 
 
