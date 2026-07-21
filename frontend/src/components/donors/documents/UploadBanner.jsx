@@ -1,11 +1,29 @@
+import { useRef } from "react";
 import {
   UploadCloud,
   ArrowRight,
 } from "lucide-react";
 
-export default function UploadBanner() {
+export default function UploadBanner({ document, onUpload }) {
+  const fileInputRef = useRef(null);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file && document) {
+      onUpload?.(document.id, file);
+    }
+    event.target.value = "";
+  };
+
   return (
     <div className="upload-banner">
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
 
       <div className="upload-left">
 
@@ -20,15 +38,20 @@ export default function UploadBanner() {
           <h3>Upload Missing Documents</h3>
 
           <p>
-            Drag & drop PDFs or browse your computer to upload
-            required compliance documents.
+            {document
+              ? `Upload "${document.title}" — drag & drop or browse your computer.`
+              : "Drag & drop PDFs or browse your computer to upload required compliance documents."}
           </p>
 
         </div>
 
       </div>
 
-      <button className="upload-banner-btn">
+      <button
+        className="upload-banner-btn"
+        onClick={() => fileInputRef.current?.click()}
+        disabled={!document}
+      >
 
         Upload Documents
 

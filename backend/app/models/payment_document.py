@@ -29,6 +29,10 @@ class PaymentDocument(db.Model):
         db.Text
     )
 
+    file_path = db.Column(
+        db.Text
+    )
+
     file_size = db.Column(
         db.String(30)
     )

@@ -1,7 +1,11 @@
+import { useState } from "react";
 import {
   ChevronDown,
+  ChevronUp,
   FolderOpen,
 } from "lucide-react";
+
+import DocumentList from "./DocumentList";
 
 export default function DocumentCategory({
   title,
@@ -9,11 +13,20 @@ export default function DocumentCategory({
   progress,
   completed,
   color,
+  documents = [],
+  onUpload,
+  onReview,
 }) {
+  const [expanded, setExpanded] = useState(false);
+
   return (
     <div className="document-category">
 
-      <div className="category-header">
+      <div
+        className="category-header"
+        onClick={() => setExpanded((prev) => !prev)}
+        style={{ cursor: "pointer" }}
+      >
 
         <div className="category-left">
 
@@ -41,7 +54,11 @@ export default function DocumentCategory({
 
           <strong>{completed}</strong>
 
-          <ChevronDown size={20} />
+          {expanded ? (
+            <ChevronUp size={20} />
+          ) : (
+            <ChevronDown size={20} />
+          )}
 
         </div>
 
@@ -65,6 +82,14 @@ export default function DocumentCategory({
 
       </div>
 
+      {expanded && (
+        <DocumentList
+          documents={documents}
+          onUpload={onUpload}
+          onReview={onReview}
+        />
+      )}
+
     </div>
   );
-}   
+}

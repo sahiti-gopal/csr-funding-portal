@@ -1,6 +1,9 @@
 import { Sparkles } from "lucide-react";
 
-export default function AIRecommendation() {
+export default function AIRecommendation({
+  recommendation,
+  onGenerateRequest,
+}) {
   return (
     <div className="docai-card">
 
@@ -13,14 +16,12 @@ export default function AIRecommendation() {
         <h3>AI Recommendation</h3>
 
         <p>
-          Request the donor's latest audited financial statements.
-          This will improve compliance from <strong>63%</strong> to approximately
-          <strong> 81%</strong>.
+          {recommendation}
         </p>
 
       </div>
 
-      <button className="docai-btn">
+      <button className="docai-btn" onClick={onGenerateRequest}>
         Generate Request
       </button>
 

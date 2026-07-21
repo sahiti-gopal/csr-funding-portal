@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 
 from app.config import Config
@@ -14,6 +16,8 @@ from app.routes.alert_routes import alert_bp
 from app.routes.payments import payments_bp
 from app.routes.chat_routes import chat_bp
 from app.routes.report_routes import report_bp
+from app.routes.auth_routes import auth_bp
+from app.routes.document_routes import document_bp
 
 def create_app():
 
@@ -22,10 +26,17 @@ def create_app():
 
     db.init_app(app)
     migrate.init_app(app, db)
+
+    allowed_origins = [
+        origin.strip()
+        for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:5173").split(",")
+        if origin.strip()
+    ]
+
     cors.init_app(
-    app,
-    resources={r"/api/*": {"origins": "http://localhost:5173"}}
-)
+        app,
+        resources={r"/api/*": {"origins": allowed_origins}},
+    )
    
     @app.get("/")
     def home():
@@ -54,6 +65,8 @@ def create_app():
 
     app.register_blueprint(chat_bp, url_prefix="/api")
     app.register_blueprint(report_bp, url_prefix="/api")
+    app.register_blueprint(auth_bp, url_prefix="/api")
+    app.register_blueprint(document_bp, url_prefix="/api")
     print("\n========== REGISTERED ROUTES ==========")
 
     for rule in app.url_map.iter_rules():

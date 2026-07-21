@@ -8,6 +8,7 @@ from .project_location import ProjectLocation
 from .project_team_member import ProjectTeamMember
 from .project_document import ProjectDocument
 from .donor import Donor
+from .donor_document import DonorDocument
 from .risk import Risk
 from .alert import Alert
 

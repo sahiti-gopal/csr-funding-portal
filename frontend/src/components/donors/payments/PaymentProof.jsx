@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import {
   ChevronDown,
   ChevronUp,
@@ -10,16 +10,40 @@ import {
   XCircle,
 } from "lucide-react";
 
+import { uploadPaymentDocument } from "../../../services/documentService";
+
+const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
+const API_ORIGIN = API.replace(/\/api\/?$/, "");
+
 export default function PaymentProof({
   proofs = [],
+  onRefresh,
 }) {
   const [open, setOpen] = useState({});
+  const fileInputRef = useRef(null);
+  const pendingPaymentId = useRef(null);
 
   const toggle = (id) => {
     setOpen((prev) => ({
       ...prev,
       [id]: !prev[id],
     }));
+  };
+
+  const triggerUpload = (paymentId, event) => {
+    event.stopPropagation();
+    pendingPaymentId.current = paymentId;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file || pendingPaymentId.current == null) return;
+
+    await uploadPaymentDocument(pendingPaymentId.current, file);
+    onRefresh?.();
   };
 
   const statusIcon = (status) => {
@@ -52,6 +76,13 @@ export default function PaymentProof({
 
   return (
     <div className="payment-proof-card">
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
 
       <div className="section-header">
 
@@ -151,7 +182,12 @@ export default function PaymentProof({
 
                   </div>
 
-                  <button className="upload-btn">
+                  <button
+                    className="upload-btn"
+                    onClick={(event) =>
+                      triggerUpload(proof.paymentId, event)
+                    }
+                  >
 
                     <Upload
                       size={16}
@@ -263,7 +299,20 @@ export default function PaymentProof({
 
                             <td>
 
-                              <button className="table-action">
+                              <a
+                                className="table-action"
+                                href={
+                                  doc.url
+                                    ? `${API_ORIGIN}${doc.url}`
+                                    : undefined
+                                }
+                                target="_blank"
+                                rel="noreferrer"
+                                aria-disabled={!doc.url}
+                                onClick={(event) => {
+                                  if (!doc.url) event.preventDefault();
+                                }}
+                              >
 
                                 <Download
                                   size={
@@ -271,7 +320,7 @@ export default function PaymentProof({
                                   }
                                 />
 
-                              </button>
+                              </a>
 
                             </td>
 

@@ -1,6 +1,11 @@
-from flask import Blueprint, jsonify
+import os
+from datetime import datetime
+
+from flask import Blueprint, current_app, jsonify, request, send_from_directory
 
 from sqlalchemy import func
+
+from werkzeug.utils import secure_filename
 
 from app.extensions import db
 
@@ -8,12 +13,21 @@ from app.models.donor import Donor
 from app.models.project import Project
 
 from app.models.donor_payment import DonorPayment
+from app.models.payment_document import PaymentDocument
 
 
 payments_bp = Blueprint(
     "payments",
     __name__,
 )
+
+
+def _format_file_size(num_bytes):
+    size = float(num_bytes)
+    for unit in ("B", "KB", "MB", "GB"):
+        if size < 1024 or unit == "GB":
+            return f"{size:.1f} {unit}" if unit != "B" else f"{int(size)} B"
+        size /= 1024
 
 @payments_bp.route(
     "/donors/<int:donor_id>/payments",
@@ -395,3 +409,63 @@ def get_donor_payments(donor_id):
     }
 
     return jsonify(response), 200
+
+
+@payments_bp.route(
+    "/payments/<int:payment_id>/documents",
+    methods=["POST"],
+)
+def upload_payment_document(payment_id):
+    payment = DonorPayment.query.get_or_404(payment_id)
+
+    if "file" not in request.files:
+        return jsonify({"message": "No file provided"}), 400
+
+    file = request.files["file"]
+    if not file.filename:
+        return jsonify({"message": "No file selected"}), 400
+
+    document_type = request.form.get("document_type", "Other")
+
+    upload_dir = os.path.join(
+        current_app.config["UPLOAD_FOLDER"],
+        "payment_documents",
+        str(payment_id),
+    )
+    os.makedirs(upload_dir, exist_ok=True)
+
+    filename = secure_filename(file.filename)
+    file_path = os.path.join(upload_dir, filename)
+    file.save(file_path)
+
+    document = PaymentDocument(
+        payment_id=payment.id,
+        document_name=file.filename,
+        document_type=document_type,
+        file_size=_format_file_size(os.path.getsize(file_path)),
+        verification_status="Pending",
+        uploaded_by="You",
+        uploaded_at=datetime.utcnow(),
+    )
+    db.session.add(document)
+    db.session.flush()
+
+    document.file_url = f"/api/payment-documents/{document.id}/file"
+    document.file_path = file_path
+    db.session.commit()
+
+    return jsonify(document.to_dict()), 201
+
+
+@payments_bp.route(
+    "/payment-documents/<int:document_id>/file",
+    methods=["GET"],
+)
+def get_payment_document_file(document_id):
+    document = PaymentDocument.query.get_or_404(document_id)
+
+    if not document.file_path:
+        return jsonify({"message": "No file uploaded for this document"}), 404
+
+    directory, filename = os.path.split(document.file_path)
+    return send_from_directory(directory, filename)

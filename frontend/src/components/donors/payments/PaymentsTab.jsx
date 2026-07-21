@@ -12,7 +12,7 @@ import RecentActivity from "./RecentActivity";
 
 import "../../../styles/payments.css";
 
-const API = "http://127.0.0.1:5000/api";
+const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 export default function PaymentsTab({ donor }) {
 
@@ -178,6 +178,7 @@ export default function PaymentsTab({ donor }) {
 
       <PaymentProof
         proofs={paymentData.documents}
+        onRefresh={() => loadPayments(donor.id)}
       />
 
       <FundUtilization

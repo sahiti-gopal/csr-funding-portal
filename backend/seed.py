@@ -1,6 +1,8 @@
+import os
 from datetime import date
 
 from app import create_app
+from app.config import Config
 from app.extensions import db
 from app.models import Role, ProjectType, BeneficiaryCategory
 from app.models.project import Project
@@ -10,6 +12,7 @@ from app.models.project_team_member import ProjectTeamMember
 from app.models.project_document import ProjectDocument
 from app.models.donor import Donor
 from app.models.donor_payment import DonorPayment
+from app.models.donor_document import DonorDocument
 from app.models.risk import Risk
 from app.models.alert import Alert
 from app.models.report import Report
@@ -30,6 +33,7 @@ with app.app_context():
     ProjectDocument.query.delete()
     Risk.query.delete()
     Project.query.delete()
+    DonorDocument.query.delete()
     Donor.query.delete()
     BeneficiaryCategory.query.delete()
     ProjectType.query.delete()
@@ -1197,6 +1201,74 @@ with app.app_context():
     db.session.add_all(payments)
 
     db.session.commit()
+
+    # ===================================================
+    # DONOR DOCUMENTS (compliance checklist per donor)
+    # ===================================================
+
+    DOCUMENT_TEMPLATE = [
+        ("Financial Documents", "Audited Financial Statement", "Medium", "Verified", date(2026, 4, 15)),
+        ("Financial Documents", "Tax Exemption Certificate", "Medium", "Verified", date(2026, 4, 15)),
+        ("Financial Documents", "CSR Fund Utilization Report", "Medium", "Verified", date(2026, 7, 15)),
+        ("Financial Documents", "Annual Report", "Medium", "Pending Review", date(2026, 7, 15)),
+
+        ("Compliance Documents", "CSR-1 Registration", "Critical", "Missing", None),
+        ("Compliance Documents", "80G Certificate", "Critical", "Missing", None),
+        ("Compliance Documents", "12A Registration", "Medium", "Pending Review", date(2026, 6, 30)),
+        ("Compliance Documents", "FCRA Registration", "Low", "Verified", date(2026, 3, 1)),
+
+        ("Legal Documents", "MOU Agreement", "Medium", "Verified", date(2026, 2, 1)),
+        ("Legal Documents", "Trust Deed", "Low", "Verified", date(2026, 1, 1)),
+        ("Legal Documents", "Board Resolution", "Medium", "Verified", date(2026, 5, 1)),
+        ("Legal Documents", "Registration Certificate", "Low", "Missing", None),
+
+        ("Impact Reports", "Q1 Impact Report", "Medium", "Verified", date(2026, 4, 30)),
+        ("Impact Reports", "Q2 Impact Report", "Medium", "Verified", date(2026, 7, 31)),
+        ("Impact Reports", "Q3 Impact Report", "Medium", "Pending Review", date(2026, 10, 31)),
+        ("Impact Reports", "Annual Impact Report", "Medium", "Missing", date(2027, 3, 31)),
+    ]
+
+    seed_uploads_dir = os.path.join(
+        Config.UPLOAD_FOLDER, "donor_documents", "seed"
+    )
+    os.makedirs(seed_uploads_dir, exist_ok=True)
+
+    donor_documents = []
+
+    for donor in donors:
+        for category, title, severity, status, due_date in DOCUMENT_TEMPLATE:
+            has_file = status in ("Pending Review", "Verified")
+
+            file_path = None
+            if has_file:
+                safe_title = title.lower().replace(" ", "_").replace("-", "_")
+                file_path = os.path.join(
+                    seed_uploads_dir, f"{donor.id}_{safe_title}.pdf"
+                )
+                if not os.path.exists(file_path):
+                    with open(file_path, "w") as f:
+                        f.write(f"Placeholder document: {title}\n")
+
+            donor_documents.append(
+                DonorDocument(
+                    donor_id=donor.id,
+                    category=category,
+                    title=title,
+                    due_date=due_date,
+                    severity=severity,
+                    status=status,
+                    owner="Meera" if has_file else None,
+                    uploaded_at=due_date if has_file else None,
+                    file_path=file_path,
+                    file_size="182 KB" if has_file else None,
+                )
+            )
+
+    db.session.add_all(donor_documents)
+
+    db.session.commit()
+
+    print("Donor documents inserted.")
 
     print("Payments inserted.")
 

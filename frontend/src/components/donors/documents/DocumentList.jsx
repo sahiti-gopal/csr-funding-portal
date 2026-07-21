@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import {
   FileText,
   AlertTriangle,
@@ -7,14 +8,42 @@ import {
 
 export default function DocumentList({
   documents,
+  onUpload,
+  onReview,
 }) {
+  const fileInputRef = useRef(null);
+  const pendingDocId = useRef(null);
+
+  const triggerUpload = (docId) => {
+    pendingDocId.current = docId;
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files?.[0];
+    if (file && pendingDocId.current != null) {
+      onUpload?.(pendingDocId.current, file);
+    }
+    event.target.value = "";
+  };
+
+  const criticalMissing = documents.find(
+    (doc) => !doc.fileUrl && doc.severity === "Critical"
+  );
+
   return (
     <div className="document-list">
 
+      <input
+        ref={fileInputRef}
+        type="file"
+        style={{ display: "none" }}
+        onChange={handleFileChange}
+      />
+
       {documents.map((doc) => {
 
-        const missing =
-          doc.status === "Missing";
+        const missing = !doc.fileUrl;
 
         return (
           <div
@@ -63,7 +92,7 @@ export default function DocumentList({
                 </div>
 
                 <p>
-                  Due: {doc.due}
+                  Due: {doc.due ?? "Required"}
 
                   {doc.updated &&
                     ` • Updated ${doc.updated}`}
@@ -90,7 +119,10 @@ export default function DocumentList({
 
               {missing ? (
 
-                <button className="doc-upload-btn">
+                <button
+                  className="doc-upload-btn"
+                  onClick={() => triggerUpload(doc.id)}
+                >
 
                   <Upload size={16} />
 
@@ -100,11 +132,15 @@ export default function DocumentList({
 
               ) : (
 
-                <button className="review-btn">
+                <button
+                  className="review-btn"
+                  onClick={() => onReview?.(doc.id)}
+                  disabled={doc.status === "Verified"}
+                >
 
                   <Eye size={16} />
 
-                  Review
+                  {doc.status === "Verified" ? "Reviewed" : "Review"}
 
                 </button>
 
@@ -116,21 +152,25 @@ export default function DocumentList({
         );
       })}
 
-      <div className="risk-banner">
+      {criticalMissing && (
 
-        <AlertTriangle
-          size={18}
-        />
+        <div className="risk-banner">
 
-        <span>
+          <AlertTriangle
+            size={18}
+          />
 
-          <strong>High risk</strong>
+          <span>
 
-          {" — CSR-1 registration is a mandatory filing. Missing it may delay donor approval."}
+            <strong>High risk</strong>
 
-        </span>
+            {` — ${criticalMissing.title} is a mandatory filing. Missing it may delay donor approval.`}
 
-      </div>
+          </span>
+
+        </div>
+
+      )}
 
     </div>
   );
