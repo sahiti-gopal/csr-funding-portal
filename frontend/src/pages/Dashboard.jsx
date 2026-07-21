@@ -20,6 +20,8 @@ import { getDonor, getDonorAiSummary } from "../services/donorService";
 
 import "../styles/dashboard.css";
 
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+
 const utilizationStatus = (pct) => {
   if (pct >= 85) return "Excellent";
   if (pct >= 65) return "On Track";
@@ -97,7 +99,7 @@ export default function Dashboard() {
   useEffect(() => {
     axios
       .get(
-        "http://localhost:5000/api/dashboard/summary",
+        `${API}/dashboard/summary`,
         {
           params: {
             region: filters.region,
@@ -143,7 +145,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:5000/api/donors", {
+      .get(`${API}/donors`, {
         params: { region: filters.region },
       })
       .then((res) => setDonorsList(res.data ?? []))
@@ -215,7 +217,7 @@ export default function Dashboard() {
 
     axios
       .get(
-        "http://localhost:5000/api/dashboard/ai-summary",
+        `${API}/dashboard/ai-summary`,
         {
           params: {
             region: filters.region,
@@ -233,7 +235,7 @@ export default function Dashboard() {
   useEffect(() => {
     axios
       .get(
-        "http://localhost:5000/api/risks"
+        `${API}/risks`
       )
       .then((res) => {
         setRisks(

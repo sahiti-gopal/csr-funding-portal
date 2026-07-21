@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bot, MessageSquarePlus, Send, Trash2 } from "lucide-react";
+import { Bot, MessageSquarePlus, Send, Sparkles, Trash2, User } from "lucide-react";
 
 import {
   createConversation,
@@ -174,31 +174,47 @@ export default function Chat() {
 
       <section className="chat-main">
         <header className="chat-main-header">
-          <Bot size={18} />
+          <span className="chat-main-header-icon">
+            <Sparkles size={16} />
+          </span>
           <span>AI Assistant</span>
         </header>
 
         <div className="chat-messages" ref={listRef}>
           {messages.length === 0 ? (
             <div className="chat-empty-state">
-              <Bot size={28} />
+              <span className="chat-empty-icon">
+                <Sparkles size={26} />
+              </span>
+              <h4>How can I help?</h4>
               <p>Ask me anything about your projects and donors.</p>
             </div>
           ) : (
             messages.map((m) => (
-              <div
-                key={m.id}
-                className={`chat-bubble chat-bubble-${m.role}${
-                  m.isError ? " chat-bubble-error" : ""
-                }`}
-              >
-                {m.content}
+              <div key={m.id} className={`chat-row chat-row-${m.role}`}>
+                <span className={`chat-avatar chat-avatar-${m.role}`}>
+                  {m.role === "user" ? <User size={14} /> : <Bot size={14} />}
+                </span>
+                <div
+                  className={`chat-bubble chat-bubble-${m.role}${
+                    m.isError ? " chat-bubble-error" : ""
+                  }`}
+                >
+                  {m.content}
+                </div>
               </div>
             ))
           )}
           {sendMutation.isPending && (
-            <div className="chat-bubble chat-bubble-assistant chat-bubble-typing">
-              Thinking…
+            <div className="chat-row chat-row-assistant">
+              <span className="chat-avatar chat-avatar-assistant">
+                <Bot size={14} />
+              </span>
+              <div className="chat-bubble chat-bubble-assistant chat-bubble-typing">
+                <span className="chat-typing-dot" />
+                <span className="chat-typing-dot" />
+                <span className="chat-typing-dot" />
+              </div>
             </div>
           )}
         </div>

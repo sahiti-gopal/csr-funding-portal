@@ -5,7 +5,6 @@ from app.extensions import db
 from app.models.alert import Alert
 
 alert_bp = Blueprint("alerts", __name__)
-print("✅ alert_routes.py loaded")
 
 # ==========================
 # GET ALL ALERTS

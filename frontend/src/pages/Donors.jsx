@@ -13,7 +13,7 @@ import PaymentHeader from "../components/donors/payments/PaymentHeader";
 import "../styles/dashboard.css";
 import "../styles/donors.css";
 
-const API = "http://127.0.0.1:5000/api";
+const API = import.meta.env.VITE_API_URL || "http://127.0.0.1:5000/api";
 
 const getColor = (score) => {
   if (score >= 85) return "#16A34A";
