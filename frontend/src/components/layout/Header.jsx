@@ -1,8 +1,21 @@
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useMatch, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useLocation,
+  useMatch,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Bell, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Bell,
+  BadgeCheck,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  LogOut,
+} from "lucide-react";
 
 import NotificationDropdown from "./NotificationDropdown";
 import { getGreeting } from "../../utils/greeting";
@@ -16,7 +29,13 @@ export default function Header({
   userName = "Sahiti",
 }) {
   const location = useLocation();
+  const navigate = useNavigate();
   const isMainPage = location.pathname === "/";
+
+  const handleLogout = () => {
+    localStorage.removeItem("seva-user-email");
+    navigate("/login");
+  };
 
   const projectMatch = useMatch("/projects/:id");
   const projectId = projectMatch?.params?.id;
@@ -42,7 +61,10 @@ export default function Header({
   const [showNotifications, setShowNotifications] =
     useState(false);
 
+  const [showUserMenu, setShowUserMenu] = useState(false);
+
   const notificationRef = useRef(null);
+  const userMenuRef = useRef(null);
 
   useEffect(() => {
     loadAlerts();
@@ -55,6 +77,13 @@ export default function Header({
         !notificationRef.current.contains(event.target)
       ) {
         setShowNotifications(false);
+      }
+
+      if (
+        userMenuRef.current &&
+        !userMenuRef.current.contains(event.target)
+      ) {
+        setShowUserMenu(false);
       }
     }
 
@@ -185,6 +214,40 @@ export default function Header({
             />
           )}
 
+        </div>
+
+        <div className="header-user" ref={userMenuRef}>
+          <button
+            className="header-user-trigger"
+            onClick={() => setShowUserMenu((prev) => !prev)}
+            aria-label="Account menu"
+          >
+            <img
+              src="/images/team/Woman-3.png"
+              alt={userName}
+              className="header-user-avatar-img"
+            />
+            <div className="header-user-info">
+              <p className="header-user-name">{userName}</p>
+              <p className="header-user-role">
+                <BadgeCheck size={13} />
+                CSR Admin
+              </p>
+            </div>
+            <ChevronDown size={14} className="header-user-caret" />
+          </button>
+
+          {showUserMenu && (
+            <div className="header-user-menu">
+              <button
+                className="header-user-menu-item"
+                onClick={handleLogout}
+              >
+                <LogOut size={14} />
+                Sign out
+              </button>
+            </div>
+          )}
         </div>
 
       </div>

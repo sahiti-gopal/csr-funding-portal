@@ -6,11 +6,9 @@ import {
   FileText,
   Settings,
   Leaf,
-  BadgeCheck,
   MessageSquare,
-  LogOut,
 } from "lucide-react";
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import "../../styles/layout.css";
 
 const NAV = [
@@ -24,13 +22,6 @@ const NAV = [
 ];
 
 export default function Sidebar() {
-  const navigate = useNavigate();
-
-  const handleLogout = () => {
-    localStorage.removeItem("seva-user-email");
-    navigate("/login");
-  };
-
   return (
     <aside className="sidebar">
       <Link to="/" className="logo">
@@ -51,29 +42,6 @@ export default function Sidebar() {
           </NavLink>
         ))}
       </nav>
-
-      <div className="sidebar-user">
-        <img
-  src="/images/team/Woman-3.png"
-  alt="Sahiti"
-  className="sidebar-user-avatar-img"
-/>
-        <div className="sidebar-user-info">
-          <p className="sidebar-user-name">Sahiti</p>
-          <p className="sidebar-user-role">
-            <BadgeCheck size={13} />
-            CSR Admin
-          </p>
-        </div>
-        <button
-          className="sidebar-logout"
-          onClick={handleLogout}
-          aria-label="Sign out"
-          title="Sign out"
-        >
-          <LogOut size={16} />
-        </button>
-      </div>
     </aside>
   );
 }
