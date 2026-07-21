@@ -1,0 +1,32 @@
+version: "3.9"
+
+# Standalone MySQL for the EC2 box. Deploy this on the instance, NOT as part
+# of the app's local dev docker-compose.yml (that one keeps hardcoded dev
+# creds on purpose). Credentials here come from deploy/.env — copy
+# deploy/.env.example, fill in real values, and never commit the filled-in file.
+#
+# Bound to 127.0.0.1 only: the Flask API runs on this same instance and talks
+# to MySQL over localhost, so the DB is never reachable from outside the box —
+# no firewall rule or public exposure needed for it at all.
+
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: csr_mysql_prod
+
+    restart: unless-stopped
+
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+
+    ports:
+      - "127.0.0.1:3306:3306"
+
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  mysql_data:
