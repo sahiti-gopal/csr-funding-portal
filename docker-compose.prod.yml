@@ -1,0 +1,53 @@
+# Full-stack deploy for a single EC2 instance: MySQL, the Flask API, and the
+# built frontend behind nginx, all on one internal Docker network. Only the
+# frontend container publishes a port — nginx is the single entry point, and
+# it reverse-proxies /api to the backend container by service name.
+#
+# Usage:
+#   cp deploy/.env.example .env                        # MySQL root/user passwords
+#   cp backend/.env.docker.example backend/.env
+#   # edit backend/.env: SECRET_KEY, DB_PASSWORD (must match MYSQL_PASSWORD above),
+#   # GEMINI_API_KEY, ALLOWED_ORIGINS=https://yourdomain.com
+#   docker compose -f docker-compose.prod.yml up -d --build
+
+version: "3.9"
+
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-csr_funding_portal}
+      MYSQL_USER: ${MYSQL_USER:-csr_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file:
+      - backend/.env
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+
+volumes:
+  mysql_data:
