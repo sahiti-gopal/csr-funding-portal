@@ -15,6 +15,8 @@ import {
   RotateCw,
   AlertTriangle,
   Sparkles,
+  MapPin,
+  Wallet,
 } from "lucide-react";
 
 import { getReport, approveReport, deliverReport, retryReport } from "../services/reportService";
@@ -49,6 +51,27 @@ const formatCompact = (value) => {
   const n = Number(value || 0);
   if (n >= 1e5) return `${(n / 1e5).toFixed(2)} Lakh`;
   return n.toLocaleString("en-IN");
+};
+
+const formatShortDate = (iso) =>
+  iso
+    ? new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
+    : "—";
+
+const PROJECT_STATUS_CLASS = {
+  Active: "approved",
+  Completed: "delivered",
+  Planning: "pending",
+  Pending: "pending",
+  "On Hold": "pending",
+  Delayed: "failed",
+};
+
+const PAYMENT_STATUS_CLASS = {
+  Paid: "approved",
+  Pending: "pending",
+  Scheduled: "pending",
+  Overdue: "failed",
 };
 
 export default function ReportReview() {
@@ -138,6 +161,7 @@ export default function ReportReview() {
         </div>
       </div>
 
+      <div className="reports-doc-scroll">
       {report.review_status === "Failed" ? (
         <div className="reports-failed-panel">
           <AlertTriangle size={26} />
@@ -176,6 +200,7 @@ export default function ReportReview() {
               <thead>
                 <tr>
                   <th>Programme</th>
+                  <th>Status</th>
                   <th>Target</th>
                   <th>Achieved</th>
                   <th>Progress</th>
@@ -188,7 +213,17 @@ export default function ReportReview() {
                       <strong>{row.programme}</strong>
                       <span className="reports-outcome-meta">
                         {row.location} · {formatCr(row.budget)}
+                        {row.start_date && row.end_date && (
+                          <> · {formatShortDate(row.start_date)} – {formatShortDate(row.end_date)}</>
+                        )}
                       </span>
+                    </td>
+                    <td>
+                      {row.status && (
+                        <span className={`reports-pill ${PROJECT_STATUS_CLASS[row.status] || ""}`}>
+                          {row.status}
+                        </span>
+                      )}
                     </td>
                     <td>{row.target.toLocaleString("en-IN")}</td>
                     <td>{row.achieved.toLocaleString("en-IN")}</td>
@@ -208,7 +243,7 @@ export default function ReportReview() {
                 ))}
                 {(!c?.outcome_progress || c.outcome_progress.length === 0) && (
                   <tr>
-                    <td colSpan={4} className="reports-outcome-empty">
+                    <td colSpan={5} className="reports-outcome-empty">
                       No linked projects for this donor and financial year.
                     </td>
                   </tr>
@@ -328,8 +363,63 @@ export default function ReportReview() {
               </div>
             </div>
           </div>
+
+          {c?.locations?.length > 0 && (
+            <div className="reports-doc-section">
+              <h5>Locations Covered</h5>
+              <div className="reports-location-chips">
+                {c.locations.map((loc) => (
+                  <span key={loc} className="reports-location-chip">
+                    <MapPin size={12} />
+                    {loc}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {c?.payment_schedule?.length > 0 && (
+            <div className="reports-doc-section">
+              <h5>
+                <Wallet size={12} className="reports-section-inline-icon" />
+                Payment Schedule
+              </h5>
+              <table className="reports-outcome-table">
+                <thead>
+                  <tr>
+                    <th>Installment</th>
+                    <th>Amount</th>
+                    <th>Due Date</th>
+                    <th>Received</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {c.payment_schedule.map((row, i) => (
+                    <tr key={i}>
+                      <td>
+                        <strong>{row.installment}</strong>
+                        {row.payment_mode && (
+                          <span className="reports-outcome-meta">{row.payment_mode}</span>
+                        )}
+                      </td>
+                      <td>{formatCr(row.amount)}</td>
+                      <td>{formatShortDate(row.due_date)}</td>
+                      <td>{formatShortDate(row.received_date)}</td>
+                      <td>
+                        <span className={`reports-pill ${PAYMENT_STATUS_CLASS[row.status] || ""}`}>
+                          {row.status}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       )}
+      </div>
     </div>
   );
 }

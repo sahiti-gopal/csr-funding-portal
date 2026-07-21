@@ -1,6 +1,17 @@
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { FileBarChart2, Plus, Eye, Download, RotateCw } from "lucide-react";
+import {
+  FileBarChart2,
+  Plus,
+  Eye,
+  Download,
+  RotateCw,
+  FileText,
+  Clock,
+  CheckCircle2,
+  Send,
+} from "lucide-react";
 
 import { listReports, retryReport } from "../services/reportService";
 
@@ -32,6 +43,14 @@ const formatDate = (iso) =>
     ? new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
     : "—";
 
+const formatFunds = (value) => {
+  const n = Number(value);
+  if (!n) return "—";
+  if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)} Cr`;
+  if (n >= 100000) return `₹${(n / 100000).toFixed(1)} L`;
+  return `₹${n.toLocaleString("en-IN")}`;
+};
+
 const REVIEW_CLASS = {
   Approved: "approved",
   "Pending review": "pending",
@@ -43,9 +62,17 @@ const DELIVERY_CLASS = {
   Awaiting: "awaiting",
 };
 
+const CARD_FILTERS = {
+  total: () => true,
+  pending: (r) => r.review_status === "Pending review",
+  approved: (r) => r.review_status === "Approved",
+  delivered: (r) => r.delivery_status === "Delivered",
+};
+
 export default function Reports() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [activeCard, setActiveCard] = useState("total");
 
   const { data: reports = [], isLoading } = useQuery({
     queryKey: ["reports"],
@@ -56,6 +83,24 @@ export default function Reports() {
     mutationFn: retryReport,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["reports"] }),
   });
+
+  const stats = useMemo(() => {
+    const pending = reports.filter((r) => r.review_status === "Pending review").length;
+    const approved = reports.filter((r) => r.review_status === "Approved").length;
+    const delivered = reports.filter((r) => r.delivery_status === "Delivered").length;
+
+    return [
+      { key: "total", title: "Total Reports", value: reports.length, icon: FileText },
+      { key: "pending", title: "Pending Review", value: pending, icon: Clock },
+      { key: "approved", title: "Approved", value: approved, icon: CheckCircle2 },
+      { key: "delivered", title: "Delivered", value: delivered, icon: Send },
+    ];
+  }, [reports]);
+
+  const filteredReports = useMemo(() => {
+    const matches = CARD_FILTERS[activeCard] ?? CARD_FILTERS.total;
+    return reports.filter(matches);
+  }, [reports, activeCard]);
 
   return (
     <div className="dashboard reports-page">
@@ -74,6 +119,25 @@ export default function Reports() {
         </button>
       </div>
 
+      <div className="overview-grid reports-stats-grid">
+        {stats.map((card) => {
+          const Icon = card.icon;
+          return (
+            <div
+              key={card.key}
+              className={`overview-card stat-card ${activeCard === card.key ? "active" : ""}`}
+              onClick={() => setActiveCard(card.key)}
+            >
+              <span className="stat-icon">
+                <Icon size={15} />
+              </span>
+              <span className="eyebrow">{card.title}</span>
+              <div className="overview-value">{card.value}</div>
+            </div>
+          );
+        })}
+      </div>
+
       <div className="reports-table-panel">
         {isLoading ? (
           <div className="empty-state-panel">
@@ -86,6 +150,12 @@ export default function Reports() {
             <h3>No reports yet</h3>
             <p>Generate your first AI report to see it here.</p>
           </div>
+        ) : filteredReports.length === 0 ? (
+          <div className="empty-state-panel">
+            <FileBarChart2 size={28} className="empty-state-icon" />
+            <h3>No reports match this filter</h3>
+            <p>Try a different card, or clear the filter to see all reports.</p>
+          </div>
         ) : (
           <table className="reports-table">
             <thead>
@@ -93,6 +163,10 @@ export default function Reports() {
                 <th>Report Name</th>
                 <th>Donor</th>
                 <th>FY</th>
+                <th>Projects</th>
+                <th>Beneficiaries</th>
+                <th>Committed</th>
+                <th>Utilization</th>
                 <th>Generated</th>
                 <th>Review</th>
                 <th>Delivery</th>
@@ -100,7 +174,7 @@ export default function Reports() {
               </tr>
             </thead>
             <tbody>
-              {reports.map((r) => (
+              {filteredReports.map((r) => (
                 <tr key={r.id}>
                   <td className="reports-name-cell">{r.title}</td>
                   <td>
@@ -111,10 +185,36 @@ export default function Reports() {
                       >
                         {initials(r.donor?.name)}
                       </span>
-                      {r.donor?.name}
+                      <div>
+                        <div>{r.donor?.name}</div>
+                        {r.donor?.focus_area && (
+                          <div className="reports-donor-focus">{r.donor.focus_area}</div>
+                        )}
+                      </div>
                     </div>
                   </td>
                   <td>{r.financial_year}</td>
+                  <td>{r.project_count ?? "—"}</td>
+                  <td>{r.beneficiaries_total?.toLocaleString("en-IN") ?? "—"}</td>
+                  <td>{formatFunds(r.committed)}</td>
+                  <td>
+                    {r.utilization_pct != null ? (
+                      <div className="reports-util-cell">
+                        <div className="reports-progress-track">
+                          <div
+                            className="reports-progress-fill"
+                            style={{
+                              width: `${Math.min(r.utilization_pct, 100)}%`,
+                              background: r.utilization_pct >= 75 ? "#16a34a" : "#f59e0b",
+                            }}
+                          />
+                        </div>
+                        <span className="reports-progress-label">{r.utilization_pct}%</span>
+                      </div>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td>{formatDate(r.generated_at)}</td>
                   <td>
                     <span className={`reports-pill ${REVIEW_CLASS[r.review_status] || ""}`}>
