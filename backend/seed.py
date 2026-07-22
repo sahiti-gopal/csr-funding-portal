@@ -1,7 +1,6 @@
 import os
 from datetime import date
 
-from app import create_app
 from app.config import Config
 from app.extensions import db
 from app.models import Role, ProjectType, BeneficiaryCategory
@@ -18,10 +17,8 @@ from app.models.alert import Alert
 from app.models.report import Report
 from app.routes.report_routes import _generate_report
 
-app = create_app()
 
-with app.app_context():
-
+def run_seed():
     # -----------------------------
     # Clear Existing Data
     # -----------------------------
@@ -1304,3 +1301,11 @@ with app.app_context():
     print("Reports inserted.")
 
     print("Database seeded successfully!")
+
+
+if __name__ == "__main__":
+    from app import create_app
+
+    app = create_app()
+    with app.app_context():
+        run_seed()

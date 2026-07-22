@@ -79,15 +79,29 @@ DB_USER=csr_user
 DB_PASSWORD=<same value you put in deploy/.env>
 GEMINI_API_KEY=<your key>
 ALLOWED_ORIGINS=https://yourdomain.com
+SEED_ADMIN_EMAIL=<the email you'll actually log in with>
+SEED_ADMIN_PASSWORD=<a real password, not the local-dev default>
 ```
 (`ALLOWED_ORIGINS` is mostly a formality here since frontend and API share an origin — it
 just matters if anything ever calls the API cross-origin.)
 
-Apply migrations and (optionally) seed demo data:
+Apply migrations:
 ```bash
 .venv/bin/flask db upgrade
-.venv/bin/python seed.py   # optional — wipes + reseeds demo data
 ```
+Seeding demo data (roles, project types, sample projects/donors/alerts, and the
+`SEED_ADMIN_*` login user) now happens **automatically** the first time the app starts —
+`run.py` checks whether the `Role` table is empty and, if so, runs `seed.py` and
+`seed_users.py` before the app begins serving requests. A MySQL advisory lock keeps this
+safe even with gunicorn's multiple workers starting at once; only one worker seeds, the
+rest see the lock and skip. On every subsequent start it's a no-op — it never re-seeds a
+database that already has data, so it won't wipe anything after the first run. Set
+`AUTO_SEED=false` in `.env` if you want to disable this and seed manually instead. To
+force a reseed of demo data (destructive — wipes and rebuilds projects/donors/alerts/etc.,
+but does not delete the `User` table), run `python seed.py` by hand, and re-run
+`python seed_users.py` right after so the existing login user's role reference doesn't go
+stale (`seed.py` recreates the `Role` table with new IDs).
+
 Install the systemd service (already written for you at `deploy/csr-backend.service`,
 assuming the repo lives at `/home/ubuntu/csr-funding-portal` — edit the paths in that file
 first if yours differs):

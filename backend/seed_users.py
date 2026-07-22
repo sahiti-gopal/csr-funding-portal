@@ -3,7 +3,6 @@ import os
 from dotenv import load_dotenv
 from werkzeug.security import generate_password_hash
 
-from app import create_app
 from app.extensions import db
 from app.models import Role, User
 
@@ -19,9 +18,8 @@ DEMO_USERS = [
     },
 ]
 
-app = create_app()
 
-with app.app_context():
+def run_seed_users():
     for u in DEMO_USERS:
         if User.query.filter_by(email=u["email"]).first():
             print(f"skip (exists): {u['email']}")
@@ -44,3 +42,11 @@ with app.app_context():
         print(f"created: {u['email']} / {u['password']}")
 
     db.session.commit()
+
+
+if __name__ == "__main__":
+    from app import create_app
+
+    app = create_app()
+    with app.app_context():
+        run_seed_users()
