@@ -2,15 +2,15 @@
    one-screen dashboard layout. That's a global stylesheet import, so it stays
    applied after client-side navigation to /login (e.g. via sign out) even
    though this page needs normal scrolling — override it back here. */
-html:has(.app-shell),
-body:has(.app-shell),
-#root:has(.app-shell) {
+html:has(.login-shell),
+body:has(.login-shell),
+#root:has(.login-shell) {
   height: auto;
   overflow: auto;
 }
 
 /* Full-screen layout */
-.app-shell {
+.login-shell {
   display: flex;
   min-height: 100vh;
   width: 100%;
@@ -446,7 +446,7 @@ body:has(.app-shell),
 
 /* Responsive */
 @media (max-width: 900px) {
-  .app-shell {
+  .login-shell {
     flex-direction: column;
   }
 

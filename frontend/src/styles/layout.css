@@ -350,6 +350,45 @@ body {
   place-items: center;
 }
 
+@media (max-width: 640px) {
+  .header {
+    height: auto;
+    flex-wrap: wrap;
+    row-gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .header-greeting {
+    font-size: 12.5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 55%;
+  }
+
+  .header-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px;
+    margin-left: auto;
+  }
+
+  .header-filters {
+    order: 3;
+    flex: 1 1 100%;
+    gap: 6px;
+  }
+
+  .header-filters select {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .header-user {
+    padding-left: 6px;
+  }
+}
+
 /* ============================================================
    FLOATING AI ASSISTANT
 ============================================================ */
@@ -535,9 +574,9 @@ body {
 
     right:0;
 
-    width:400px;
+    width:340px;
 
-    max-height:520px;
+    max-height:320px;
 
     overflow-y:auto;
 
@@ -552,6 +591,17 @@ body {
     z-index:999999;
 
 }
+
+@media (max-width: 480px) {
+  .notification-dropdown {
+    position: fixed;
+    top: 80px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+  }
+}
+
 .notification-row{
     display:flex;
     align-items:center;
@@ -597,11 +647,6 @@ body {
     background:var(--brand-green-light);
 }
 
-.notification-dropdown{
-    width:340px;
-    max-height:320px;
-    overflow-y:auto;
-}
 .notification-row{
 
     display:flex;

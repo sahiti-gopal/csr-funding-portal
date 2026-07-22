@@ -111,7 +111,7 @@ export default function Login() {
   };
 
   return (
-    <div className="app-shell">
+    <div className="login-shell">
       <aside className="hero-panel">
         <img src="/images/login-hero.jpg" alt="" className="hero-photo" />
         <div className="hero-overlay" />
