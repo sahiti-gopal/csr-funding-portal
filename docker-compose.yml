@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   mysql:
     image: mysql:8.4
@@ -8,10 +6,10 @@ services:
     restart: unless-stopped
 
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: csr_funding_portal
-      MYSQL_USER: csr_user
-      MYSQL_PASSWORD: csr_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${DB_NAME:-csr_funding_portal}
+      MYSQL_USER: ${DB_USER:-csr_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-csr_password}
 
     ports:
       - "3307:3306"
@@ -19,5 +17,55 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  backend:
+    build: ./backend
+    container_name: csr_backend
+
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+
+    environment:
+      FLASK_APP: run.py
+      FLASK_ENV: production
+      SECRET_KEY: ${SECRET_KEY:?SECRET_KEY is required}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: ${DB_NAME:-csr_funding_portal}
+      DB_USER: ${DB_USER:-csr_user}
+      DB_PASSWORD: ${DB_PASSWORD:-csr_password}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost}
+      SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL:-admin@sevaimpact.org}
+      SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD:?SEED_ADMIN_PASSWORD is required}
+      AUTO_SEED: ${AUTO_SEED:-true}
+
+    volumes:
+      - backend_uploads:/app/uploads
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: /api
+    container_name: csr_frontend
+
+    restart: unless-stopped
+
+    depends_on:
+      - backend
+
+    ports:
+      - "80:80"
+
 volumes:
   mysql_data:
+  backend_uploads:

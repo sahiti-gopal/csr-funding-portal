@@ -8,7 +8,7 @@ Type=simple
 User=ubuntu
 WorkingDirectory=/home/ubuntu/csr-funding-portal/backend
 EnvironmentFile=/home/ubuntu/csr-funding-portal/backend/.env
-ExecStart=/home/ubuntu/csr-funding-portal/backend/.venv/bin/gunicorn run:app --bind 127.0.0.1:8000 --workers 3
+ExecStart=/home/ubuntu/csr-funding-portal/backend/.venv/bin/gunicorn --preload run:app --bind 127.0.0.1:8000 --workers 3
 Restart=on-failure
 RestartSec=5
 

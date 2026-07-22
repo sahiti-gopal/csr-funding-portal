@@ -12,4 +12,4 @@ RUN chmod +x docker-entrypoint.sh
 EXPOSE 8000
 
 ENTRYPOINT ["./docker-entrypoint.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "run:app"]
+CMD ["gunicorn", "--preload", "--bind", "0.0.0.0:8000", "--workers", "3", "run:app"]

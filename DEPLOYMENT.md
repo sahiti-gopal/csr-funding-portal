@@ -90,17 +90,22 @@ Apply migrations:
 .venv/bin/flask db upgrade
 ```
 Seeding demo data (roles, project types, sample projects/donors/alerts, and the
-`SEED_ADMIN_*` login user) now happens **automatically** the first time the app starts —
-`run.py` checks whether the `Role` table is empty and, if so, runs `seed.py` and
-`seed_users.py` before the app begins serving requests. A MySQL advisory lock keeps this
-safe even with gunicorn's multiple workers starting at once; only one worker seeds, the
-rest see the lock and skip. On every subsequent start it's a no-op — it never re-seeds a
-database that already has data, so it won't wipe anything after the first run. Set
+`SEED_ADMIN_*` login user) now happens **automatically** the first time the app starts.
+`run.py` exposes `ensure_seeded()`, which checks whether the `Role` table is empty and, if
+so, runs `seed.py` before the app begins serving requests — `seed.py` is the single seed
+entrypoint: it seeds roles, project types, beneficiary categories, projects, donors,
+risks, reports, alerts, and the demo admin user in one pass, so one run reflects
+everywhere. `gunicorn.conf.py`'s `when_ready` hook is what actually calls
+`ensure_seeded()`, firing exactly once in gunicorn's master process after the server is
+bound but before any workers are forked — deliberately *not* a module-level side effect,
+since `FLASK_APP=run.py` means `flask db upgrade` also imports `run.py` to resolve the
+app object, and seeding on import would race the very migration it depends on. A MySQL
+advisory lock adds a second layer of safety on top. On every subsequent start it's a
+no-op — it never re-seeds a database that already has data, so it won't wipe anything
+after the first run. Set
 `AUTO_SEED=false` in `.env` if you want to disable this and seed manually instead. To
-force a reseed of demo data (destructive — wipes and rebuilds projects/donors/alerts/etc.,
-but does not delete the `User` table), run `python seed.py` by hand, and re-run
-`python seed_users.py` right after so the existing login user's role reference doesn't go
-stale (`seed.py` recreates the `Role` table with new IDs).
+force a reseed of demo data (destructive — wipes and rebuilds everything, including the
+`User` table), run `python seed.py` by hand.
 
 Install the systemd service (already written for you at `deploy/csr-backend.service`,
 assuming the repo lives at `/home/ubuntu/csr-funding-portal` — edit the paths in that file
