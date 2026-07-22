@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import {
-  RefreshCcw,
-  Download,
-} from "lucide-react";
 
 import AlertStats from "../components/alerts/AlertStats";
 import AlertCard from "../components/alerts/AlertCard";
@@ -76,8 +72,6 @@ export default function Alerts() {
     try {
       const res = await axios.get(`${API}/alerts/summary`);
 
-      console.log("SUMMARY API:", res.data);
-
       setSummary(res.data);
     } catch (err) {
       console.error(err);
@@ -89,8 +83,6 @@ export default function Alerts() {
       setLoading(true);
 
       const res = await axios.get(`${API}/alerts`);
-
-      console.log("ALERTS API:", res.data);
 
       const mapped = res.data.map((a) => ({
         id: a.id,
@@ -124,10 +116,6 @@ export default function Alerts() {
     const matches = CARD_FILTERS[activeCard] ?? CARD_FILTERS.total;
     return alerts.filter(matches);
   }, [alerts, activeCard]);
-
-  const exportAlerts = () => {
-    window.open(`${API}/alerts/export`, "_blank");
-  };
 
   return (
     <div className="alerts-page">

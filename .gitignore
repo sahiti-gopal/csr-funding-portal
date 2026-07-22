@@ -8,9 +8,12 @@ __pycache__/
 backend/uploads/*
 !backend/uploads/.gitkeep
 
-# Environment
+# Environment (real env files only — *.example templates are tracked)
 .env
-.env.*
+.env.local
+.env.*.local
+.env.docker
+.env.production
 
 # Node
 frontend/node_modules/

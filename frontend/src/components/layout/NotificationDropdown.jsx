@@ -16,10 +16,6 @@ export default function NotificationDropdown({ onClose }) {
 
   const [alerts, setAlerts] = useState([]);
 
-  useEffect(() => {
-    loadAlerts();
-  }, []);
-
   const loadAlerts = async () => {
     try {
       const res = await axios.get(`${API}/alerts`);
@@ -29,6 +25,10 @@ export default function NotificationDropdown({ onClose }) {
       console.error(err);
     }
   };
+
+  useEffect(() => {
+    loadAlerts();
+  }, []);
 
   const getIcon = (priority) => {
     switch (priority?.toLowerCase()) {

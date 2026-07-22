@@ -66,6 +66,16 @@ export default function Header({
   const notificationRef = useRef(null);
   const userMenuRef = useRef(null);
 
+  const loadAlerts = async () => {
+    try {
+      const res = await axios.get(`${API}/alerts`);
+
+      setAlerts(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   useEffect(() => {
     loadAlerts();
   }, []);
@@ -98,16 +108,6 @@ export default function Header({
         handleClickOutside
       );
   }, []);
-
-  const loadAlerts = async () => {
-    try {
-      const res = await axios.get(`${API}/alerts`);
-
-      setAlerts(res.data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const unreadCount = alerts.filter(
     (a) => !a.is_read

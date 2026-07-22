@@ -8,13 +8,6 @@ const BADGE_CLASS = {
   Partner: "pd-badge-outline",
 };
 
-const TEAM_IMAGES = {
-  "Priya Sharma": "/images/team/priya.png",
-  "Rohan Mehta": "/images/team/rohan.png",
-  "Pooja Sharma": "/images/team/pooja.png",
-  "Tata Trusts": "/images/team/tata.png",
-  "Vivek Joshi": "/images/team/vivek.png",
-};
 export default function TeamCard({ members = [] }) {
   const [open, setOpen] = useState(false);
   return (

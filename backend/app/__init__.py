@@ -58,19 +58,16 @@ def create_app():
         url_prefix="/api",
     )
 
-    app.register_blueprint(
-    alert_bp,
-    url_prefix="/api"
-)
-
+    app.register_blueprint(alert_bp, url_prefix="/api")
     app.register_blueprint(chat_bp, url_prefix="/api")
     app.register_blueprint(report_bp, url_prefix="/api")
     app.register_blueprint(auth_bp, url_prefix="/api")
     app.register_blueprint(document_bp, url_prefix="/api")
-    print("\n========== REGISTERED ROUTES ==========")
 
-    for rule in app.url_map.iter_rules():
-        print(f"{rule.endpoint:35} {rule}")
+    if os.getenv("FLASK_ENV") != "production":
+        print("\n========== REGISTERED ROUTES ==========")
+        for rule in sorted(app.url_map.iter_rules(), key=lambda r: str(r)):
+            print(f"{rule.endpoint:35} {rule}")
+        print("=======================================\n")
 
-    print("=======================================\n")
     return app
