@@ -7,8 +7,6 @@ import {
   FileText,
   Shield,
   CheckCircle,
-  ChevronLeft,
-  ChevronRight,
   Target,
 } from "lucide-react";
 
@@ -82,19 +80,6 @@ export default function Dashboard() {
 
   const [risks, setRisks] =
     useState([]);
-
-  const [riskIndex, setRiskIndex] = useState(0);
-
-  useEffect(() => {
-    // Clamp back in range when the list shrinks (or reloads).
-    setRiskIndex((i) => (risks.length ? Math.min(i, risks.length - 1) : 0));
-  }, [risks]);
-
-  const goToPrevRisk = () =>
-    setRiskIndex((i) => (i - 1 + risks.length) % risks.length);
-
-  const goToNextRisk = () =>
-    setRiskIndex((i) => (i + 1) % risks.length);
 
   useEffect(() => {
     axios
@@ -386,64 +371,11 @@ export default function Dashboard() {
 
           </h3>
 
-          <div className="risk-carousel">
+          <div className="panel-scroll risk-list">
 
-            <div className="risk-carousel-viewport">
-
-              <div
-                className="risk-carousel-track"
-                style={{ transform: `translateX(-${riskIndex * 100}%)` }}
-              >
-
-                {risks.map((risk) => (
-
-                  <div className="risk-carousel-slide" key={risk.id}>
-                    <RiskCard {...risk} />
-                  </div>
-
-                ))}
-
-              </div>
-
-            </div>
-
-            {risks.length > 1 && (
-
-              <div className="risk-carousel-controls">
-
-                <button
-                  type="button"
-                  className="risk-carousel-nav"
-                  onClick={goToPrevRisk}
-                  aria-label="Previous risk"
-                >
-                  <ChevronLeft size={16} />
-                </button>
-
-                <div className="risk-carousel-dots">
-                  {risks.map((_, i) => (
-                    <button
-                      key={i}
-                      type="button"
-                      className={`risk-carousel-dot ${i === riskIndex ? "active" : ""}`}
-                      onClick={() => setRiskIndex(i)}
-                      aria-label={`Go to risk ${i + 1}`}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  className="risk-carousel-nav"
-                  onClick={goToNextRisk}
-                  aria-label="Next risk"
-                >
-                  <ChevronRight size={16} />
-                </button>
-
-              </div>
-
-            )}
+            {risks.map((risk) => (
+              <RiskCard key={risk.id} {...risk} />
+            ))}
 
           </div>
 

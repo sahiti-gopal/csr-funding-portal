@@ -7,15 +7,26 @@
 
 body {
   background: var(--surface-muted, #fafaf8);
+  /* macOS/WebKit renders text noticeably heavier than Windows' default
+     ClearType rendering without this — normalizes weight across platforms. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* ============================================================
    APP SHELL
+   The page itself scrolls (natural body/html scroll) rather than a
+   nested overflow:auto div — nested scroll containers are the classic
+   spot where touch scrolling silently fails to engage on iOS/iPad
+   Safari. min-height (not height+overflow:hidden) means the shell
+   still fills at least one screen when content is short, but grows
+   with the page instead of clipping when content is taller.
 ============================================================ */
 .app-shell{
     display:flex;
-    height:100vh;
-    overflow:hidden;
+    min-height:100vh;
+    min-height:100dvh;
 }
 .app-main{
     flex:1;
@@ -23,22 +34,35 @@ body {
     flex-direction:column;
 
     min-width:0;
+    /* Without this, a flex item's default min-height:auto floors it at
+       its content's natural size — harmless for pages that are meant
+       to grow/scroll, but it's what let a fixed-height page (Overview
+       in laptop mode, see dashboard.css) force this column taller than
+       the viewport instead of actually being capped at it. */
     min-height:0;
 }
 .app-content{
 
     flex:1;
-
     min-height:0;
 
-    overflow-y:auto;
-
-    overflow-x:hidden;
+    /* Windows browsers reserve real layout width for the scrollbar;
+       macOS defaults to an overlay scrollbar that takes none — without
+       this, the exact same page renders at a different content width
+       (and everything inside redistributes slightly) between the two.
+       both-edges reserves matching space on the left too, so the
+       centered page content doesn't shift/skew toward one side just
+       because the scrollbar gutter is real on the right only. Now that
+       the page (not this div) is what scrolls, this lives on html. */
 
     background:var(--surface-muted);
 
     padding-bottom:40px;
 
+}
+
+html {
+    scrollbar-gutter:stable both-edges;
 }
 
 /* ============================================================
@@ -47,6 +71,18 @@ body {
 .sidebar {
   width: 200px;
   flex-shrink: 0;
+  /* height:100dvh (not just align-self:stretch) + position:sticky
+     means the dark background always spans the full viewport — top
+     to bottom — regardless of how tall the main content grows: on a
+     short page it simply matches the one-screen height, and once
+     .app-content is tall enough to scroll, sticky keeps this same
+     full-viewport-tall box pinned at top:0 instead of letting it
+     scroll away (or grow taller than the screen) with the rest of
+     the page. */
+  height: 100vh;
+  height: 100dvh;
+  position: sticky;
+  top: 0;
   background: var(--brand-green-dark, #0f1f3d);
   color: #fff;
   padding: 22px 14px;
@@ -89,7 +125,7 @@ body {
 .sidebar nav {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 4px;
   flex: 1;
 }
@@ -353,9 +389,9 @@ body {
 @media (max-width: 640px) {
   .header {
     height: auto;
-    flex-wrap: wrap;
-    row-gap: 8px;
+    flex-wrap: nowrap;
     padding: 10px 14px;
+    gap: 8px;
   }
 
   .header-greeting {
@@ -363,25 +399,29 @@ body {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 55%;
+    max-width: 30%;
+    flex-shrink: 1;
   }
 
   .header-right {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     justify-content: flex-end;
     gap: 6px;
     margin-left: auto;
+    flex-shrink: 0;
   }
 
   .header-filters {
-    order: 3;
-    flex: 1 1 100%;
     gap: 6px;
+    flex-shrink: 0;
   }
 
   .header-filters select {
-    flex: 1;
+    flex: 0 0 auto;
     min-width: 0;
+    width: 84px;
+    padding: 0 6px;
+    font-size: 11px;
   }
 
   .header-user {
@@ -599,6 +639,13 @@ body {
     left: 12px;
     right: 12px;
     width: auto;
+  }
+
+  /* below this width there isn't room for both the filters and a
+     truncated greeting on one line — drop the greeting rather than
+     show an unreadable sliver of it */
+  .header-greeting {
+    display: none;
   }
 }
 

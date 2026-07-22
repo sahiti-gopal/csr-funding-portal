@@ -1,6 +1,5 @@
 /* ===========================================================
-   RESET (prevents the whole page from scrolling — only
-   .panel-scroll regions should scroll)
+   RESET
 =========================================================== */
 
 html,
@@ -8,29 +7,126 @@ body,
 #root {
   height: 100%;
   margin: 0;
-  overflow: hidden;
 }
 
 /* ===========================================================
    DASHBOARD SHELL
+   Sized with min-height (not a hard height + overflow:hidden) so a
+   short screen still shows a full-height page, but content taller
+   than the viewport (a long AI summary, more risks, a shorter/taller
+   window) just flows past one screen instead of getting clipped —
+   .app-content already scrolls (overflow-y:auto, see layout.css),
+   this just stops .dashboard from fighting that.
 =========================================================== */
 
 .dashboard {
-  height: 100%;
+  min-height: 100%;
   max-width: 1600px;
   margin: auto;
-  padding: 11px 24px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   background: var(--surface-muted);
 }
 
-/* .app-content reserves a 40px bottom padding for scrollable pages;
-   the dashboard doesn't scroll, so drop it here to avoid clipping
-   the bottom of the panels within the one-screen layout. */
-.app-content:has(.dashboard) {
-  padding-bottom: 0;
+/* Overview page only (the only place that renders .sdg-band).
+   Below 1025px (tablet/iPad, panels stacked in one column): the risk
+   panel stretches to fill whatever vertical room is left under the KPI
+   cards, so its scrollable list of every risk shows as many as will
+   fit. The AI summary panel opts out of that stretch (see below) — the
+   risk list is tall there for a good reason (showing real risks), and
+   matching a short AI blurb to it would mean either stretching the
+   text unnaturally or centering it inside a lot of empty padding; it
+   just sizes to its own (larger, see .ai-summary-body p) text instead,
+   so the two panels end up different heights, which is fine — their
+   content genuinely differs. .dashboard-head stays flush at the top
+   either way (no centering trick that would reopen a *top* gap between
+   the app header and the page title).
+   At 1025px+ (laptop/desktop, see the media query below) both panels
+   stretch to match each other instead: the page is capped at one
+   screen with no scroll there, so "extend to fill the space" and
+   "match the other panel" are the same instruction, and each one's own
+   overflow-y:auto scrolls its content if it's longer than that shared,
+   dynamic height. */
+.dashboard:has(.sdg-band) .dashboard-content {
+  flex: 1;
+  min-height: 0;
+}
+
+.dashboard:has(.sdg-band) .overview-row2 {
+  flex: 1;
+  align-items: stretch;
+  /* .overview-row2's base rule sets align-content:start (a safety net
+     for the stacked single-column layout, see that rule's comment);
+     here the container should stretch the row to fill it, so this
+     override is what actually makes the row (and so the risk panel,
+     below 1025px) reach the bottom instead of floating at its content
+     height. */
+  align-content: stretch;
+}
+
+.dashboard:has(.sdg-band) .overview-row2 .ai-summary-panel {
+  align-self: start;
+  height: auto;
+}
+
+/* Laptop/desktop mode: everything fits one screen, no page scroll —
+   both panels scroll internally instead (.ai-summary-body and
+   .risk-list both already have overflow-y:auto) if their content runs
+   longer than the space available. Tablet/iPad keeps the natural page
+   scroll from the base rules above instead: forcing a fixed height
+   there would need its own nested scroll region — the exact
+   touch-scroll trap this whole layout has been designed to avoid
+   elsewhere in the app. */
+@media (min-width: 1025px) {
+  /* .app-shell (layout.css) deliberately uses min-height:100dvh rather
+     than a hard height — a floor, not a ceiling — so pages with
+     genuinely long content (Reports, Projects) can grow taller than
+     one screen and let the real page scroll. That's exactly what was
+     still happening here: .dashboard's own overflow:hidden only clips
+     *its own* box, but nothing above it (.app-content, .app-main,
+     .app-shell) was capped, so the shell just grew to fit the
+     dashboard's natural content height instead of constraining it,
+     and the outer page scrolled by exactly the difference. Capping
+     .app-shell itself, scoped to only this page (:has(.sdg-band)) and
+     only this width, is what actually enforces "one screen, no page
+     scroll" here without affecting any other page. */
+  .app-shell:has(.dashboard .sdg-band) {
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  .app-content:has(.dashboard .sdg-band) {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    /* .app-content's own 40px bottom padding (layout.css) is meant for
+       scrollable pages like Reports/Projects, giving their long lists
+       breathing room at the end — here it would just add 40px on top
+       of a .dashboard that otherwise exactly fills the screen. */
+    padding-bottom: 0;
+  }
+
+  .dashboard:has(.sdg-band) {
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  .dashboard:has(.sdg-band) .dashboard-content {
+    overflow: hidden;
+  }
+
+  /* Reverses the ai-summary-panel opt-out above: at this width the row
+     (.overview-row2's own align-content:stretch, unconditional) fills
+     exactly the remaining one-screen space — no more, no less — so
+     stretching both panels to match it is "extend as far as the
+     no-scroll limit allows," not an arbitrary height. */
+  .dashboard:has(.sdg-band) .overview-row2 .ai-summary-panel {
+    align-self: stretch;
+    height: 100%;
+  }
 }
 
 .dashboard-head {
@@ -88,9 +184,13 @@ body,
 }
 
 .dashboard-content {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
+  /* no flex:1 — this no longer grows to fill .dashboard's leftover
+     height. That leftover space is now handled by centering the whole
+     content block (see .dashboard:has(.sdg-band) above) instead of
+     stretching this one section, which used to leave the AI summary/
+     risk panels inside it looking artificially tall and empty. */
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===========================================================
@@ -278,9 +378,13 @@ body,
 }
 
 
-@media (max-width: 640px) {
+/* Tablet/mobile: KPI cards stack one below another instead of
+   staying in a row — the page already scrolls (see .dashboard's
+   min-height instead of a fixed height + overflow:hidden above), so a
+   taller stacked column just flows into that scroll normally. */
+@media (max-width: 1024px) {
   .overview-grid {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
   }
 }
 
@@ -289,15 +393,32 @@ body,
 =========================================================== */
 
 .overview-row2 {
-  height: 100%;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  /* Panels size to their own content (height:auto below) instead of
+     stretching to fill this row — there's no need to force them to
+     fill whatever space happens to be left on screen, which used to
+     leave a big empty void inside each card (their footer/attribution
+     pinned to the bottom via margin-top:auto). The row stays anchored
+     right under the KPI cards.
+     align-content:start is explicit (not left to default/"normal") as
+     a safety net — grid's default alignment stretches auto-sized row
+     tracks to fill any extra container height rather than leaving it
+     after the last row, which previously reopened a gap between the
+     two stacked panels on narrow (single-column) layouts. */
+  align-items: start;
+  align-content: start;
   gap: 14px;
   min-height: 0;
 }
 
 .overview-row2 .panel {
-  height: 100%;
+  /* Pure content-driven height — no min-height floor. Each panel's own
+     content already guards against a degenerate sliver (the AI summary
+     skeleton has its own min-height, the risk card has its own
+     min-height), so the card just grows or shrinks with whatever the
+     AI actually generated instead of reserving blank space to fill. */
+  height: auto;
 }
 
 @media (max-width: 1024px) {
@@ -434,17 +555,21 @@ body,
 }
 
 .ai-summary-body {
-  padding: 16px;
+  padding: 22px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   overflow-y: auto;
+  /* reserve matching gutter space on the left too, so the scrollbar on
+     the right doesn't eat into that side's padding and leave the gap
+     around the text looking lopsided */
+  scrollbar-gutter: stable both-edges;
 }
 
 .ai-summary-body p {
   margin: 0;
-  font-size: 13.5px;
-  line-height: 1.6;
+  font-size: 15.5px;
+  line-height: 1.75;
   color: var(--ink-700);
 }
 
@@ -517,86 +642,17 @@ body,
 }
 
 /* ===========================================================
-   RISK CAROUSEL
+   RISK PANEL — every risk stacked in a scrollable list, at every
+   screen size. A carousel doesn't make sense once the panel is
+   sized to fill real available space rather than a fixed compact
+   box (see .ai-summary-panel/.overview-row2 above) — showing every
+   risk is more useful than paging through them one at a time.
 =========================================================== */
 
-.risk-carousel {
-  position: relative;
-  flex: 1;
-  min-height: 0;
+.risk-list {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 6px 14px 6px;
-  overflow: hidden;
-}
-
-.risk-carousel-viewport {
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.risk-carousel-track {
-  display: flex;
-  align-items: flex-start;
-  transition: transform 0.25s ease;
-}
-
-.risk-carousel-slide {
-  flex: 0 0 100%;
-  min-width: 0;
-  display: flex;
-}
-
-.risk-carousel-controls {
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 10px;
-  margin-top: 6px;
-  flex-shrink: 0;
-}
-
-.risk-carousel-nav {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border: 1px solid #e2e8f0;
-  border-radius: 50%;
-  background: #fff;
-  color: #475569;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: 0.15s;
-}
-
-.risk-carousel-nav:hover {
-  border-color: var(--brand-green);
-  color: var(--brand-green);
-}
-
-.risk-carousel-dots {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.risk-carousel-dot {
-  width: 6px;
-  height: 6px;
-  padding: 0;
-  border: none;
-  border-radius: 50%;
-  background: #d9e2ec;
-  cursor: pointer;
-  transition: 0.15s;
-}
-
-.risk-carousel-dot.active {
-  width: 16px;
-  border-radius: 4px;
-  background: var(--brand-green, #2f855a);
 }
 
 /* ===========================================================
@@ -1246,7 +1302,12 @@ body,
   gap: 6px;
 }
 
-@media (max-width: 1200px) {
+/* Wrap to 9 columns on genuinely narrow screens, or in portrait —
+   a flat max-width:1200px also caught iPad landscape widths (1180,
+   1194) that have plenty of horizontal room and comfortably fit all
+   17 in one row; tying it to orientation keeps those single-row
+   while still wrapping narrower/portrait screens the same as before. */
+@media (max-width: 900px), (orientation: portrait) {
   .sdg-tiles {
     grid-template-columns: repeat(9, 1fr);
   }
@@ -1260,6 +1321,13 @@ body,
 
 .sdg-tile {
   position: relative;
+  /* Without this, a grid item's default min-width:auto floors it at
+     its text's min-content size (driven by the longest single word,
+     e.g. "Responsible"/"Partnerships") — at 17 columns that can exceed
+     the tile's 1fr share and push the whole row wider than the page,
+     opening a horizontal scrollbar. min-width:0 lets the tile shrink
+     to its grid share and wrap the label instead. */
+  min-width: 0;
   border-radius: 9px;
   min-height: 68px;
   padding: 8px 4px 5px;
@@ -1305,6 +1373,7 @@ body,
   font-weight: 700;
   line-height: 1.15;
   letter-spacing: 0.1px;
+  overflow-wrap: break-word;
 }
 
 .sdg-tile-tooltip {
@@ -1457,4 +1526,17 @@ body,
   color: var(--ink-600);
   font-size: 10.5px;
   font-weight: 800;
+}
+
+/* ===========================================================
+   MOBILE / TABLET: panels always size to their own content (see
+   .overview-row2 .panel's height:auto above) and the page scrolls
+   (.dashboard/.dashboard-content have no fixed height or
+   overflow:hidden), so the only breakpoint-specific change left is
+   stacking the two panels into one column.
+=========================================================== */
+@media (max-width: 1024px) {
+  .overview-row2 {
+    grid-template-rows: auto auto;
+  }
 }

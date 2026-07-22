@@ -2,9 +2,17 @@
    PROJECT PAGE
 ========================== */
 
+/* min-height (not height+overflow:hidden) so the page grows with its
+   content and the actual document scrolls — same reasoning as
+   .dashboard in dashboard.css: a nested overflow:auto scroll region
+   (the old .project-table-scroll below) is the classic spot where
+   touch scrolling silently fails to engage on iPad/iOS Safari, and it
+   also opened the door to the table's own overflow-x:auto creating a
+   *horizontal* scrollbar, which is the "side scroll" that shouldn't
+   exist at all — only the page's normal vertical scroll should. */
 .projects-page{
 
-    height:100%;
+    min-height:100%;
 
     max-width:1600px;
 
@@ -16,20 +24,10 @@
 
     flex-direction:column;
 
-    overflow:hidden;
-
     background:var(--surface-muted);
 
     box-sizing:border-box;
 
-}
-
-/* .app-content reserves a 40px bottom padding for scrollable pages;
-   the projects page manages its own scroll region (.project-table-
-   scroll), so drop it here to avoid dead space / clipping at the
-   bottom. */
-.app-content:has(.projects-page) {
-  padding-bottom: 0;
 }
 
 .projects-page .dashboard-head{
@@ -56,10 +54,6 @@
 ========================== */
 
 .project-table-card{
-
-    flex:1;
-
-    min-height:0;
 
     display:flex;
 
@@ -119,24 +113,13 @@
 
 }
 
+/* No overflow here — the table renders at its full natural size and
+   the page itself scrolls (see .projects-page). This used to be its
+   own overflow-y/x:auto region; besides the touch-scroll issue that
+   pattern has everywhere else in the app, overflow-x:auto is exactly
+   what let a too-wide table open a horizontal scrollbar in the first
+   place, which is the "side scroll" that shouldn't exist at all. */
 .project-table-scroll{
-
-    flex:1;
-
-    min-height:0;
-
-    overflow-y:auto;
-
-    overflow-x:auto;
-
-    scrollbar-gutter:stable;
-
-}
-
-.project-table-scroll::-webkit-scrollbar{
-
-    width:8px;
-
 }
 
 .project-table-scroll::-webkit-scrollbar-thumb{
@@ -203,6 +186,21 @@
 
     color:var(--ink-900);
 
+}
+
+/* At tablet width (including iPad portrait at 1024px, where the
+   sidebar is still full-width) the 8-column table needs more space
+   than is available and would otherwise require horizontal dragging
+   to see every column. Hide the two lowest-priority columns (Region,
+   Deadline) instead — both stay reachable via the row's own detail
+   page — so the remaining columns fit without scrolling. */
+@media (max-width: 1100px) {
+  .project-table th:nth-child(3),
+  .project-table td:nth-child(3),
+  .project-table th:nth-child(7),
+  .project-table td:nth-child(7) {
+    display: none;
+  }
 }
 
 .project-row-sub{

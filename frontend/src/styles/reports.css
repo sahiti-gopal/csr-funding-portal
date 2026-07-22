@@ -26,12 +26,16 @@
 }
 
 .reports-table-panel {
-  flex: 1;
-  min-height: 0;
+  /* No overflow here — the table renders full-size and the page itself
+     scrolls (this page uses .dashboard, already min-height-based rather
+     than a fixed-height + overflow container). overflow:auto used to
+     open a *horizontal* scrollbar for this 11-column table on anything
+     narrower than desktop; the responsive column-hiding below keeps it
+     fitting without one instead — only the page's normal vertical
+     scroll should exist. */
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 16px;
-  overflow: auto;
   margin-top: 8px;
 }
 
@@ -711,5 +715,91 @@
 
   .reports-highlight-tiles {
     grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* The reports list table has 11 columns — too many to fit below
+   desktop width without a horizontal scrollbar. Hide the columns
+   whose info is secondary (still visible on the report's own detail
+   page via Actions > View) so the remaining ones fit without one.
+   Thresholds are cascading: at each step, the *previous* step's
+   already-hidden columns stay hidden too. Chosen from each column's
+   measured natural width (Report Name 213, Donor 178, FY 84, Projects
+   90, Beneficiaries 122, Committed 100, Utilization 166, Generated
+   103, Review 134, Delivery 103, Actions 167 — ~1459px total) against
+   the ~264px the sidebar/page chrome takes up at desktop widths
+   (~136px once the sidebar collapses to icon-only below 768px). */
+@media (max-width: 1750px) {
+  .reports-table th:nth-child(3),
+  .reports-table td:nth-child(3),
+  .reports-table th:nth-child(8),
+  .reports-table td:nth-child(8) {
+    display: none;
+  }
+}
+
+@media (max-width: 1560px) {
+  .reports-table th:nth-child(4),
+  .reports-table td:nth-child(4),
+  .reports-table th:nth-child(5),
+  .reports-table td:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 1350px) {
+  .reports-table th:nth-child(7),
+  .reports-table td:nth-child(7) {
+    display: none;
+  }
+}
+
+@media (max-width: 1180px) {
+  .reports-table th:nth-child(10),
+  .reports-table td:nth-child(10) {
+    display: none;
+  }
+}
+
+@media (max-width: 1080px) {
+  .reports-table th:nth-child(9),
+  .reports-table td:nth-child(9) {
+    display: none;
+  }
+
+  .reports-name-cell {
+    max-width: 160px;
+  }
+
+  .reports-donor-cell {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 850px) {
+  .reports-table th:nth-child(6),
+  .reports-table td:nth-child(6) {
+    display: none;
+  }
+
+  .reports-name-cell {
+    max-width: 130px;
+  }
+
+  .reports-donor-cell {
+    max-width: 120px;
+  }
+}
+
+/* Phone width: down to just Report Name + Actions — donor, dates,
+   counts and status are all still one tap away via Actions > View. */
+@media (max-width: 600px) {
+  .reports-table th:nth-child(2),
+  .reports-table td:nth-child(2) {
+    display: none;
+  }
+
+  .reports-name-cell {
+    max-width: 110px;
   }
 }
