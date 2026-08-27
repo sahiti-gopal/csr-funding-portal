@@ -10,6 +10,7 @@ import ProjectOwnerCard from "../components/project/ProjectOwnerCard";
 import SponsorCard from "../components/project/SponsorCard";
 import DocumentsCard from "../components/project/DocumentsCard";
 import Gallery from "../components/project/Gallery";
+import { formatCount } from "../utils/format";
 
 import "../styles/projectDetails.css";
 
@@ -62,8 +63,8 @@ const decorateTeam = (team = []) =>
 const formatMetrics = (metrics = []) =>
   metrics.map((metric) => ({
     ...metric,
-    value: Number(metric.value).toLocaleString(),
-    target: Number(metric.target).toLocaleString(),
+    value: formatCount(metric.value),
+    target: metric.target != null ? formatCount(metric.target) : metric.target,
   }));
 
 export default function ProjectDetails() {

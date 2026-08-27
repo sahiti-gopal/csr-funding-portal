@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 
 import { getReport, approveReport, deliverReport, retryReport } from "../services/reportService";
+import { formatCurrency, formatCount } from "../utils/format";
 
 import "../styles/dashboard.css";
 import "../styles/reports.css";
@@ -40,18 +41,9 @@ const colorFor = (name = "") => {
   return DONOR_COLORS[Math.abs(hash) % DONOR_COLORS.length];
 };
 
-const formatCr = (value) => {
-  const n = Number(value || 0);
-  if (n >= 1e7) return `₹${(n / 1e7).toFixed(2)} Cr`;
-  if (n >= 1e5) return `₹${(n / 1e5).toFixed(1)} L`;
-  return `₹${n.toLocaleString("en-IN")}`;
-};
+const formatCr = formatCurrency;
 
-const formatCompact = (value) => {
-  const n = Number(value || 0);
-  if (n >= 1e5) return `${(n / 1e5).toFixed(2)} Lakh`;
-  return n.toLocaleString("en-IN");
-};
+const formatCompact = formatCount;
 
 const formatShortDate = (iso) =>
   iso
@@ -225,8 +217,8 @@ export default function ReportReview() {
                         </span>
                       )}
                     </td>
-                    <td>{row.target.toLocaleString("en-IN")}</td>
-                    <td>{row.achieved.toLocaleString("en-IN")}</td>
+                    <td>{formatCount(row.target)}</td>
+                    <td>{formatCount(row.achieved)}</td>
                     <td>
                       <div className="reports-progress-track">
                         <div
@@ -355,7 +347,7 @@ export default function ReportReview() {
                       />
                       {item.name}
                       <strong>
-                        {item.pct}% ({item.beneficiaries.toLocaleString("en-IN")})
+                        {item.pct}% ({formatCount(item.beneficiaries)})
                       </strong>
                     </div>
                   ))}

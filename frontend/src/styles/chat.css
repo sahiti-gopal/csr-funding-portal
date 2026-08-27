@@ -1,9 +1,33 @@
+/* .app-shell/.app-content sizing for this page (scoped via :has so it
+   doesn't affect any other page) replaces the old height:calc(100vh -
+   140px): that "140px" was a guess at the app header + padding above
+   this page, and 100vh itself doesn't reliably match the real visible
+   viewport on mobile browsers (dynamic address-bar chrome) — together
+   they let the input row get pushed below the fold on a phone with no
+   way to scroll down to it, since chat-page's own height didn't
+   actually match what was on screen. flex:1/min-height:0 through a
+   properly capped ancestor chain sizes this off the real available
+   space instead, the same technique used for the Overview page (see
+   dashboard.css's .app-shell:has(.dashboard .sdg-band) etc.). */
+.app-shell:has(.chat-page) {
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.app-content:has(.chat-page) {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding-bottom: 0;
+}
+
 .chat-page {
   display: grid;
   grid-template-columns: 260px 1fr;
   gap: 16px;
-  height: calc(100vh - 140px);
-  min-height: 480px;
+  flex: 1;
+  min-height: 0;
 }
 
 /* ===========================================================
@@ -153,6 +177,30 @@
   color: var(--brand-green);
 }
 
+/* history toggle + backdrop — only relevant below 900px, where the
+   history rail becomes a slide-in drawer instead of a stacked column */
+.chat-history-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--ink-200);
+  border-radius: 8px;
+  background: var(--surface-white);
+  color: var(--ink-700);
+  cursor: pointer;
+}
+
+.chat-history-toggle:hover {
+  border-color: var(--brand-green);
+  color: var(--brand-green);
+}
+
+.chat-history-backdrop {
+  display: none;
+}
+
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -232,6 +280,13 @@
   color: #fff;
 }
 
+.chat-bubble-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
 .chat-bubble {
   min-width: 0;
   padding: 10px 14px;
@@ -292,6 +347,86 @@
   background: var(--danger-bg);
   border-color: var(--danger-bg);
   color: var(--danger);
+}
+
+.chat-result-table-wrap {
+  margin-top: 6px;
+  max-width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--ink-100);
+  border-radius: var(--radius-lg);
+  background: var(--surface-white);
+}
+
+.chat-result-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+
+.chat-result-table th,
+.chat-result-table td {
+  padding: 6px 10px;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--ink-100);
+}
+
+.chat-result-table th {
+  color: var(--ink-500);
+  font-weight: 600;
+  text-transform: capitalize;
+  background: var(--ink-50, var(--surface-subtle));
+}
+
+.chat-result-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.chat-result-table-more {
+  padding: 6px 10px;
+  font-size: 12px;
+  color: var(--ink-400);
+}
+
+.chat-message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+}
+
+.chat-message-action-btn {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--ink-400);
+  border-radius: var(--radius-md, 6px);
+  cursor: pointer;
+}
+
+.chat-message-action-btn:hover {
+  background: var(--ink-100);
+  color: var(--ink-600);
+}
+
+.chat-message-action-btn.active {
+  color: var(--brand-green);
+}
+
+.chat-sql-preview {
+  flex-basis: 100%;
+  margin: 4px 0 0;
+  padding: 8px 10px;
+  background: var(--ink-900);
+  color: #d7ffd9;
+  font-size: 11.5px;
+  border-radius: var(--radius-md, 6px);
+  overflow-x: auto;
+  white-space: pre-wrap;
 }
 
 .chat-faq-row {
@@ -373,11 +508,39 @@
 @media (max-width: 900px) {
   .chat-page {
     grid-template-columns: 1fr;
-    height: auto;
+    position: relative;
   }
 
+  .chat-history-toggle {
+    display: flex;
+  }
+
+  /* the rail becomes a fixed-position slide-in drawer instead of a
+     stacked column — a stacked 200px-tall rail ate too much vertical
+     space above the chat pane on a phone-sized screen */
   .chat-history-rail {
-    max-height: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 280px;
+    max-width: calc(100vw - 40px);
+    z-index: 60;
+    border-radius: 0 var(--radius-xl) var(--radius-xl) 0;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+  }
+
+  .chat-history-rail.chat-history-rail-open {
+    transform: translateX(0);
+  }
+
+  .chat-history-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.35);
+    z-index: 55;
   }
 
   .chat-row {

@@ -1,4 +1,6 @@
-from flask import Blueprint, jsonify, request
+import os
+
+from flask import Blueprint, jsonify, request, current_app, send_from_directory
 from datetime import datetime
 
 from app.extensions import db
@@ -9,6 +11,25 @@ from app.models.beneficiary_category import BeneficiaryCategory
 from app.models.donor import Donor
 
 project_bp = Blueprint("projects", __name__)
+
+# Project documents (seeded ProjectDocument rows and the fallback pool below
+# alike) only ever use this small, fixed set of display names — mapped to a
+# real sample file under app/static/sample_documents/ (see
+# generate_sample_documents.py) so "Recent Files" has something genuine to
+# preview instead of just a name+size record with no file behind it.
+DOCUMENT_SAMPLE_FILES = {
+    "Project Proposal.pdf": "project_proposal.pdf",
+    "Progress Report.pdf": "progress_report.pdf",
+    "MOU Agreement.pdf": "mou_agreement.pdf",
+    "Q2 Impact Report.pdf": "q2_impact_report.pdf",
+    "Budget Estimate.xlsx": "budget_estimate.xlsx",
+    "Budget Breakdown.xlsx": "budget_breakdown.xlsx",
+}
+
+
+def _document_url(name):
+    filename = DOCUMENT_SAMPLE_FILES.get(name)
+    return f"/api/projects/documents/file/{filename}" if filename else None
 
 # Per-project-type breakdown of a project's `beneficiaries_reached` total
 # into 3 KPI tiles, used when no ProjectMetric rows were seeded for a project.
@@ -109,7 +130,7 @@ def fallback_team(p):
 
 def fallback_documents(p):
     return [
-        {"name": name, "size": size}
+        {"name": name, "size": size, "url": _document_url(name)}
         for name, size in (
             DOCUMENT_POOL[p.id % len(DOCUMENT_POOL):]
             + DOCUMENT_POOL[: p.id % len(DOCUMENT_POOL)]
@@ -253,12 +274,27 @@ def get_project(id):
                 else fallback_team(p)
             ),
             "documents": (
-                [{"name": d.name, "size": d.size} for d in p.documents]
+                [
+                    {"name": d.name, "size": d.size, "url": _document_url(d.name)}
+                    for d in p.documents
+                ]
                 if p.documents
                 else fallback_documents(p)
             ),
         }
     )
+
+
+@project_bp.route("/projects/documents/file/<path:filename>", methods=["GET"])
+def get_project_document_file(filename):
+    # Only ever serves the fixed sample files above (never an arbitrary path
+    # off disk) — filename always comes from DOCUMENT_SAMPLE_FILES' own
+    # values, not directly from user input.
+    if filename not in DOCUMENT_SAMPLE_FILES.values():
+        return jsonify({"message": "File not found"}), 404
+
+    sample_dir = os.path.join(current_app.static_folder, "sample_documents")
+    return send_from_directory(sample_dir, filename)
 
 
 # ==========================

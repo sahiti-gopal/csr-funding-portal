@@ -37,6 +37,8 @@ import {
   deleteRole,
 } from "../services/roleService";
 
+import { formatCount } from "../utils/format";
+
 import "../styles/dashboard.css";
 import "../styles/settings.css";
 
@@ -73,12 +75,6 @@ const swatchFor = (name = "") => {
   let hash = 0;
   for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
   return SWATCHES[Math.abs(hash) % SWATCHES.length];
-};
-
-const formatCount = (n) => {
-  const v = Number(n) || 0;
-  if (v >= 1000) return `${(v / 1000).toFixed(v % 1000 === 0 ? 0 : 1)}K`;
-  return `${v}`;
 };
 
 const TABS = [

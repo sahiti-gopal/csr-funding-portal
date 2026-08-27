@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { getDonor, getDonorAiSummary } from "../services/donorService";
+import { formatCurrency, formatCount } from "../utils/format";
 
 import "../styles/donors.css";
 import "../styles/donorDetail.css";
@@ -22,12 +23,7 @@ const initials = (name = "") =>
     .join("")
     .toUpperCase();
 
-const formatAmount = (amount) => {
-  if (!amount) return "₹0";
-  if (amount >= 10000000) return `₹${(amount / 10000000).toFixed(1)} Cr`;
-  if (amount >= 100000) return `₹${(amount / 100000).toFixed(1)} L`;
-  return `₹${amount.toLocaleString()}`;
-};
+const formatAmount = formatCurrency;
 
 const PROJECT_STATUS_CLASS = {
   Active: "status-pill-active",
@@ -127,7 +123,7 @@ export default function DonorDetail() {
         </div>
         <div className="donor-detail-stat">
           <span>Beneficiaries</span>
-          <strong>{donor.beneficiaries_total.toLocaleString()}</strong>
+          <strong>{formatCount(donor.beneficiaries_total)}</strong>
         </div>
         <div className="donor-detail-stat">
           <span>Overdue payments</span>
@@ -192,38 +188,40 @@ export default function DonorDetail() {
         {donor.projects.length === 0 ? (
           <div className="donor-detail-empty">No projects yet.</div>
         ) : (
-          <table className="donor-detail-projects-table">
-            <thead>
-              <tr>
-                <th>Project</th>
-                <th>Status</th>
-                <th>Budget</th>
-                <th>Raised</th>
-                <th>Utilized</th>
-                <th>Beneficiaries</th>
-              </tr>
-            </thead>
-            <tbody>
-              {donor.projects.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.name}</td>
-                  <td>
-                    <span
-                      className={`donor-detail-status-badge ${
-                        PROJECT_STATUS_CLASS[p.status] ?? ""
-                      }`}
-                    >
-                      {p.status}
-                    </span>
-                  </td>
-                  <td>{formatAmount(p.budget)}</td>
-                  <td>{formatAmount(p.raised_amount)}</td>
-                  <td>{formatAmount(p.utilized_amount)}</td>
-                  <td>{p.beneficiaries_reached.toLocaleString()}</td>
+          <div className="donor-detail-projects-table-scroll">
+            <table className="donor-detail-projects-table">
+              <thead>
+                <tr>
+                  <th>Project</th>
+                  <th>Status</th>
+                  <th>Budget</th>
+                  <th>Raised</th>
+                  <th>Utilized</th>
+                  <th>Beneficiaries</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {donor.projects.map((p) => (
+                  <tr key={p.id}>
+                    <td>{p.name}</td>
+                    <td>
+                      <span
+                        className={`donor-detail-status-badge ${
+                          PROJECT_STATUS_CLASS[p.status] ?? ""
+                        }`}
+                      >
+                        {p.status}
+                      </span>
+                    </td>
+                    <td>{formatAmount(p.budget)}</td>
+                    <td>{formatAmount(p.raised_amount)}</td>
+                    <td>{formatAmount(p.utilized_amount)}</td>
+                    <td>{formatCount(p.beneficiaries_reached)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>

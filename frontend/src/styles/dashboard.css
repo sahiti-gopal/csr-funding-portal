@@ -225,6 +225,22 @@ body,
   white-space: nowrap;
 }
 
+/* Below this, "SDG impact" + the nowrap count sentence no longer fit
+   side by side on one line — nowrap was clipping the sentence's tail
+   past the band's edge instead of ever actually wrapping it. Stack
+   them and let the sentence wrap normally instead. */
+@media (max-width: 480px) {
+  .sdg-band-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .sdg-band-count {
+    white-space: normal;
+  }
+}
+
 .sdg-band-count strong {
   color: var(--ink-900);
   font-weight: 700;
@@ -445,6 +461,7 @@ body,
 .panel-title {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 8px;
   /* right padding = panel-scroll's 14px + the 8px scrollbar-gutter it
      reserves, so the count badge stays flush with the list below it */
@@ -552,6 +569,21 @@ body,
   font-size: 11.5px;
   font-weight: 600;
   cursor: pointer;
+}
+
+/* Once .panel-title wraps (narrow phone widths — the icon + "AI
+   Summary" no longer fit alongside this dropdown on one line), the
+   dropdown drops to its own row. margin-left:auto is only meaningful
+   for pushing it to the right of the title *on the same line*; on its
+   own wrapped row it just left an odd, seemingly random gap to its
+   left instead. Dropping the margin and spanning the full row instead
+   reads as a deliberate second line, not a misplaced control. */
+@media (max-width: 480px) {
+  .ai-summary-donor-select {
+    margin-left: 0;
+    max-width: none;
+    width: 100%;
+  }
 }
 
 .ai-summary-body {
@@ -1374,10 +1406,25 @@ body,
   line-height: 1.15;
   letter-spacing: 0.1px;
   overflow-wrap: break-word;
+  /* .sdg-tile uses align-items:center (not stretch), so without an
+     explicit width constraint this flex/inline item just sizes to its
+     unwrapped text's natural width and overflows past the tile's edges
+     instead of wrapping — overflow-wrap:break-word alone can't force a
+     break without something to break against. max-width:100% ties it
+     to the tile's own width, which is what actually makes long labels
+     (e.g. "Partnerships") wrap instead of sticking out. */
+  max-width: 100%;
 }
 
 .sdg-tile-tooltip {
   position: absolute;
+  /* Even at opacity:0/visibility:hidden, an absolutely-positioned
+     168-220px-wide tooltip near the edge tiles still contributes to
+     the page's scrollWidth on a narrow phone, opening an invisible-
+     but-real horizontal scrollbar. Hovering isn't reachable by touch
+     anyway, so there's nothing lost by not rendering it there —
+     (hover:none) targets real touch devices, the width fallback
+     covers testing tools that don't emulate touch media features. */
   top: calc(100% + 8px);
   left: 50%;
   transform: translateX(-50%) translateY(-4px);
@@ -1455,6 +1502,12 @@ body,
   left: auto;
   right: 24px;
   transform: none;
+}
+
+@media (hover: none), (max-width: 480px) {
+  .sdg-tile-tooltip {
+    display: none;
+  }
 }
 
 .sdg-tile-tooltip-title {

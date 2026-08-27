@@ -203,6 +203,35 @@
   }
 }
 
+/* Phone widths: the 6 columns left after the tier above still don't
+   fit — .project-table-card's overflow:hidden (for its rounded
+   corners) was silently clipping the right side of the table instead
+   of showing a scrollbar. Keep dropping lower-priority columns
+   (all still reachable via the row's own detail page) until what's
+   left actually fits. */
+@media (max-width: 700px) {
+  .project-table th:nth-child(2),
+  .project-table td:nth-child(2),
+  .project-table th:nth-child(5),
+  .project-table td:nth-child(5) {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .project-table th:nth-child(4),
+  .project-table td:nth-child(4) {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .project-table th:nth-child(6),
+  .project-table td:nth-child(6) {
+    display: none;
+  }
+}
+
 .project-row-sub{
 
     color:var(--ink-400);

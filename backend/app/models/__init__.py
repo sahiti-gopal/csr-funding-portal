@@ -23,6 +23,10 @@ from .payment_document import PaymentDocument
 # ----------------------------
 from .conversation import Conversation
 from .message import Message
+from .chat_query_audit import ChatQueryAudit
+from .chat_failed_question import ChatFailedQuestion
+from .chat_query_cache import ChatQueryCache
+from .chat_promoted_example import ChatPromotedExample
 
 # ----------------------------
 # Reports Module

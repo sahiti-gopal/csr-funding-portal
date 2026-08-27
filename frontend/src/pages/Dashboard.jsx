@@ -15,6 +15,7 @@ import RiskCard from "../components/dashboard/RiskCard";
 import SDGImpact from "../components/dashboard/SDGImpact";
 
 import { getDonor, getDonorAiSummary } from "../services/donorService";
+import { formatCurrency, formatCount } from "../utils/format";
 
 import "../styles/dashboard.css";
 
@@ -27,12 +28,7 @@ const utilizationStatus = (pct) => {
   return "Needs Attention";
 };
 
-const formatFunds = (amount) => {
-  const value = amount ?? 0;
-  if (value >= 10000000) return `₹${(value / 10000000).toFixed(1)} Cr`;
-  if (value >= 100000) return `₹${(value / 100000).toFixed(1)} L`;
-  return `₹${value.toLocaleString()}`;
-};
+const formatFunds = formatCurrency;
 
 const RISK_ICONS = {
   file: FileText,
@@ -118,9 +114,7 @@ export default function Dashboard() {
           },
           {
             title: "Beneficiaries",
-            value: (
-              d.beneficiaries ?? 0
-            ).toLocaleString(),
+            value: formatCount(d.beneficiaries),
             subtitle: "reached",
           },
         ]);
@@ -191,7 +185,7 @@ export default function Dashboard() {
         },
         {
           title: "Beneficiaries",
-          value: (donorDetail.beneficiaries_total ?? 0).toLocaleString(),
+          value: formatCount(donorDetail.beneficiaries_total),
           subtitle: "reached",
         },
       ]

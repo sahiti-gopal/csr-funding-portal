@@ -6,13 +6,7 @@ import {
 } from "lucide-react";
 
 import ProgressBar from "./ProgressBar";
-
-const formatCurrency = (value) =>
-  new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(Number(value || 0));
+import { formatCurrency } from "../../../utils/format";
 
 export default function LinkedProjects({
   projects = [],

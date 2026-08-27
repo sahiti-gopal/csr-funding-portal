@@ -26,3 +26,8 @@ export const deleteConversation = async (id) => {
   const response = await api.delete(`/conversations/${id}`);
   return response.data;
 };
+
+export const submitMessageFeedback = async (messageId, rating) => {
+  const response = await api.post(`/messages/${messageId}/feedback`, { rating });
+  return response.data;
+};

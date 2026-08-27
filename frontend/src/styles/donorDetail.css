@@ -225,6 +225,11 @@
   padding: 12px 0;
 }
 
+.donor-detail-projects-table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 .donor-detail-projects-table {
   width: 100%;
   border-collapse: collapse;
@@ -278,5 +283,15 @@
   }
   .donor-detail-ai-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .donor-detail-stats-row {
+    grid-template-columns: 1fr;
+  }
+
+  .donor-detail-header {
+    flex-wrap: wrap;
   }
 }

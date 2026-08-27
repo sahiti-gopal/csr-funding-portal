@@ -1,4 +1,5 @@
 import os
+import random
 from datetime import date
 
 from werkzeug.security import generate_password_hash
@@ -44,6 +45,7 @@ def run_seed():
     Risk.query.delete()
     Project.query.delete()
     DonorDocument.query.delete()
+    DonorPayment.query.delete()
     Donor.query.delete()
     BeneficiaryCategory.query.delete()
     ProjectType.query.delete()
@@ -130,11 +132,14 @@ def run_seed():
     women_emp = ProjectType.query.filter_by(name="Women Empowerment").first()
     livelihood = ProjectType.query.filter_by(name="Livelihood").first()
     rural_dev = ProjectType.query.filter_by(name="Rural Development").first()
+    skill_dev = ProjectType.query.filter_by(name="Skill Development").first()
 
     students = BeneficiaryCategory.query.filter_by(name="Students").first()
     women = BeneficiaryCategory.query.filter_by(name="Women").first()
     children = BeneficiaryCategory.query.filter_by(name="Children").first()
     farmers = BeneficiaryCategory.query.filter_by(name="Farmers").first()
+    youth = BeneficiaryCategory.query.filter_by(name="Youth").first()
+    elderly = BeneficiaryCategory.query.filter_by(name="Elderly").first()
 
     # ===================================================
     # DONORS
@@ -1033,11 +1038,202 @@ def run_seed():
 
     ]
 
+    # ---------------------------------------------
+    # Generated projects — bulk volume so aggregate/
+    # group-by chat questions aren't trivially small,
+    # plus deliberate coverage of every status value.
+    # ---------------------------------------------
+
+    NUM_GENERATED_PROJECTS = 55
+
+    REGIONS = ["South", "West", "North", "East"]
+
+    CITY_POOL = {
+        "South": ["Hyderabad", "Bangalore", "Chennai", "Coimbatore", "Madurai", "Vijayawada", "Kochi", "Mysore", "Warangal", "Visakhapatnam"],
+        "West": ["Mumbai", "Pune", "Nagpur", "Ahmedabad", "Surat", "Nashik", "Panaji", "Indore", "Rajkot", "Aurangabad"],
+        "North": ["New Delhi", "Gurugram", "Chandigarh", "Lucknow", "Jaipur", "Dehradun", "Noida", "Kanpur", "Ludhiana", "Shimla"],
+        "East": ["Kolkata", "Bhubaneswar", "Patna", "Guwahati", "Ranchi", "Gangtok", "Siliguri", "Cuttack", "Imphal", "Shillong"],
+    }
+
+    PROJECT_TYPE_VARS = {
+        "Education": (education, students),
+        "Healthcare": (healthcare, children),
+        "Environment": (environment, children),
+        "Women Empowerment": (women_emp, women),
+        "Livelihood": (livelihood, farmers),
+        "Rural Development": (rural_dev, farmers),
+        "Skill Development": (skill_dev, youth),
+    }
+
+    THEMES_BY_TYPE = {
+        "Education": ["School Renovation", "Digital Learning Lab", "Literacy Mission", "STEM Outreach", "Scholarship Program", "Teacher Training Initiative"],
+        "Healthcare": ["Health Camp", "Maternal Care Program", "Nutrition Drive", "Sanitation Project", "Mobile Clinic Initiative", "Child Health Drive"],
+        "Environment": ["Green Corridor", "Afforestation Drive", "Water Conservation Project", "Coastal Cleanup", "Solar Energy Initiative", "Waste Management Program"],
+        "Women Empowerment": ["Women Cooperative", "Skill Academy", "Entrepreneurship Program", "Weavers Collective", "Self-Help Group Initiative"],
+        "Livelihood": ["Farmer Livelihood Support", "Artisan Support Program", "Microfinance Initiative", "Livelihood Restoration Project"],
+        "Rural Development": ["Rural Infrastructure Uplift", "Village Connectivity Project", "Rural Electrification Drive", "Community Center Initiative"],
+        "Skill Development": ["Youth Skilling Hub", "Vocational Training Center", "Digital Skills Bootcamp", "Employment Readiness Program"],
+    }
+
+    DONOR_CYCLE = [infosys, tata, reliance, wipro, jsw, aditya_birla, mahindra, hcl, sbi, vedanta, axis, lt_trust]
+    FINANCIAL_YEARS = ["2023-24", "2024-25", "2025-26", "2026-27"]
+    FY_START_YEAR = {"2023-24": 2023, "2024-25": 2024, "2025-26": 2025, "2026-27": 2026}
+
+    # Full status enum represented (existing hand-written projects only used
+    # Active/Planning/Completed) — a real portfolio has stalled/dropped work too.
+    STATUS_CYCLE = ["Active", "Planning", "Completed", "On Hold", "Cancelled", "Delayed"]
+
+    UTILIZATION_RANGE_BY_STATUS = {
+        "Completed": (95, 100),
+        "Active": (30, 75),
+        "Planning": (5, 20),
+        "On Hold": (10, 40),
+        "Cancelled": (0, 15),
+        "Delayed": (15, 45),
+    }
+
+    rng = random.Random(42)  # deterministic across re-seeds
+    type_names = list(PROJECT_TYPE_VARS.keys())
+    generated_projects = []
+
+    for i in range(NUM_GENERATED_PROJECTS):
+        region = REGIONS[i % len(REGIONS)]
+        type_name = type_names[i % len(type_names)]
+        project_type, beneficiary = PROJECT_TYPE_VARS[type_name]
+        fy = FINANCIAL_YEARS[i % len(FINANCIAL_YEARS)]
+        status = STATUS_CYCLE[i % len(STATUS_CYCLE)]
+        city = CITY_POOL[region][i % len(CITY_POOL[region])]
+        theme = THEMES_BY_TYPE[type_name][i % len(THEMES_BY_TYPE[type_name])]
+        donor = DONOR_CYCLE[i % len(DONOR_CYCLE)]
+
+        budget = rng.randint(28, 95) * 10000
+        util_min, util_max = UTILIZATION_RANGE_BY_STATUS[status]
+        utilized_amount = round(budget * rng.randint(util_min, util_max) / 100)
+        beneficiaries_reached = rng.randint(150, 2500)
+
+        start_year = FY_START_YEAR[fy]
+        start_date = date(start_year, ((i * 2) % 12) + 1, 1)
+        end_date = date(start_year + 1, ((i * 3) % 12) + 1, 28)
+
+        generated_projects.append(
+            Project(
+                project_name=f"{city} {theme}",
+                project_type_id=project_type.id,
+                beneficiary_category_id=beneficiary.id,
+                budget=budget,
+                location=city,
+                region=region,
+                financial_year=fy,
+                status=status,
+                start_date=start_date,
+                end_date=end_date,
+                donor_id=donor.id,
+                raised_amount=budget,
+                utilized_amount=utilized_amount,
+                beneficiaries_reached=beneficiaries_reached,
+            )
+        )
+
+    # ---------------------------------------------
+    # Deliberate edge cases — hand-placed rather than
+    # left to chance, so the chat/SQL pipeline is
+    # guaranteed to see non-trivial relationships.
+    # ---------------------------------------------
+
+    edge_case_projects = [
+        # Partial funding: raised < budget
+        Project(
+            project_name="Odisha Partial Funding Pilot",
+            project_type_id=rural_dev.id,
+            beneficiary_category_id=farmers.id,
+            budget=800000,
+            location="Cuttack",
+            region="East",
+            financial_year="2026-27",
+            status="Active",
+            start_date=date(2026, 2, 1),
+            end_date=date(2027, 1, 31),
+            donor_id=vedanta.id,
+            raised_amount=500000,
+            utilized_amount=210000,
+            beneficiaries_reached=430,
+        ),
+        # Over-subscribed: raised > budget
+        Project(
+            project_name="Karnataka Oversubscribed Scholarship Fund",
+            project_type_id=education.id,
+            beneficiary_category_id=students.id,
+            budget=400000,
+            location="Mysore",
+            region="South",
+            financial_year="2026-27",
+            status="Active",
+            start_date=date(2026, 3, 1),
+            end_date=date(2027, 2, 28),
+            donor_id=jsw.id,
+            raised_amount=560000,
+            utilized_amount=180000,
+            beneficiaries_reached=610,
+        ),
+        # Zero utilization
+        Project(
+            project_name="Punjab Zero Utilization Health Initiative",
+            project_type_id=healthcare.id,
+            beneficiary_category_id=women.id,
+            budget=450000,
+            location="Ludhiana",
+            region="North",
+            financial_year="2026-27",
+            status="Planning",
+            start_date=date(2026, 8, 1),
+            end_date=date(2027, 5, 31),
+            donor_id=sbi.id,
+            raised_amount=450000,
+            utilized_amount=0,
+            beneficiaries_reached=0,
+        ),
+        # Overdue: end_date already passed, still marked Active
+        Project(
+            project_name="Maharashtra Overdue Sanitation Drive",
+            project_type_id=healthcare.id,
+            beneficiary_category_id=children.id,
+            budget=380000,
+            location="Nagpur",
+            region="West",
+            financial_year="2025-26",
+            status="Active",
+            start_date=date(2025, 6, 1),
+            end_date=date(2026, 6, 1),
+            donor_id=mahindra.id,
+            raised_amount=380000,
+            utilized_amount=190000,
+            beneficiaries_reached=740,
+        ),
+        Project(
+            project_name="Assam Overdue Literacy Drive",
+            project_type_id=education.id,
+            beneficiary_category_id=students.id,
+            budget=310000,
+            location="Guwahati",
+            region="East",
+            financial_year="2025-26",
+            status="Active",
+            start_date=date(2025, 4, 1),
+            end_date=date(2026, 5, 15),
+            donor_id=lt_trust.id,
+            raised_amount=310000,
+            utilized_amount=140000,
+            beneficiaries_reached=520,
+        ),
+    ]
+
+    projects = projects + generated_projects + edge_case_projects
+
     db.session.add_all(projects)
 
     db.session.commit()
 
-    print("Projects inserted.")
+    print(f"Projects inserted ({len(projects)} total).")
 
     # ===================================================
     # RISKS
@@ -1099,13 +1295,38 @@ def run_seed():
             icon="file",
         ),
 
+        # ---------------------------------------------
+        # Additional risks — includes "Low" level, which
+        # the hand-written set above never used, and
+        # brings the table above trivial-group-by size.
+        # ---------------------------------------------
+
+        Risk(title="Minor documentation gap", description="Karnataka Women Weavers is missing a non-critical annexure in its proposal file.", level="Low", due_date=date(2026, 9, 10), action="Attach missing annexure", icon="file"),
+        Risk(title="Vendor invoice mismatch", description="A vendor invoice for Rural Infrastructure Uplift doesn't match the approved PO amount.", level="Medium", due_date=date(2026, 9, 5), action="Reconcile invoice with PO", icon="file"),
+        Risk(title="Site visit overdue", description="No field visit logged for Assam Tea Worker Welfare in over 90 days.", level="Medium", due_date=date(2026, 9, 12), action="Schedule field visit", icon="check"),
+        Risk(title="Beneficiary count unverified", description="Reported beneficiary numbers for Bihar Digital Inclusion haven't been independently verified.", level="Low", due_date=date(2026, 9, 20), action="Commission third-party verification", icon="check"),
+        Risk(title="Partial fund shortfall", description="Odisha Partial Funding Pilot has only received 62% of its approved budget.", level="High", due_date=date(2026, 9, 1), action="Follow up with donor on remaining tranche", icon="shield"),
+        Risk(title="Over-subscription reconciliation", description="Karnataka Oversubscribed Scholarship Fund received more than its approved budget and needs reallocation sign-off.", level="Low", due_date=date(2026, 10, 1), action="Get reallocation approved", icon="check"),
+        Risk(title="Zero spend flagged", description="Punjab Zero Utilization Health Initiative has not spent any of its raised funds since approval.", level="High", due_date=date(2026, 9, 15), action="Confirm project start plan", icon="shield"),
+        Risk(title="Project overdue for closure", description="Maharashtra Overdue Sanitation Drive is past its end date but still marked Active.", level="High", due_date=date(2026, 9, 3), action="Close out or extend project timeline", icon="shield"),
+        Risk(title="Project overdue for closure", description="Assam Overdue Literacy Drive is past its end date but still marked Active.", level="High", due_date=date(2026, 9, 8), action="Close out or extend project timeline", icon="shield"),
+        Risk(title="Staffing gap reported", description="Haryana Skill Academy's field coordinator role has been vacant for a month.", level="Medium", due_date=date(2026, 9, 18), action="Fill field coordinator vacancy", icon="check"),
+        Risk(title="Data quality flag", description="Duplicate beneficiary entries detected in Odisha Rural Health Camp's tracker.", level="Low", due_date=date(2026, 9, 25), action="Deduplicate beneficiary records", icon="file"),
+        Risk(title="Communication lapse", description="No status update sent to Vedanta Foundation for Telangana Green Corridor in over 60 days.", level="Medium", due_date=date(2026, 9, 22), action="Send donor status update", icon="file"),
+        Risk(title="Renewal decision pending", description="Surat Youth Skilling Hub's donor renewal decision is pending beyond the usual review window.", level="Medium", due_date=date(2026, 10, 5), action="Follow up on renewal decision", icon="check"),
+        Risk(title="Minor budget variance", description="Nashik School Infrastructure shows a small unexplained variance between planning and actual budget.", level="Low", due_date=date(2026, 10, 10), action="Reconcile budget variance", icon="file"),
+        Risk(title="Permit renewal required", description="Gujarat Green Belt's local environmental permit is due for renewal.", level="Medium", due_date=date(2026, 10, 15), action="Renew environmental permit", icon="shield"),
+        Risk(title="Training completion lag", description="Haryana Skill Academy is behind its planned training-session schedule.", level="Low", due_date=date(2026, 10, 20), action="Catch up on training schedule", icon="check"),
+        Risk(title="Insurance coverage gap", description="Uttarakhand Forest Restoration's field team insurance coverage lapsed last month.", level="High", due_date=date(2026, 9, 6), action="Renew field team insurance", icon="shield"),
+        Risk(title="Photo documentation missing", description="Sikkim Eco Tourism Skilling is missing required photo documentation for its last milestone.", level="Low", due_date=date(2026, 10, 25), action="Upload milestone photo documentation", icon="file"),
+
     ]
 
     db.session.add_all(risks)
 
     db.session.commit()
 
-    print("Risks inserted.")
+    print(f"Risks inserted ({len(risks)} total).")
 
     # ===================================================
     # PAYMENT DATA
@@ -1411,6 +1632,41 @@ def run_seed():
             project_id=library.id if library else None,
         ),
     ]
+
+    # ---------------------------------------------
+    # Additional alerts — brings the table above
+    # trivial-group-by size and covers HIGH/MEDIUM/LOW
+    # priority with a realistic mix of read/unread.
+    # ---------------------------------------------
+
+    overdue1 = project("Maharashtra Overdue Sanitation Drive")
+    overdue2 = project("Assam Overdue Literacy Drive")
+    zero_util = project("Punjab Zero Utilization Health Initiative")
+    partial = project("Odisha Partial Funding Pilot")
+    oversub = project("Karnataka Oversubscribed Scholarship Fund")
+
+    extra_alerts = [
+        Alert(title="Project past end date", description="Maharashtra Overdue Sanitation Drive is past its end date but still marked Active.", category="DONOR RISK", priority="HIGH", status="Unread", due_date=date(2026, 9, 3), is_read=False, is_resolved=False, project_id=overdue1.id if overdue1 else None),
+        Alert(title="Project past end date", description="Assam Overdue Literacy Drive is past its end date but still marked Active.", category="DONOR RISK", priority="HIGH", status="Unread", due_date=date(2026, 9, 8), is_read=False, is_resolved=False, project_id=overdue2.id if overdue2 else None),
+        Alert(title="Zero utilization detected", description="Punjab Zero Utilization Health Initiative has not spent any raised funds.", category="DONOR RISK", priority="HIGH", status="Unread", due_date=date(2026, 9, 15), is_read=False, is_resolved=False, project_id=zero_util.id if zero_util else None),
+        Alert(title="Funding shortfall", description="Odisha Partial Funding Pilot has only received 62% of its approved budget.", category="DONOR RISK", priority="MEDIUM", status="Unread", due_date=date(2026, 9, 1), is_read=False, is_resolved=False, project_id=partial.id if partial else None),
+        Alert(title="Reallocation approval needed", description="Karnataka Oversubscribed Scholarship Fund exceeded its approved budget and needs reallocation sign-off.", category="DONOR RISK", priority="LOW", status="Read", due_date=date(2026, 10, 1), is_read=True, is_resolved=False, project_id=oversub.id if oversub else None),
+        Alert(title="Document verification failed", description="Compliance document verification failed for a recent upload.", category="DOCUMENTS", priority="MEDIUM", status="Unread", due_date=date(2026, 9, 20), is_read=False, is_resolved=False, project_id=None),
+        Alert(title="Report submission delayed", description="Quarterly impact report submission slipped past its due date.", category="REPORTS", priority="MEDIUM", status="Read", due_date=date(2026, 8, 30), is_read=True, is_resolved=False, project_id=None),
+        Alert(title="Donor renewal pending", description="A donor renewal decision is pending beyond the usual review window.", category="DONOR RISK", priority="LOW", status="Read", due_date=date(2026, 10, 5), is_read=True, is_resolved=False, project_id=None),
+        Alert(title="Field visit overdue", description="No field visit logged for a project in over 90 days.", category="DONOR RISK", priority="MEDIUM", status="Unread", due_date=date(2026, 9, 12), is_read=False, is_resolved=False, project_id=None),
+        Alert(title="Data quality flag", description="Duplicate beneficiary entries detected in a project tracker.", category="DOCUMENTS", priority="LOW", status="Read", due_date=date(2026, 9, 25), is_read=True, is_resolved=True, project_id=None),
+        Alert(title="Insurance coverage lapsed", description="Field team insurance coverage lapsed for an active project.", category="DONOR RISK", priority="HIGH", status="Unread", due_date=date(2026, 9, 6), is_read=False, is_resolved=False, project_id=None),
+        Alert(title="Permit renewal required", description="A local environmental permit is due for renewal.", category="DOCUMENTS", priority="MEDIUM", status="Unread", due_date=date(2026, 10, 15), is_read=False, is_resolved=False, project_id=None),
+        Alert(title="Training schedule slipping", description="A skilling program is behind its planned training-session schedule.", category="DONOR RISK", priority="LOW", status="Read", due_date=date(2026, 10, 20), is_read=True, is_resolved=False, project_id=None),
+        Alert(title="System maintenance completed", description="Scheduled portal maintenance completed successfully.", category="SYSTEM", priority="LOW", status="Read", due_date=None, is_read=True, is_resolved=True, project_id=None),
+        Alert(title="New donor onboarded", description="A new donor record was added to the portal.", category="SYSTEM", priority="LOW", status="Read", due_date=None, is_read=True, is_resolved=True, project_id=None),
+        Alert(title="Budget variance flagged", description="A small unexplained variance was found between planning and actual budget.", category="DONOR RISK", priority="LOW", status="Unread", due_date=date(2026, 10, 10), is_read=False, is_resolved=False, project_id=None),
+        Alert(title="Photo documentation missing", description="Required milestone photo documentation is missing for a project.", category="DOCUMENTS", priority="LOW", status="Unread", due_date=date(2026, 10, 25), is_read=False, is_resolved=False, project_id=None),
+        Alert(title="Staffing gap reported", description="A field coordinator role has been vacant for a month on an active project.", category="DONOR RISK", priority="MEDIUM", status="Unread", due_date=date(2026, 9, 18), is_read=False, is_resolved=False, project_id=None),
+    ]
+
+    alerts = alerts + extra_alerts
 
     db.session.add_all(alerts)
     db.session.commit()

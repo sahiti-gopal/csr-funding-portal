@@ -1,4 +1,5 @@
 import Collapsible from "./Collapsible";
+import { formatCurrency as formatCurrencyValue } from "../../utils/format";
 
 const initials = (name = "") =>
   name
@@ -10,9 +11,7 @@ const initials = (name = "") =>
     .toUpperCase();
 
 const formatCurrency = (value) =>
-  value == null
-    ? null
-    : `₹${(value / 10000000).toFixed(1)} Cr`;
+  value == null ? null : formatCurrencyValue(value);
 
 const SPONSOR_LOGOS = {
   "Aditya Birla CSR": "/images/gallery/abg-renewable-logo.png",

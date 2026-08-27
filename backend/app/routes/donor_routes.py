@@ -6,6 +6,7 @@ from app.models.project import Project
 from app.models.project_type import ProjectType
 from app.routes.dashboard_routes import PROJECT_TYPE_SDG_MAP
 from app.services.ai_summary import generate_ai_json
+from app.utils.format import format_inr, format_count
 
 donor_bp = Blueprint("donors", __name__)
 
@@ -26,8 +27,12 @@ DONOR_AI_SYSTEM_PROMPT = (
     "funded projects — utilization, beneficiaries reached, project status "
     "mix). "
     "Use ONLY the numbers given — never invent or estimate a number that "
-    "isn't present. Do not mention SQL, databases, or JSON in the text "
-    "itself."
+    "isn't present. Every field ending in \"_formatted\" is the Indian-style "
+    "abbreviated form (Cr for crore, L for lakh) of the field with the same "
+    "base name — when the summary mentions that figure, use the _formatted "
+    'value verbatim (e.g. "₹1.8 Cr") instead of writing out the full '
+    "number, so the text never shows a long run of digits. Do not mention "
+    "SQL, databases, or JSON in the text itself."
 )
 
 def _donor_stats(donor_id):
@@ -119,7 +124,7 @@ def _fallback_donor_summary(donor, stats):
         "project_health_summary": (
             f"Across {stats['projects_total']} project(s), "
             f"{stats['utilization_pct']}% of raised funds have been utilized, "
-            f"reaching {stats['beneficiaries_total']} beneficiaries."
+            f"reaching {format_count(stats['beneficiaries_total'])} beneficiaries."
         ),
     }
 
@@ -182,6 +187,13 @@ def donor_ai_summary(donor_id):
                 str(donor.last_contact) if donor.last_contact else None
             ),
             **{k: v for k, v in stats.items() if k != "projects"},
+            # Abbreviated companion fields for the prompt only (see
+            # DONOR_AI_SYSTEM_PROMPT) — the frontend formats the raw stats
+            # itself, these just give the model a ready-made short form.
+            "budget_total_formatted": format_inr(stats["budget_total"]),
+            "raised_total_formatted": format_inr(stats["raised_total"]),
+            "utilized_total_formatted": format_inr(stats["utilized_total"]),
+            "beneficiaries_total_formatted": format_count(stats["beneficiaries_total"]),
         },
     )
 

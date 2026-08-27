@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 
 import StatusBadge from "./StatusBadge";
+import { formatCurrency } from "../../../utils/format";
 
 export default function PaymentSchedule({
   rows = [],
@@ -58,16 +59,7 @@ export default function PaymentSchedule({
     }
   };
 
-  const formatMoney = (value) => {
-    return new Intl.NumberFormat(
-      "en-IN",
-      {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0,
-      }
-    ).format(value || 0);
-  };
+  const formatMoney = formatCurrency;
 
   return (
     <div className="payment-schedule-card">

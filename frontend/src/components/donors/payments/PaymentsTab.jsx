@@ -9,6 +9,7 @@ import FundUtilization from "./FundUtilization";
 import LinkedProjects from "./LinkedProjects";
 import AIInsights from "./AIInsights";
 import RecentActivity from "./RecentActivity";
+import { formatCurrency } from "../../../utils/format";
 
 import "../../../styles/payments.css";
 
@@ -19,25 +20,6 @@ export default function PaymentsTab({ donor }) {
   const [loading, setLoading] = useState(true);
 
   const [paymentData, setPaymentData] = useState(null);
-
-  //----------------------------------
-  // Currency Formatter
-  //----------------------------------
-
-  const formatCurrency = (value) => {
-
-    const amount = Number(value || 0);
-
-    return new Intl.NumberFormat(
-      "en-IN",
-      {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0,
-      }
-    ).format(amount);
-
-  };
 
   //----------------------------------
   // Load Payments

@@ -1,6 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Bot, MessageSquarePlus, Send, Sparkles, Trash2, User } from "lucide-react";
+import {
+  Bot,
+  Code2,
+  History,
+  MessageSquarePlus,
+  Send,
+  Sparkles,
+  ThumbsDown,
+  ThumbsUp,
+  Trash2,
+  User,
+} from "lucide-react";
 
 import {
   createConversation,
@@ -8,7 +19,9 @@ import {
   getConversation,
   listConversations,
   sendMessage,
+  submitMessageFeedback,
 } from "../services/chatService";
+import ChatResultTable from "../components/chat/ChatResultTable";
 
 import "../styles/chat.css";
 
@@ -33,10 +46,63 @@ function formatRelativeTime(dateString) {
   return date.toLocaleDateString();
 }
 
+function ChatMessageActions({ message, conversationId, queryClient }) {
+  const [showSql, setShowSql] = useState(false);
+
+  const feedbackMutation = useMutation({
+    mutationFn: (rating) => submitMessageFeedback(message.id, rating),
+    onSuccess: (_data, rating) => {
+      queryClient.setQueryData(["conversation", conversationId], (prev) => ({
+        ...prev,
+        messages: (prev?.messages || []).map((m) =>
+          m.id === message.id ? { ...m, feedback: rating } : m
+        ),
+      }));
+    },
+  });
+
+  if (typeof message.id !== "number") return null;
+
+  return (
+    <div className="chat-message-actions">
+      {message.sql_generated && (
+        <button
+          type="button"
+          className="chat-message-action-btn"
+          onClick={() => setShowSql((v) => !v)}
+          aria-label="View generated SQL"
+        >
+          <Code2 size={13} />
+        </button>
+      )}
+      <button
+        type="button"
+        className={`chat-message-action-btn${message.feedback === "up" ? " active" : ""}`}
+        onClick={() => feedbackMutation.mutate("up")}
+        aria-label="Good answer"
+      >
+        <ThumbsUp size={13} />
+      </button>
+      <button
+        type="button"
+        className={`chat-message-action-btn${message.feedback === "down" ? " active" : ""}`}
+        onClick={() => feedbackMutation.mutate("down")}
+        aria-label="Bad answer"
+      >
+        <ThumbsDown size={13} />
+      </button>
+      {showSql && message.sql_generated && (
+        <pre className="chat-sql-preview">{message.sql_generated}</pre>
+      )}
+    </div>
+  );
+}
+
 export default function Chat() {
   const queryClient = useQueryClient();
   const [activeId, setActiveId] = useState(null);
   const [input, setInput] = useState("");
+  const [historyOpen, setHistoryOpen] = useState(false);
   const listRef = useRef(null);
 
   const { data: conversations = [] } = useQuery({
@@ -96,6 +162,12 @@ export default function Chat() {
 
   const handleNewChat = () => {
     createMutation.mutate();
+    setHistoryOpen(false);
+  };
+
+  const handleSelectConversation = (conversationId) => {
+    setActiveId(conversationId);
+    setHistoryOpen(false);
   };
 
   const handleSend = async (text) => {
@@ -132,7 +204,14 @@ export default function Chat() {
 
   return (
     <div className="chat-page">
-      <aside className="chat-history-rail">
+      {historyOpen && (
+        <div
+          className="chat-history-backdrop"
+          onClick={() => setHistoryOpen(false)}
+        />
+      )}
+
+      <aside className={`chat-history-rail${historyOpen ? " chat-history-rail-open" : ""}`}>
         <button className="chat-new-btn" onClick={handleNewChat}>
           <MessageSquarePlus size={16} />
           New chat
@@ -148,7 +227,7 @@ export default function Chat() {
                 className={`chat-history-item${
                   conversation.id === activeId ? " active" : ""
                 }`}
-                onClick={() => setActiveId(conversation.id)}
+                onClick={() => handleSelectConversation(conversation.id)}
               >
                 <div className="chat-history-item-text">
                   <span className="chat-history-title">{conversation.title}</span>
@@ -174,6 +253,14 @@ export default function Chat() {
 
       <section className="chat-main">
         <header className="chat-main-header">
+          <button
+            type="button"
+            className="chat-history-toggle"
+            aria-label="Toggle conversation history"
+            onClick={() => setHistoryOpen((open) => !open)}
+          >
+            <History size={18} />
+          </button>
           <span className="chat-main-header-icon">
             <Sparkles size={16} />
           </span>
@@ -195,12 +282,22 @@ export default function Chat() {
                 <span className={`chat-avatar chat-avatar-${m.role}`}>
                   {m.role === "user" ? <User size={14} /> : <Bot size={14} />}
                 </span>
-                <div
-                  className={`chat-bubble chat-bubble-${m.role}${
-                    m.isError ? " chat-bubble-error" : ""
-                  }`}
-                >
-                  {m.content}
+                <div className="chat-bubble-col">
+                  <div
+                    className={`chat-bubble chat-bubble-${m.role}${
+                      m.isError ? " chat-bubble-error" : ""
+                    }`}
+                  >
+                    {m.content}
+                  </div>
+                  <ChatResultTable table={m.table} />
+                  {m.role === "assistant" && !m.isError && (
+                    <ChatMessageActions
+                      message={m}
+                      conversationId={activeId}
+                      queryClient={queryClient}
+                    />
+                  )}
                 </div>
               </div>
             ))

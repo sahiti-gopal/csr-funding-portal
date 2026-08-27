@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { listReports, retryReport } from "../services/reportService";
+import { formatCurrency, formatCount } from "../utils/format";
 
 import "../styles/dashboard.css";
 import "../styles/reports.css";
@@ -43,13 +44,7 @@ const formatDate = (iso) =>
     ? new Date(iso).toLocaleDateString("en-IN", { day: "2-digit", month: "short", year: "numeric" })
     : "—";
 
-const formatFunds = (value) => {
-  const n = Number(value);
-  if (!n) return "—";
-  if (n >= 10000000) return `₹${(n / 10000000).toFixed(1)} Cr`;
-  if (n >= 100000) return `₹${(n / 100000).toFixed(1)} L`;
-  return `₹${n.toLocaleString("en-IN")}`;
-};
+const formatFunds = (value) => formatCurrency(value, { fallback: "—" });
 
 const REVIEW_CLASS = {
   Approved: "approved",
@@ -195,7 +190,7 @@ export default function Reports() {
                   </td>
                   <td>{r.financial_year}</td>
                   <td>{r.project_count ?? "—"}</td>
-                  <td>{r.beneficiaries_total?.toLocaleString("en-IN") ?? "—"}</td>
+                  <td>{formatCount(r.beneficiaries_total, { fallback: "—" })}</td>
                   <td>{formatFunds(r.committed)}</td>
                   <td>
                     {r.utilization_pct != null ? (

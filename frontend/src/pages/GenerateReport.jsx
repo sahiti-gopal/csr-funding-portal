@@ -5,18 +5,14 @@ import { ArrowLeft, Sparkles, Loader2 } from "lucide-react";
 
 import { getDonors } from "../services/donorService";
 import { previewReport, generateReport } from "../services/reportService";
+import { formatCurrency } from "../utils/format";
 
 import "../styles/dashboard.css";
 import "../styles/reports.css";
 
 const FINANCIAL_YEARS = ["2023-24", "2024-25", "2025-26", "2026-27"];
 
-const formatCr = (value) => {
-  const n = Number(value || 0);
-  if (n >= 1e7) return `₹${(n / 1e7).toFixed(2)} Cr`;
-  if (n >= 1e5) return `₹${(n / 1e5).toFixed(1)} L`;
-  return `₹${n.toLocaleString("en-IN")}`;
-};
+const formatCr = formatCurrency;
 
 export default function GenerateReport() {
   const navigate = useNavigate();

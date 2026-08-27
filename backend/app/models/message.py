@@ -14,6 +14,13 @@ class Message(BaseModel):
     role = db.Column(db.String(20), nullable=False)
     content = db.Column(db.Text, nullable=False)
 
+    sql_generated = db.Column(db.Text, nullable=True)
+    table_data = db.Column(db.JSON, nullable=True)
+    # fast_path | cache | llm | fallback | error
+    response_source = db.Column(db.String(20), nullable=True)
+    # up | down | null (no feedback given)
+    feedback = db.Column(db.String(10), nullable=True)
+
     conversation = db.relationship(
         "Conversation",
         backref=db.backref(

@@ -1,4 +1,5 @@
 import ProgressBar from "./ProgressBar";
+import { formatCurrency } from "../../../utils/format";
 
 export default function FundUtilization({
   projects = [],
@@ -69,9 +70,7 @@ export default function FundUtilization({
 
               <strong>
 
-                ₹{(
-                  project.utilized / 100000
-                ).toFixed(1)} L
+                {formatCurrency(project.utilized)}
 
               </strong>
 
@@ -92,8 +91,7 @@ export default function FundUtilization({
 
               <span>
 
-                Remaining ₹
-                {(project.remaining / 100000).toFixed(1)}L
+                Remaining {formatCurrency(project.remaining)}
 
               </span>
 

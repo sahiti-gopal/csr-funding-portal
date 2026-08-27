@@ -1,8 +1,8 @@
 import { Eye, MapPin } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency } from "../../utils/format";
 
-const formatCr = (value) =>
-  `₹${(Number(value ?? 0) / 10000000).toFixed(1)} Cr`;
+const formatCr = formatCurrency;
 
 export default function ProjectRow({ project }) {
   const navigate = useNavigate();

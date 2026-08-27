@@ -1,15 +1,10 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { ImageIcon, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { formatCurrency as formatCurrencyValue } from "../../utils/format";
 
-const formatCurrency = (value) => {
-  if (value == null) return "—";
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    maximumFractionDigits: 0,
-  }).format(Number(value));
-};
+const formatCurrency = (value) =>
+  value == null ? "—" : formatCurrencyValue(value);
 
 export default function Gallery({ images = [], project }) {
   const [activeIndex, setActiveIndex] = useState(null);
